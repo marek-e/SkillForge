@@ -7,6 +7,7 @@
       "category": "infrastructure",
       "description": "Add ESLint and Prettier configuration",
       "steps": [
+        "Look for oxlint first and if it's a plausible replacement for ESLint, use it instead",
         "Add ESLint config at root level",
         "Add Prettier config at root level",
         "Add lint script to root package.json",
