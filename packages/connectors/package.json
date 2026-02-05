@@ -17,9 +17,9 @@
   },
   "dependencies": {
     "@skillforge/core": "workspace:*",
-    "zod": "^3.23.0"
+    "zod": "^3.24.2"
   },
   "devDependencies": {
-    "typescript": "^5.4.0"
+    "typescript": "^5.7.3"
   }
 }

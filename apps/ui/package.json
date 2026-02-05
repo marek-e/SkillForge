@@ -10,19 +10,18 @@
   },
   "dependencies": {
     "@skillforge/core": "workspace:*",
-    "@tanstack/react-query": "^5.40.0",
-    "@tanstack/react-router": "^1.34.0",
+    "@tanstack/react-query": "^5.66.1",
+    "@tanstack/react-router": "^1.114.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.0",
-    "autoprefixer": "^10.4.19",
-    "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.4",
-    "typescript": "^5.4.0",
-    "vite": "^5.2.0"
+    "@tailwindcss/vite": "^4.0.6",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.0.6",
+    "typescript": "^5.7.3",
+    "vite": "^6.1.0"
   }
 }
