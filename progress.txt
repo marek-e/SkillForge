@@ -1,0 +1,17 @@
+# SkillForge Progress Log
+# This file tracks progress between Ralph iterations.
+# Delete this file when starting a new sprint.
+
+## Completed Tasks
+
+### 2026-02-05 - Initial Bootstrap (Manual)
+- Created monorepo structure with pnpm workspaces
+- packages/core: Zod schemas for Agent and Skill
+- packages/connectors: Stub with Cursor connector placeholder
+- apps/runtime: Hono server with GET endpoints for health, agents, skills
+- apps/ui: Vite + React + Tailwind + TanStack Router/Query
+- Verified end-to-end: UI fetches data from runtime API
+- Files: 38 files created across all packages
+
+## Next Up
+- See prd.json for prioritized task list

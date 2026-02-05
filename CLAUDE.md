@@ -56,3 +56,38 @@ Priority: Cursor first, then Claude Code.
 - Transparency over magic
 - Fewer skills → smarter agents (reduce context/token bloat)
 - No framework lock-in
+
+---
+
+## Ralph Wiggum Mode
+
+This repo supports Ralph Wiggum - an autonomous AI coding loop pattern. See `docs/ralph-wiggum.md` for full documentation.
+
+### Quick Start
+
+```bash
+# HITL (human-in-the-loop) - watch and intervene
+./ralph-once.sh
+
+# AFK (away from keyboard) - autonomous
+./ralph.sh 5    # Run 5 iterations
+```
+
+### Files
+
+| File | Purpose |
+|------|---------|
+| `ralph.sh` | AFK loop - runs N iterations autonomously |
+| `ralph-once.sh` | HITL mode - single iteration with human oversight |
+| `prd.json` | Product requirements with prioritized tasks |
+| `progress.txt` | Session progress log (delete between sprints) |
+
+---
+
+## Code Quality Expectations
+
+- **TypeScript**: Strict mode, no `any` types
+- **Tests**: Write tests for new functionality
+- **Small commits**: One logical change per commit
+- **Feedback loops**: Run `pnpm typecheck` before committing
+- Leave the codebase better than you found it

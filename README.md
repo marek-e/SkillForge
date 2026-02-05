@@ -188,3 +188,39 @@ Success criteria
 	•	Skill duplication across tools is trivial
 	•	Token/context waste becomes visible
 	•	Adding Electron later requires no rewrite
+
+⸻
+
+## Development
+
+### Quick Start
+
+```bash
+pnpm install
+pnpm dev          # Starts runtime (:4321) and UI (:4320)
+```
+
+Open http://localhost:4320 to see the dashboard.
+
+### Individual Services
+
+```bash
+pnpm --filter @skillforge/runtime dev   # Runtime only
+pnpm --filter @skillforge/ui dev        # UI only
+```
+
+⸻
+
+## Ralph Wiggum Mode
+
+This repo supports [Ralph Wiggum](https://ghuntley.com/ralph/) - an autonomous AI coding loop pattern.
+
+```bash
+# Human-in-the-loop: watch and intervene
+./ralph-once.sh
+
+# Away from keyboard: autonomous loop
+./ralph.sh 5    # Run 5 iterations
+```
+
+Ralph reads `prd.json` for tasks and tracks progress in `progress.txt`. See `docs/ralph-wiggum.md` for details.

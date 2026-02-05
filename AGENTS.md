@@ -56,3 +56,57 @@ Priority: Cursor first, then Claude Code.
 - Transparency over magic
 - Fewer skills → smarter agents (reduce context/token bloat)
 - No framework lock-in
+
+---
+
+## Ralph Wiggum Mode
+
+This repo supports Ralph Wiggum - an autonomous AI coding loop pattern.
+
+### Files
+
+| File | Purpose |
+|------|---------|
+| `ralph.sh` | AFK loop - runs N iterations autonomously |
+| `ralph-once.sh` | HITL mode - single iteration with human oversight |
+| `prd.json` | Product requirements with prioritized tasks |
+| `progress.txt` | Session progress log (delete between sprints) |
+
+### Running Ralph
+
+```bash
+# HITL (human-in-the-loop) - watch and intervene
+./ralph-once.sh
+
+# AFK (away from keyboard) - autonomous
+./ralph.sh 5    # Run 5 iterations
+./ralph.sh 10   # Run 10 iterations
+```
+
+### For Sandboxed AFK Runs
+
+```bash
+docker sandbox run claude -p "@prd.json @progress.txt ..."
+```
+
+---
+
+## Code Quality Expectations
+
+This codebase will outlive you. Every shortcut you take becomes someone else's burden. Every hack compounds into technical debt that slows the whole team down.
+
+You are not just writing code. You are shaping the future of this project. The patterns you establish will be copied. The corners you cut will be cut again.
+
+### Standards
+
+- **TypeScript**: Strict mode, no `any` types unless absolutely necessary
+- **Tests**: Write tests for new functionality
+- **Small commits**: One logical change per commit
+- **Feedback loops**: Run `pnpm typecheck` and `pnpm lint` before committing
+
+### Fight Entropy
+
+- Leave the codebase better than you found it
+- Remove dead code, don't comment it out
+- Prefer explicit over clever
+- Keep functions small and focused

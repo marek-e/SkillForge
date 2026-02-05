@@ -1,0 +1,83 @@
+{
+  "name": "SkillForge v0.2",
+  "description": "Next iteration improvements for SkillForge",
+  "items": [
+    {
+      "id": "1",
+      "category": "infrastructure",
+      "description": "Add ESLint and Prettier configuration",
+      "steps": [
+        "Add ESLint config at root level",
+        "Add Prettier config at root level",
+        "Add lint script to root package.json",
+        "Verify all packages pass linting"
+      ],
+      "priority": "high",
+      "passes": false
+    },
+    {
+      "id": "2",
+      "category": "infrastructure",
+      "description": "Add Vitest for testing",
+      "steps": [
+        "Add Vitest to packages/core",
+        "Write tests for Zod schemas (Agent, Skill)",
+        "Add test script to package.json",
+        "Verify tests pass"
+      ],
+      "priority": "high",
+      "passes": false
+    },
+    {
+      "id": "3",
+      "category": "functional",
+      "description": "Implement CRUD operations for agents in runtime",
+      "steps": [
+        "Add POST /api/agents endpoint",
+        "Add PUT /api/agents/:id endpoint",
+        "Add DELETE /api/agents/:id endpoint",
+        "Validate request bodies with Zod schemas"
+      ],
+      "priority": "medium",
+      "passes": false
+    },
+    {
+      "id": "4",
+      "category": "functional",
+      "description": "Implement CRUD operations for skills in runtime",
+      "steps": [
+        "Add POST /api/skills endpoint",
+        "Add PUT /api/skills/:id endpoint",
+        "Add DELETE /api/skills/:id endpoint",
+        "Validate request bodies with Zod schemas"
+      ],
+      "priority": "medium",
+      "passes": false
+    },
+    {
+      "id": "5",
+      "category": "ui",
+      "description": "Add forms for creating agents and skills",
+      "steps": [
+        "Create AgentForm component",
+        "Create SkillForm component",
+        "Add mutation hooks with TanStack Query",
+        "Wire up forms to runtime API"
+      ],
+      "priority": "low",
+      "passes": false
+    },
+    {
+      "id": "6",
+      "category": "connector",
+      "description": "Implement Cursor connector detection",
+      "steps": [
+        "Detect ~/.cursor directory",
+        "Detect .cursorrules file in project",
+        "Return detection result from connector"
+      ],
+      "priority": "low",
+      "passes": false
+    }
+  ]
+}
