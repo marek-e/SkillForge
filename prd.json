@@ -1,6 +1,6 @@
 {
   "name": "SkillForge v0.2",
-  "description": "Next iteration improvements for SkillForge",
+  "description": "Claude Code and Cursor connector support",
   "items": [
     {
       "id": "1",
@@ -30,6 +30,74 @@
     },
     {
       "id": "3",
+      "category": "connector",
+      "description": "Implement Claude Code connector - detection",
+      "steps": [
+        "Create packages/connectors/src/claude-code/index.ts",
+        "Detect ~/.claude directory existence",
+        "Detect CLAUDE.md files in project root",
+        "Detect .claude/ project directory",
+        "Return detection result with found paths"
+      ],
+      "priority": "high",
+      "passes": false
+    },
+    {
+      "id": "4",
+      "category": "connector",
+      "description": "Implement Claude Code connector - import",
+      "steps": [
+        "Parse ~/.claude/settings.json for global config",
+        "Parse CLAUDE.md for custom instructions (extract as skill)",
+        "Parse .claude/settings.local.json for project config",
+        "Parse MCP server configurations from settings",
+        "Normalize parsed data to canonical Agent/Skill models"
+      ],
+      "priority": "high",
+      "passes": false
+    },
+    {
+      "id": "5",
+      "category": "connector",
+      "description": "Implement Cursor connector - detection",
+      "steps": [
+        "Detect ~/.cursor directory existence",
+        "Detect .cursorrules file in project root",
+        "Detect .cursor/ project directory",
+        "Return detection result with found paths"
+      ],
+      "priority": "high",
+      "passes": false
+    },
+    {
+      "id": "6",
+      "category": "connector",
+      "description": "Implement Cursor connector - import",
+      "steps": [
+        "Parse ~/.cursor/mcp.json for MCP servers",
+        "Parse .cursorrules file content (extract as skill)",
+        "Parse cursor settings for enabled features",
+        "Normalize parsed data to canonical Agent/Skill models"
+      ],
+      "priority": "high",
+      "passes": false
+    },
+    {
+      "id": "7",
+      "category": "functional",
+      "description": "Add connector registry and runtime integration",
+      "steps": [
+        "Create ConnectorRegistry class in packages/connectors",
+        "Register Claude Code and Cursor connectors",
+        "Add GET /api/connectors endpoint (list available)",
+        "Add GET /api/connectors/:name/detect endpoint",
+        "Add POST /api/connectors/:name/import endpoint"
+      ],
+      "priority": "high",
+      "passes": false
+    },
+    {
+      "id": "8",
       "category": "functional",
       "description": "Implement CRUD operations for agents in runtime",
       "steps": [
@@ -42,7 +110,7 @@
       "passes": false
     },
     {
-      "id": "4",
+      "id": "9",
       "category": "functional",
       "description": "Implement CRUD operations for skills in runtime",
       "steps": [
@@ -55,7 +123,46 @@
       "passes": false
     },
     {
-      "id": "5",
+      "id": "10",
+      "category": "connector",
+      "description": "Implement Claude Code connector - export",
+      "steps": [
+        "Generate CLAUDE.md from canonical skills",
+        "Generate MCP config section from skills with MCP implementationRef",
+        "Write to appropriate file locations",
+        "Handle merge with existing config (don't overwrite unrelated settings)"
+      ],
+      "priority": "medium",
+      "passes": false
+    },
+    {
+      "id": "11",
+      "category": "connector",
+      "description": "Implement Cursor connector - export",
+      "steps": [
+        "Generate .cursorrules from canonical skills",
+        "Generate MCP config from skills with MCP implementationRef",
+        "Write to appropriate file locations",
+        "Handle merge with existing config (don't overwrite unrelated settings)"
+      ],
+      "priority": "medium",
+      "passes": false
+    },
+    {
+      "id": "12",
+      "category": "ui",
+      "description": "Add connector UI - detection and import",
+      "steps": [
+        "Create ConnectorList component showing available connectors",
+        "Add detection status indicator per connector",
+        "Add 'Import' button that triggers import flow",
+        "Show import results with warnings for lossy conversions"
+      ],
+      "priority": "low",
+      "passes": false
+    },
+    {
+      "id": "13",
       "category": "ui",
       "description": "Add forms for creating agents and skills",
       "steps": [
@@ -63,18 +170,6 @@
         "Create SkillForm component",
         "Add mutation hooks with TanStack Query",
         "Wire up forms to runtime API"
-      ],
-      "priority": "low",
-      "passes": false
-    },
-    {
-      "id": "6",
-      "category": "connector",
-      "description": "Implement Cursor connector detection",
-      "steps": [
-        "Detect ~/.cursor directory",
-        "Detect .cursorrules file in project",
-        "Return detection result from connector"
       ],
       "priority": "low",
       "passes": false
