@@ -1,199 +1,22 @@
 # SkillForge
 
-## Product overview
+Forge, inspect, and control agent skills across tools.
 
-SkillForge is a local-first developer tool to visualize, manage, and normalize agent skills across multiple agentic tools (Cursor, Claude Code, OpenAI/Codex, Gemini, etc.).
+SkillForge is a local-first developer tool that makes invisible agent configurations visible. It normalizes skill definitions across agentic tools (Cursor, Claude Code, and more), letting you manage what each agent can do from a single interface.
 
-It is NOT:
-	•	an agent runner
-	•	a prompt playground
-	•	a cloud service
+## Features
 
-It IS:
-	•	a configuration inspector
-	•	a skill registry + editor
-	•	a portability & diff tool
+- **Unified skill registry** — View and edit skills from multiple tools in one place
+- **Agent visibility** — See exactly which skills each agent has access to
+- **Enable/disable skills** — Control context bloat by toggling skills per agent
+- **Import/export** — Bring in existing configs, export back to tool formats
+- **Token cost estimation** — Understand the context cost of your skill configurations
+- **Diff view** — Compare skill definitions across tools
+- **Local-first** — Your data stays on your machine, no cloud required
 
-Target user: developer working with agentic tools locally.
+## Quick Start
 
-⸻
-
-Core goals
-	•	Single source of truth for agent skills
-	•	Make invisible agent configs visible
-	•	Reduce context/token bloat by controlling exposed skills
-	•	Enable reuse and portability of skills across tools
-
-⸻
-
-## Key concepts
-
-### Agent
-
-An Agent represents a tool-specific agent configuration.
-
-Fields:
-	•	id
-	•	name
-	•	sourceTool (cursor | claude | openai | gemini | generic)
-	•	enabledSkills: SkillRef[]
-
-⸻
-
-### Skill
-
-A Skill is a semantic capability an agent can invoke.
-
-Fields:
-	•	id
-	•	name
-	•	description (LLM-facing)
-	•	inputSchema (Zod / JSON Schema)
-	•	outputSchema (optional)
-	•	implementationRef (file / command / API)
-	•	source (manual | imported)
-	•	originalTool (if imported)
-
-Skills are configuration, not execution logic.
-
-⸻
-
-## Canonical internal model
-
-All tools are normalized into one internal schema.
-Import = tool format → canonical model
-Export = canonical model → tool format
-
-No tool-specific logic leaks into the UI.
-
-⸻
-
-## Architecture
-
-Monorepo (pnpm workspaces)
-```
-apps/
-  ui/        # Vite + React
-  runtime/   # Node.js local runtime
-packages/
-  core/      # canonical models + logic
-  connectors/# per-tool adapters
-```
-
-UI
-	•	Vite + React + TypeScript
-	•	TanStack Router
-	•	TanStack Query
-	•	Tailwind CSS
-	•	Monaco Editor (schemas, prompts, diff)
-
-Responsibilities:
-	•	visualize agents & skills
-	•	edit skills
-	•	enable/disable skills per agent
-	•	show diffs
-	•	show token cost estimation per agent
-
-NO filesystem access.
-
-⸻
-
-Local runtime (not a backend)
-	•	Node.js 20 + TypeScript
-	•	Hono or Fastify
-	•	Zod
-	•	chokidar
-
-Responsibilities:
-	•	filesystem access
-	•	detect tool config locations
-	•	import configs via connectors
-	•	normalize into canonical model
-	•	watch config changes
-	•	export back to tool formats
-
-API exposed on localhost (HTTP, JSON).
-
-⸻
-
-Connectors
-
-Each connector:
-	•	locates tool configs
-	•	parses them
-	•	normalizes → canonical model
-	•	exports back (best-effort)
-
-Initial priority:
-	1.	Cursor
-	2.	Claude Code
-
-Imports may be lossy → UI must show warnings.
-
-⸻
-
-Core features (v1)
-	•	List agents (per tool)
-	•	List all skills
-	•	See which agent sees which skill
-	•	Enable / disable skills per agent
-	•	Create skill from template
-	•	Duplicate skill
-	•	Edit skill description & schema
-	•	Import from tool configs
-	•	Export back with preview
-	•	Show estimated token cost per agent
-
-⸻
-
-Non-goals (v1)
-	•	Executing agents
-	•	Running skills
-	•	Auth / secrets
-	•	Cloud sync
-	•	Marketplace
-	•	AI-assisted editing
-
-⸻
-
-Electron plan
-	•	Start as local web app (Vite + Node runtime)
-	•	Later:
-	•	runtime → Electron main
-	•	UI unchanged
-	•	optional IPC optimization
-
-Architecture must keep UI runtime-agnostic.
-
-⸻
-
-Design principles
-	•	Local-first
-	•	Transparency over magic
-	•	Fewer skills → smarter agents
-	•	Canonical model is sacred
-	•	No framework lock-in
-
-⸻
-
-Naming
-
-App name: SkillForge
-Positioning: “Forge, inspect, and control agent skills across tools.”
-
-⸻
-
-Success criteria
-	•	Developer can understand agent skill exposure at a glance
-	•	Skill duplication across tools is trivial
-	•	Token/context waste becomes visible
-	•	Adding Electron later requires no rewrite
-
-⸻
-
-## Development
-
-### Quick Start
+**Prerequisites:** Node.js 20+, pnpm
 
 ```bash
 pnpm install
@@ -202,25 +25,41 @@ pnpm dev          # Starts runtime (:4321) and UI (:4320)
 
 Open http://localhost:4320 to see the dashboard.
 
-### Individual Services
+## Supported Tools
 
-```bash
-pnpm --filter @skillforge/runtime dev   # Runtime only
-pnpm --filter @skillforge/ui dev        # UI only
+- **Cursor** — Full import/export support
+- **Claude Code** — Full import/export support
+- More connectors coming (OpenAI/Codex, Gemini)
+
+## Project Structure
+
+```
+apps/
+  ui/           # Vite + React frontend
+  runtime/      # Node.js local runtime (localhost API)
+packages/
+  core/         # Canonical models and shared logic
+  connectors/   # Per-tool adapters
 ```
 
-⸻
-
-## Ralph Wiggum Mode
-
-This repo supports [Ralph Wiggum](https://ghuntley.com/ralph/) - an autonomous AI coding loop pattern.
+## Development
 
 ```bash
-# Human-in-the-loop: watch and intervene
-./ralph-once.sh
+# Run both services
+pnpm dev
 
-# Away from keyboard: autonomous loop
-./ralph.sh 5    # Run 5 iterations
+# Individual services
+pnpm --filter @skillforge/runtime dev   # Runtime only (:4321)
+pnpm --filter @skillforge/ui dev        # UI only (:4320)
+
+# Type checking
+pnpm typecheck
 ```
 
-Ralph reads `prd.json` for tasks and tracks progress in `progress.txt`. See `docs/ralph-wiggum.md` for details.
+## Contributing
+
+Contributions welcome! Please run `pnpm typecheck` before submitting PRs. See `CLAUDE.md` for architecture details and code quality expectations.
+
+## License
+
+MIT
