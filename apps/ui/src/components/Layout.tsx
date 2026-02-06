@@ -1,4 +1,4 @@
-import { Link, Outlet } from "@tanstack/react-router";
+import { Link, Outlet } from '@tanstack/react-router'
 
 export function Layout() {
   return (
@@ -32,5 +32,5 @@ export function Layout() {
         <Outlet />
       </main>
     </div>
-  );
+  )
 }

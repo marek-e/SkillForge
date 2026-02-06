@@ -1,15 +1,19 @@
-import { useQuery } from "@tanstack/react-query";
-import { api } from "../api/client";
-import type { Skill } from "@skillforge/core";
+import { useQuery } from '@tanstack/react-query'
+import { api } from '../api/client'
+import type { Skill } from '@skillforge/core'
 
 export function SkillList() {
-  const { data: skills, isLoading, error } = useQuery({
-    queryKey: ["skills"],
+  const {
+    data: skills,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['skills'],
     queryFn: api.skills.list,
-  });
+  })
 
-  if (isLoading) return <div className="text-gray-500">Loading skills...</div>;
-  if (error) return <div className="text-red-500">Error: {(error as Error).message}</div>;
+  if (isLoading) return <div className="text-gray-500">Loading skills...</div>
+  if (error) return <div className="text-red-500">Error: {(error as Error).message}</div>
 
   return (
     <div className="space-y-4">
@@ -24,5 +28,5 @@ export function SkillList() {
         ))}
       </div>
     </div>
-  );
+  )
 }

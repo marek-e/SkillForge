@@ -1,15 +1,19 @@
-import { useQuery } from "@tanstack/react-query";
-import { api } from "../api/client";
-import type { Agent } from "@skillforge/core";
+import { useQuery } from '@tanstack/react-query'
+import { api } from '../api/client'
+import type { Agent } from '@skillforge/core'
 
 export function AgentList() {
-  const { data: agents, isLoading, error } = useQuery({
-    queryKey: ["agents"],
+  const {
+    data: agents,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['agents'],
     queryFn: api.agents.list,
-  });
+  })
 
-  if (isLoading) return <div className="text-gray-500">Loading agents...</div>;
-  if (error) return <div className="text-red-500">Error: {(error as Error).message}</div>;
+  if (isLoading) return <div className="text-gray-500">Loading agents...</div>
+  if (error) return <div className="text-red-500">Error: {(error as Error).message}</div>
 
   return (
     <div className="space-y-4">
@@ -19,12 +23,10 @@ export function AgentList() {
           <div key={agent.id} className="bg-white p-4 rounded-lg shadow border">
             <h3 className="font-semibold text-lg">{agent.name}</h3>
             <p className="text-sm text-gray-500">Source: {agent.sourceTool}</p>
-            <p className="text-sm text-gray-500">
-              Skills: {agent.enabledSkills.length} enabled
-            </p>
+            <p className="text-sm text-gray-500">Skills: {agent.enabledSkills.length} enabled</p>
           </div>
         ))}
       </div>
     </div>
-  );
+  )
 }

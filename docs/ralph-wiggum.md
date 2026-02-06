@@ -5,6 +5,7 @@ Ralph Wiggum is an autonomous AI coding pattern that runs your AI coding CLI in 
 ## Overview
 
 Instead of writing a new prompt for each phase of development, Ralph:
+
 1. Reads a PRD file to see what needs to be done
 2. Reads a progress file to see what's already done
 3. Picks the highest priority incomplete task
@@ -25,6 +26,7 @@ Watch Ralph work, intervene when needed:
 ```
 
 Use this to:
+
 - Learn how Ralph works
 - Refine your PRD
 - Build confidence before going AFK
@@ -42,12 +44,12 @@ Always cap iterations. Ralph will stop early if it completes all tasks.
 
 ## Files
 
-| File | Purpose |
-|------|---------|
-| `ralph.sh` | AFK loop script |
-| `ralph-once.sh` | Single iteration (HITL) script |
-| `prd.json` | Product requirements - your task list |
-| `progress.txt` | Session log - tracks what's done |
+| File            | Purpose                               |
+| --------------- | ------------------------------------- |
+| `ralph.sh`      | AFK loop script                       |
+| `ralph-once.sh` | Single iteration (HITL) script        |
+| `prd.json`      | Product requirements - your task list |
+| `progress.txt`  | Session log - tracks what's done      |
 
 ## PRD Format
 
@@ -62,11 +64,7 @@ The PRD is a JSON file with prioritized tasks:
       "id": "1",
       "category": "infrastructure",
       "description": "Add linting",
-      "steps": [
-        "Add ESLint config",
-        "Add lint script",
-        "Verify all files pass"
-      ],
+      "steps": ["Add ESLint config", "Add lint script", "Verify all files pass"],
       "priority": "high",
       "passes": false
     }
@@ -75,6 +73,7 @@ The PRD is a JSON file with prioritized tasks:
 ```
 
 Ralph marks `passes: true` when complete. You can also manually adjust:
+
 - Set `passes: false` to redo a task
 - Add new items mid-sprint
 - Change priorities

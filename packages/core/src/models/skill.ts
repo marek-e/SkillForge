@@ -1,16 +1,10 @@
-import { z } from "zod";
+import { z } from 'zod'
 
-export const SkillSourceSchema = z.enum(["manual", "imported"]);
-export type SkillSource = z.infer<typeof SkillSourceSchema>;
+export const SkillSourceSchema = z.enum(['manual', 'imported'])
+export type SkillSource = z.infer<typeof SkillSourceSchema>
 
-export const SourceToolSchema = z.enum([
-  "cursor",
-  "claude",
-  "openai",
-  "gemini",
-  "generic",
-]);
-export type SourceTool = z.infer<typeof SourceToolSchema>;
+export const SourceToolSchema = z.enum(['cursor', 'claude', 'openai', 'gemini', 'generic'])
+export type SourceTool = z.infer<typeof SourceToolSchema>
 
 export const SkillSchema = z.object({
   id: z.string().uuid(),
@@ -23,13 +17,13 @@ export const SkillSchema = z.object({
   originalTool: SourceToolSchema.optional(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
-});
+})
 
-export type Skill = z.infer<typeof SkillSchema>;
+export type Skill = z.infer<typeof SkillSchema>
 
 export const CreateSkillSchema = SkillSchema.omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-});
-export type CreateSkill = z.infer<typeof CreateSkillSchema>;
+})
+export type CreateSkill = z.infer<typeof CreateSkillSchema>
