@@ -15,9 +15,13 @@ packages/
 
 ## Tech Stack
 
-**UI:** Vite, React, TypeScript, TanStack Router, TanStack Query, Tailwind CSS, Monaco Editor
+**UI:** Vite, React, TypeScript, TanStack Router, TanStack Query, Tailwind CSS, Monaco Editor, shadcn/ui (Radix Nova)
 
 **Runtime:** Node.js 20, TypeScript, Hono or Fastify, Zod, chokidar
+
+## UI Components
+
+See [UI Components](ui-components.md) for a complete list of available components, including typography elements and base UI primitives.
 
 ## Key Constraints
 

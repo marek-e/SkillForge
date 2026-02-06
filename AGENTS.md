@@ -12,6 +12,7 @@ SkillForge is a local-first tool to visualize and manage agent skills across age
 ## Detailed Docs
 
 - [Architecture](docs/architecture.md) — Monorepo structure, tech stack, constraints
+- [UI Components](docs/ui-components.md) — Component library reference
 - [Domain Models](docs/domain-models.md) — Agent and Skill schemas
 - [Connectors](docs/connectors.md) — How to build tool adapters
 - [Code Quality](docs/code-quality.md) — TypeScript rules, testing, commits
