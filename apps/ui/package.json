@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",
+    "@fontsource-variable/geist": "^5.2.8",
     "@skillforge/core": "workspace:*",
     "@tanstack/react-query": "^5.66.1",
     "@tanstack/react-router": "^1.114.3",
