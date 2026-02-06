@@ -3,6 +3,7 @@ import { RouterProvider, createRouter, createRootRoute, createRoute } from '@tan
 import { Layout } from './components/Layout'
 import { AgentList } from './components/AgentList'
 import { SkillList } from './components/SkillList'
+import { Toaster } from './components/ui/sonner'
 
 const queryClient = new QueryClient()
 
@@ -46,6 +47,7 @@ export function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
+      <Toaster />
     </QueryClientProvider>
   )
 }
