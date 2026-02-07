@@ -54,6 +54,9 @@ importers:
       '@fontsource-variable/geist':
         specifier: ^5.2.8
         version: 5.2.8
+      '@fontsource/medievalsharp':
+        specifier: ^5.2.8
+        version: 5.2.8
       '@skillforge/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -674,6 +677,9 @@ packages:
 
   '@fontsource-variable/geist@5.2.8':
     resolution: {integrity: sha512-cJ6m9e+8MQ5dCYJsLylfZrgBh6KkG4bOLckB35Tr9J/EqdkEM6QllH5PxqP1dhTvFup+HtMRPuz9xOjxXJggxw==}
+
+  '@fontsource/medievalsharp@5.2.8':
+    resolution: {integrity: sha512-KD4nShnTLAdnjsQspINuk3EJ5O2WdmFKe5H7L4EqVIOmcoxsjGKWgLfEPWsxUJ8GRinM1dkin8e4xsWZvj2r9A==}
 
   '@hono/node-server@1.19.9':
     resolution: {integrity: sha512-vHL6w3ecZsky+8P5MD+eFfaGTyCeOHUIFYMGpQGbrBTSmNNoxv0if69rEZ5giu36weC5saFuznL411gRX7bJDw==}
@@ -3733,6 +3739,8 @@ snapshots:
   '@floating-ui/utils@0.2.10': {}
 
   '@fontsource-variable/geist@5.2.8': {}
+
+  '@fontsource/medievalsharp@5.2.8': {}
 
   '@hono/node-server@1.19.9(hono@4.11.7)':
     dependencies:

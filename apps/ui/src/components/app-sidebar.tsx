@@ -29,7 +29,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <BookOpenIcon className="h-4 w-4" />
             </div>
-            <span className="font-semibold text-lg group-data-[collapsible=icon]:hidden">
+            <span className="font-semibold font-serif text-lg group-data-[collapsible=icon]:hidden">
               SkillForge
             </span>
           </Link>
