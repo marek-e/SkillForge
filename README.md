@@ -1,3 +1,10 @@
+<div align="center">
+  <a href="https://raw.githubusercontent.com/marek-e/SkillForge/refs/heads/main/apps/ui/public/logo.svg">
+    <img width="180" src="https://raw.githubusercontent.com/marek-e/SkillForge/refs/heads/main/apps/ui/public/logo.svg" alt="SkillForge Logo" />
+  </a>
+</div>
+<br />
+
 # SkillForge
 
 Forge, inspect, and control agent skills across tools.

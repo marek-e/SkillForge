@@ -37,9 +37,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
             to="/"
             className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center"
           >
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-primary-foreground">
-              <img src="/logo.svg" alt="SkillForge" className="size-6" />
-            </div>
+            <img src="/logo.svg" alt="SkillForge" className="size-8" />
             <span className="font-semibold font-serif text-lg group-data-[collapsible=icon]:hidden">
               SkillForge
             </span>
