@@ -12,18 +12,20 @@ export function AgentList() {
     queryFn: api.agents.list,
   })
 
-  if (isLoading) return <div className="text-gray-500">Loading agents...</div>
-  if (error) return <div className="text-red-500">Error: {(error as Error).message}</div>
+  if (isLoading) return <div className="text-muted-foreground">Loading agents...</div>
+  if (error) return <div className="text-destructive">Error: {(error as Error).message}</div>
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold text-gray-900">Agents</h2>
+      <h2 className="text-2xl font-bold text-foreground">Agents</h2>
       <div className="grid gap-4">
         {agents?.map((agent: Agent) => (
-          <div key={agent.id} className="bg-white p-4 rounded-lg shadow border">
+          <div key={agent.id} className="bg-card p-4 rounded-lg shadow border">
             <h3 className="font-semibold text-lg">{agent.name}</h3>
-            <p className="text-sm text-gray-500">Source: {agent.sourceTool}</p>
-            <p className="text-sm text-gray-500">Skills: {agent.enabledSkills.length} enabled</p>
+            <p className="text-sm text-muted-foreground">Source: {agent.sourceTool}</p>
+            <p className="text-sm text-muted-foreground">
+              Skills: {agent.enabledSkills.length} enabled
+            </p>
           </div>
         ))}
       </div>
