@@ -1,5 +1,5 @@
-import { Link, useLocation } from '@tanstack/react-router'
-import { NavMain } from '@/components/nav-main'
+import { Link, useLocation } from "@tanstack/react-router";
+import { NavMain } from "@/components/nav-main";
 import {
   Sidebar,
   SidebarContent,
@@ -9,25 +9,25 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from '@/components/ui/sidebar'
-import { BotIcon, BookOpenIcon, SettingsIcon } from 'lucide-react'
-import { ComponentProps } from 'react'
+} from "@/components/ui/sidebar";
+import { BotIcon, BookOpenIcon, SettingsIcon } from "lucide-react";
+import { ComponentProps } from "react";
 
 const navItems = [
   {
-    title: 'Agents',
-    url: '/agents',
+    title: "Agents",
+    url: "/agents",
     icon: <BotIcon />,
   },
   {
-    title: 'Skills',
-    url: '/skills',
+    title: "Skills",
+    url: "/skills",
     icon: <BookOpenIcon />,
   },
-]
+];
 
 export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
-  const location = useLocation()
+  const location = useLocation();
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -37,8 +37,8 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
             to="/"
             className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center"
           >
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <BookOpenIcon className="h-4 w-4" />
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-primary-foreground">
+              <img src="/logo.svg" alt="SkillForge" className="size-6" />
             </div>
             <span className="font-semibold font-serif text-lg group-data-[collapsible=icon]:hidden">
               SkillForge
@@ -55,7 +55,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton
               asChild
               tooltip="Settings"
-              isActive={location.pathname === '/settings'}
+              isActive={location.pathname === "/settings"}
             >
               <Link to="/settings">
                 <SettingsIcon />
@@ -67,5 +67,5 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

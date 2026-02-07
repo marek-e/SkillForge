@@ -62,4 +62,4 @@ Contributions welcome! Please run `pnpm typecheck` before submitting PRs. See `C
 
 ## License
 
-MIT
+[MIT](LICENSE)
