@@ -128,8 +128,8 @@ All components follow these patterns:
 Components can be imported using the `@/components` alias:
 
 ```tsx
-import { Button } from "@/components/ui/button"
-import { H1, P } from "@/components/typography"
+import { Button } from '@/components/ui/button'
+import { H1, P } from '@/components/typography'
 ```
 
 ## Styling

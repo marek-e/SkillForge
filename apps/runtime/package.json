@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.14.0",
-    "@skillforge/core": "workspace:*",
     "@skillforge/connectors": "workspace:*",
+    "@skillforge/core": "workspace:*",
     "hono": "^4.7.4",
     "zod": "^3.24.2"
   },

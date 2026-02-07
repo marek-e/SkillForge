@@ -51,10 +51,11 @@ const router = createRouter({ routeTree })
 ### Adding a New Route
 
 1. Create `routes/new-route.tsx`:
+
    ```tsx
    import { createRoute } from '@tanstack/react-router'
    import { rootRoute } from './__root'
-   
+
    export const newRoute = createRoute({
      getParentRoute: () => rootRoute,
      path: '/new-path',
@@ -63,6 +64,7 @@ const router = createRouter({ routeTree })
    ```
 
 2. Export from `routes/index.ts`:
+
    ```tsx
    export { newRoute } from './new-route'
    ```
