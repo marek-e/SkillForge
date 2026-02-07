@@ -1,36 +1,90 @@
-import { Link, Outlet } from '@tanstack/react-router'
+import { Outlet, useMatches, Link } from '@tanstack/react-router'
+import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
+import { AppSidebar } from './app-sidebar'
+import { Separator } from './ui/separator'
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from './ui/breadcrumb'
+import { HomeIcon } from 'lucide-react'
+
+const routeLabels: Record<string, string> = {
+  '/': 'Home',
+  '/agents': 'Agents',
+  '/skills': 'Skills',
+}
+
+function Breadcrumbs() {
+  const matches = useMatches()
+
+  const currentMatch = matches[matches.length - 1]
+  const currentPath = currentMatch?.pathname || '/'
+
+  if (currentPath === '/') {
+    return (
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbPage className="flex items-center gap-2">
+              <HomeIcon className="size-4" /> Home
+            </BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+    )
+  }
+
+  // Get the label for current route
+  const currentLabel =
+    routeLabels[currentPath] ||
+    currentPath
+      .split('/')
+      .pop()
+      ?.replace(/^\w/, (c) => c.toUpperCase()) ||
+    'Page'
+
+  return (
+    <Breadcrumb>
+      <BreadcrumbList>
+        <BreadcrumbItem className="hidden md:block">
+          <BreadcrumbLink asChild>
+            <Link to="/" className="flex items-center gap-2">
+              <HomeIcon className="size-4" /> Home
+            </Link>
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator className="hidden md:block" />
+        <BreadcrumbItem>
+          <BreadcrumbPage>{currentLabel}</BreadcrumbPage>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </Breadcrumb>
+  )
+}
 
 export function Layout() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex">
-              <Link to="/" className="flex items-center text-xl font-bold text-gray-900">
-                SkillForge
-              </Link>
-              <div className="ml-10 flex items-center space-x-4">
-                <Link
-                  to="/agents"
-                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100"
-                >
-                  Agents
-                </Link>
-                <Link
-                  to="/skills"
-                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100"
-                >
-                  Skills
-                </Link>
-              </div>
-            </div>
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator
+              orientation="vertical"
+              className="mr-2 data-[orientation=vertical]:h-4 data-vertical:self-center "
+            />
+            <Breadcrumbs />
           </div>
-        </div>
-      </nav>
-      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <Outlet />
-      </main>
-    </div>
+        </header>
+        <main className="flex flex-1 flex-col gap-4 p-4">
+          <Outlet />
+        </main>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }
