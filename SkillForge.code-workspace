@@ -1,0 +1,26 @@
+{
+  "folders": [
+    { "path": "apps/ui", "name": "🎨 UI" },
+    { "path": "apps/runtime", "name": "💻 Runtime" },
+    { "path": "packages/core", "name": "🧱 Core" },
+    { "path": "packages/connectors", "name": "🔌 Connectors" },
+    { "path": ".", "name": "🏠 SkillForge (root)" },
+  ],
+  "settings": {
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "editor.defaultFormatter": "oxc.oxc-vscode",
+    "editor.formatOnSave": true,
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "pnpm-lock.yaml": true,
+    },
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+    },
+  },
+  "extensions": {
+    "recommendations": ["oxc.oxc-vscode"],
+  },
+}
