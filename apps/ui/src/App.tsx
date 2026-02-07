@@ -1,12 +1,13 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { ThemeProvider } from 'next-themes'
 import { Toaster } from './components/ui/sonner'
 import { TooltipProvider } from './components/ui/tooltip'
-import { rootRoute, indexRoute, agentsRoute, skillsRoute } from './routes'
+import { rootRoute, indexRoute, agentsRoute, skillsRoute, settingsRoute } from './routes'
 
 const queryClient = new QueryClient()
 
-const routeTree = rootRoute.addChildren([indexRoute, agentsRoute, skillsRoute])
+const routeTree = rootRoute.addChildren([indexRoute, agentsRoute, skillsRoute, settingsRoute])
 const router = createRouter({ routeTree })
 
 declare module '@tanstack/react-router' {
@@ -18,10 +19,12 @@ declare module '@tanstack/react-router' {
 export function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <RouterProvider router={router} />
-        <Toaster />
-      </TooltipProvider>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <TooltipProvider>
+          <RouterProvider router={router} />
+          <Toaster />
+        </TooltipProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   )
 }
