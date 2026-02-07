@@ -13,5 +13,19 @@
 - Verified end-to-end: UI fetches data from runtime API
 - Files: 38 files created across all packages
 
+### 2026-02-07 - PRD Item 3: Claude Code connector - detection
+- Enhanced Connector interface with DetectionResult and ImportResult types
+  - DetectionResult now includes paths: { globalDir, projectConfig, projectDir }
+  - ImportResult now includes optional warnings array
+  - All connector methods now accept optional projectPath parameter
+- Created packages/connectors/src/claude-code/index.ts
+  - Detects ~/.claude global directory
+  - Detects CLAUDE.md in project root
+  - Detects .claude/ project directory
+  - Returns DetectionResult with all found paths
+- Updated Cursor connector stub to match new interface
+- Added @types/node to packages/connectors devDependencies
+- Files changed: types.ts, cursor/index.ts, claude-code/index.ts, index.ts, package.json
+
 ## Next Up
 - See prd.json for prioritized task list
