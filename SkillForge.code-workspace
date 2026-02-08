@@ -19,6 +19,9 @@
       "**/node_modules": true,
       "**/dist": true,
     },
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "oxc.oxc-vscode",
+    },
   },
   "extensions": {
     "recommendations": ["oxc.oxc-vscode"],

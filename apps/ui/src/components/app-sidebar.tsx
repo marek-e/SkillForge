@@ -33,8 +33,8 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <Link to="/" className="flex items-center">
-          <div className="flex items-center justify-center p-1 size-8 group-data-[collapsible=icon]:hover:bg-sidebar-accent rounded-md">
-            <img src="/logo.svg" alt="SkillForge" className="size-6" />
+          <div className="flex items-center justify-center p-1 size-8 group-data-[collapsible=icon]:hover:bg-primary/10 rounded-md">
+            <img src="/anvil_outlined.svg" alt="SkillForge" className="size-6 dark:invert" />
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="font-semibold font-serif text-lg truncate">SkillForge</span>
