@@ -1,17 +1,9 @@
-import { access, readdir, readFile } from 'node:fs/promises'
+import { readdir, readFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join, basename } from 'node:path'
 import type { Connector, DetectionResult, ImportResult } from '../types'
 import type { ClaudeCodeCommand, ClaudeCodeSkill } from '@skillforge/core'
-
-async function exists(path: string): Promise<boolean> {
-  try {
-    await access(path)
-    return true
-  } catch {
-    return false
-  }
-}
+import { exists } from '../utils'
 
 function parseFrontmatter(content: string): { frontmatter: Record<string, string>; body: string } {
   const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/)
