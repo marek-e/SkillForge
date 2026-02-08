@@ -4,5 +4,5 @@
     "no-unused-vars": "warn",
     "no-console": "off"
   },
-  "ignore_patterns": ["**/dist/**", "**/node_modules/**", "**/*.d.ts"]
+  "ignore_patterns": ["**/dist/**", "**/node_modules/**", "**/*.d.ts", "**/release/**"]
 }
