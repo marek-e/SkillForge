@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, shell } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
 import path from 'node:path'
 import { startRuntime, stopRuntime } from './runtime-bridge'
 
@@ -9,6 +9,14 @@ function createWindow(url: string) {
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 820,
+    titleBarStyle: 'hidden',
+    trafficLightPosition: { x: 12, y: 12 },
+    titleBarOverlay: {
+      color: '#00000000',
+      symbolColor: '#a1a1aa',
+      height: 36,
+    },
+    icon: path.join(__dirname, '../icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,
@@ -57,6 +65,16 @@ async function bootstrap() {
     createWindow(`http://localhost:${PORT}`)
   }
 }
+
+ipcMain.handle('window:minimize', () => mainWindow?.minimize())
+ipcMain.handle('window:maximize', () => {
+  if (mainWindow?.isMaximized()) {
+    mainWindow.unmaximize()
+  } else {
+    mainWindow?.maximize()
+  }
+})
+ipcMain.handle('window:close', () => mainWindow?.close())
 
 app
   .whenReady()

@@ -129,3 +129,23 @@
     @apply font-sans;
   }
 }
+
+.drag {
+  -webkit-app-region: drag;
+}
+.no-drag {
+  -webkit-app-region: no-drag;
+}
+
+/* Electron: offset fixed sidebar below the titlebar (h-9 = 36px) */
+.electron-app [data-slot='sidebar-container'] {
+  top: 2.25rem;
+  height: calc(100svh - 2.25rem);
+}
+.electron-app [data-slot='sidebar-wrapper'] {
+  min-height: calc(100svh - 2.25rem);
+}
+.electron-app [data-slot='sidebar-rail'] {
+  top: 2.25rem;
+  height: calc(100% - 2.25rem);
+}

@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm -r --parallel dev",
+    "web:dev": "concurrently --names ui,runtime \"pnpm --filter @skillforge/ui dev\" \"pnpm --filter @skillforge/runtime dev\"",
     "build": "pnpm -r build",
     "lint": "oxlint apps packages",
     "lint:fix": "oxlint --fix apps packages",
