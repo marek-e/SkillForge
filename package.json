@@ -14,10 +14,10 @@
     "electron:build": "pnpm build && pnpm --filter @skillforge/electron build && pnpm --filter @skillforge/electron dist"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2",
-    "oxfmt": "latest",
+    "concurrently": "^9.2.1",
+    "oxfmt": "^0.28.0",
     "oxlint": "^1.43.0",
-    "typescript": "^5.7.3"
+    "typescript": "^5.9.3"
   },
   "packageManager": "pnpm@9.15.9"
 }

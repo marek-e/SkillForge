@@ -17,10 +17,10 @@
   },
   "dependencies": {
     "@skillforge/core": "workspace:*",
-    "zod": "^3.24.2"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/node": "^22.15.29",
-    "typescript": "^5.7.3"
+    "@types/node": "^25.2.2",
+    "typescript": "^5.9.3"
   }
 }
