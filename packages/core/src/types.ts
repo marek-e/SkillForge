@@ -18,3 +18,25 @@ export interface HealthResponse {
   version: string
   timestamp: string
 }
+
+export interface ToolStatus {
+  name: string
+  detected: boolean
+  paths: { globalDir?: string; projectDir?: string }
+  commandCount: number
+  skillCount: number
+}
+
+export interface ClaudeCodeCommand {
+  name: string
+  description: string
+  allowedTools?: string
+  argumentHint?: string
+  filePath: string
+}
+
+export interface ClaudeCodeSkill {
+  name: string
+  description: string
+  filePath: string
+}
