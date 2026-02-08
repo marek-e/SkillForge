@@ -1,4 +1,12 @@
-import type { Agent, Skill, HealthResponse, ApiResult } from '@skillforge/core'
+import type {
+  Agent,
+  Skill,
+  HealthResponse,
+  ApiResult,
+  ToolStatus,
+  ClaudeCodeCommand,
+  ClaudeCodeSkill,
+} from '@skillforge/core'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4321/api'
 
@@ -23,5 +31,10 @@ export const api = {
   skills: {
     list: () => fetchApi<Skill[]>('/skills'),
     get: (id: string) => fetchApi<Skill>(`/skills/${id}`),
+  },
+  tools: {
+    list: () => fetchApi<ToolStatus[]>('/tools'),
+    claudeCodeCommands: () => fetchApi<ClaudeCodeCommand[]>('/tools/claude-code/commands'),
+    claudeCodeSkills: () => fetchApi<ClaudeCodeSkill[]>('/tools/claude-code/skills'),
   },
 }
