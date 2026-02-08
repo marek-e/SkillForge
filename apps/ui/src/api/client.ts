@@ -6,6 +6,7 @@ import type {
   ToolStatus,
   ClaudeCodeCommand,
   ClaudeCodeSkill,
+  CursorSkill,
 } from '@skillforge/core'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4321/api'
@@ -36,5 +37,6 @@ export const api = {
     list: () => fetchApi<ToolStatus[]>('/tools'),
     claudeCodeCommands: () => fetchApi<ClaudeCodeCommand[]>('/tools/claude-code/commands'),
     claudeCodeSkills: () => fetchApi<ClaudeCodeSkill[]>('/tools/claude-code/skills'),
+    cursorSkills: () => fetchApi<CursorSkill[]>('/tools/cursor/skills'),
   },
 }
