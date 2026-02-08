@@ -47,3 +47,21 @@ export interface CursorSkill {
   filePath: string
   isBuiltIn: boolean
 }
+
+export interface CodexSkill {
+  name: string
+  description: string
+  filePath: string
+}
+
+export interface GeminiCliSkill {
+  name: string
+  description: string
+  filePath: string
+}
+
+export interface OpenCodeSkill {
+  name: string
+  description: string
+  filePath: string
+}
