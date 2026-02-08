@@ -1,12 +1,12 @@
-import { createRoute, Link } from "@tanstack/react-router";
+import { createRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { rootRoute } from "./__root";
 import { api } from "../api/client";
 import { getToolConfig } from "../components/ToolCardCompact";
 import { ToolCard } from "../components/ToolCard";
+import { ErrorContainer } from "../components/ErrorContainer";
 import { Skeleton } from "../components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { ArrowLeftIcon } from "lucide-react";
 import type { SkillItem } from "@skillforge/core";
 
 const skillsQueryMap: Record<string, () => Promise<SkillItem[]>> = {
@@ -51,16 +51,12 @@ function ToolDetailPage() {
 
   if (!tool) {
     return (
-      <div className="space-y-4">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeftIcon className="size-4" />
-          Back to tools
-        </Link>
-        <p className="text-destructive">Tool "{name}" not found.</p>
-      </div>
+      <ErrorContainer
+        title="Tool not found"
+        message={`No tool named "${name}" was found.`}
+        backTo="/"
+        backLabel="Back to tools"
+      />
     );
   }
 

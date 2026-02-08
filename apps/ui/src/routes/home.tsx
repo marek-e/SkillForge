@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { rootRoute } from "./__root";
 import { api } from "../api/client";
 import { ToolCardCompact } from "../components/ToolCardCompact";
+import { ErrorContainer } from "../components/ErrorContainer";
 import { H1 } from "../components/typography";
 import { Lead } from "../components/typography";
 import { Skeleton } from "../components/ui/skeleton";
@@ -19,9 +20,11 @@ function HomePage() {
 
   if (error) {
     return (
-      <div className="text-destructive">
-        Error loading tools: {(error as Error).message}
-      </div>
+      <ErrorContainer
+        title="Failed to load tools"
+        message={(error as Error).message}
+        onRetry={() => window.location.reload()}
+      />
     );
   }
 
@@ -42,7 +45,7 @@ function HomePage() {
       </div>
 
       {isLoading ? (
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap justify-center gap-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <Skeleton
               key={i}
