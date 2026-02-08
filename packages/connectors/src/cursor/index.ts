@@ -6,7 +6,7 @@ import { exists, listSkillsFromDir } from '../utils'
 
 async function listSkillsFromCursorDir(
   skillsDir: string,
-  isBuiltIn: boolean,
+  isBuiltIn: boolean
 ): Promise<CursorSkill[]> {
   return listSkillsFromDir(skillsDir, (name, frontmatter, filePath) => ({
     name: frontmatter['name'] || name,
@@ -25,7 +25,7 @@ export async function listCursorSkills(): Promise<CursorSkill[]> {
   // Built-in skills from ~/.cursor/skills-cursor/
   const builtInSkills = await listSkillsFromCursorDir(
     join(cursorDir, '.cursor', 'skills-cursor'),
-    true,
+    true
   )
 
   const allSkills = [...builtInSkills, ...userSkills]

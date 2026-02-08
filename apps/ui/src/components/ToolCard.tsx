@@ -7,23 +7,11 @@ import type {
   GeminiCliSkill,
   OpenCodeSkill,
   SkillItem,
-} from "@skillforge/core";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardAction,
-} from "./ui/card";
-import { Badge } from "./ui/badge";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "./ui/accordion";
+} from '@skillforge/core'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardAction } from './ui/card'
+import { Badge } from './ui/badge'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs'
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './ui/accordion'
 import {
   TerminalIcon,
   WrenchIcon,
@@ -32,19 +20,19 @@ import {
   SparklesIcon,
   CodeIcon,
   type LucideIcon,
-} from "lucide-react";
+} from 'lucide-react'
 
 interface ToolCardProps {
-  tool: ToolStatus;
-  icon?: LucideIcon;
-  displayName?: string;
-  commands?: ClaudeCodeCommand[];
-  skills?: SkillItem[];
-  showCommands?: boolean;
+  tool: ToolStatus
+  icon?: LucideIcon
+  displayName?: string
+  commands?: ClaudeCodeCommand[]
+  skills?: SkillItem[]
+  showCommands?: boolean
 }
 
 function isBuiltInSkill(skill: SkillItem): skill is CursorSkill {
-  return "isBuiltIn" in skill && skill.isBuiltIn;
+  return 'isBuiltIn' in skill && skill.isBuiltIn
 }
 
 export function ToolCard({
@@ -55,8 +43,8 @@ export function ToolCard({
   skills = [],
   showCommands = true,
 }: ToolCardProps) {
-  const name = displayName || tool.name;
-  const defaultTab = showCommands ? "commands" : "skills";
+  const name = displayName || tool.name
+  const defaultTab = showCommands ? 'commands' : 'skills'
 
   return (
     <Card>
@@ -65,12 +53,10 @@ export function ToolCard({
           <Icon className="size-5" />
           {name}
         </CardTitle>
-        <CardDescription>
-          {tool.detected ? tool.paths.globalDir : "Not detected"}
-        </CardDescription>
+        <CardDescription>{tool.detected ? tool.paths.globalDir : 'Not detected'}</CardDescription>
         <CardAction>
-          <Badge variant={tool.detected ? "default" : "secondary"}>
-            {tool.detected ? "Ready" : "Not Detected"}
+          <Badge variant={tool.detected ? 'default' : 'secondary'}>
+            {tool.detected ? 'Ready' : 'Not Detected'}
           </Badge>
         </CardAction>
       </CardHeader>
@@ -80,9 +66,7 @@ export function ToolCard({
           <Tabs defaultValue={defaultTab}>
             <TabsList>
               {showCommands && (
-                <TabsTrigger value="commands">
-                  Commands ({commands.length})
-                </TabsTrigger>
+                <TabsTrigger value="commands">Commands ({commands.length})</TabsTrigger>
               )}
               <TabsTrigger value="skills">Skills ({skills.length})</TabsTrigger>
             </TabsList>
@@ -90,9 +74,7 @@ export function ToolCard({
             {showCommands && (
               <TabsContent value="commands">
                 {commands.length === 0 ? (
-                  <p className="text-muted-foreground py-4">
-                    No commands found
-                  </p>
+                  <p className="text-muted-foreground py-4">No commands found</p>
                 ) : (
                   <Accordion type="single" collapsible className="mt-2">
                     {commands.map((cmd) => (
@@ -100,35 +82,25 @@ export function ToolCard({
                         <AccordionTrigger>
                           <span className="flex items-center gap-2">
                             <TerminalIcon className="size-4 text-muted-foreground" />
-                            <code className="text-sm font-mono">
-                              /{cmd.name}
-                            </code>
-                            <span className="text-muted-foreground">
-                              - {cmd.description}
-                            </span>
+                            <code className="text-sm font-mono">/{cmd.name}</code>
+                            <span className="text-muted-foreground">- {cmd.description}</span>
                           </span>
                         </AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-2 pl-6">
                             {cmd.allowedTools && (
                               <p className="text-sm">
-                                <span className="text-muted-foreground">
-                                  Tools:
-                                </span>{" "}
+                                <span className="text-muted-foreground">Tools:</span>{' '}
                                 {cmd.allowedTools}
                               </p>
                             )}
                             {cmd.argumentHint && (
                               <p className="text-sm">
-                                <span className="text-muted-foreground">
-                                  Args:
-                                </span>{" "}
+                                <span className="text-muted-foreground">Args:</span>{' '}
                                 <code>{cmd.argumentHint}</code>
                               </p>
                             )}
-                            <p className="text-xs text-muted-foreground">
-                              {cmd.filePath}
-                            </p>
+                            <p className="text-xs text-muted-foreground">{cmd.filePath}</p>
                           </div>
                         </AccordionContent>
                       </AccordionItem>
@@ -154,16 +126,12 @@ export function ToolCard({
                               Built-in
                             </Badge>
                           )}
-                          <span className="text-muted-foreground">
-                            - {skill.description}
-                          </span>
+                          <span className="text-muted-foreground">- {skill.description}</span>
                         </span>
                       </AccordionTrigger>
                       <AccordionContent>
                         <div className="space-y-2 pl-6">
-                          <p className="text-xs text-muted-foreground">
-                            {skill.filePath}
-                          </p>
+                          <p className="text-xs text-muted-foreground">{skill.filePath}</p>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
@@ -175,7 +143,7 @@ export function ToolCard({
         </CardContent>
       )}
     </Card>
-  );
+  )
 }
 
 // Pre-configured tool cards
@@ -184,9 +152,9 @@ export function ClaudeCodeCard({
   commands,
   skills,
 }: {
-  tool: ToolStatus;
-  commands?: ClaudeCodeCommand[];
-  skills?: ClaudeCodeSkill[];
+  tool: ToolStatus
+  commands?: ClaudeCodeCommand[]
+  skills?: ClaudeCodeSkill[]
 }) {
   return (
     <ToolCard
@@ -197,16 +165,10 @@ export function ClaudeCodeCard({
       skills={skills}
       showCommands={true}
     />
-  );
+  )
 }
 
-export function CursorCard({
-  tool,
-  skills,
-}: {
-  tool: ToolStatus;
-  skills?: CursorSkill[];
-}) {
+export function CursorCard({ tool, skills }: { tool: ToolStatus; skills?: CursorSkill[] }) {
   return (
     <ToolCard
       tool={tool}
@@ -215,16 +177,10 @@ export function CursorCard({
       skills={skills}
       showCommands={false}
     />
-  );
+  )
 }
 
-export function CodexCard({
-  tool,
-  skills,
-}: {
-  tool: ToolStatus;
-  skills?: CodexSkill[];
-}) {
+export function CodexCard({ tool, skills }: { tool: ToolStatus; skills?: CodexSkill[] }) {
   return (
     <ToolCard
       tool={tool}
@@ -233,16 +189,10 @@ export function CodexCard({
       skills={skills}
       showCommands={false}
     />
-  );
+  )
 }
 
-export function GeminiCliCard({
-  tool,
-  skills,
-}: {
-  tool: ToolStatus;
-  skills?: GeminiCliSkill[];
-}) {
+export function GeminiCliCard({ tool, skills }: { tool: ToolStatus; skills?: GeminiCliSkill[] }) {
   return (
     <ToolCard
       tool={tool}
@@ -251,16 +201,10 @@ export function GeminiCliCard({
       skills={skills}
       showCommands={false}
     />
-  );
+  )
 }
 
-export function OpenCodeCard({
-  tool,
-  skills,
-}: {
-  tool: ToolStatus;
-  skills?: OpenCodeSkill[];
-}) {
+export function OpenCodeCard({ tool, skills }: { tool: ToolStatus; skills?: OpenCodeSkill[] }) {
   return (
     <ToolCard
       tool={tool}
@@ -269,5 +213,5 @@ export function OpenCodeCard({
       skills={skills}
       showCommands={false}
     />
-  );
+  )
 }

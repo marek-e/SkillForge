@@ -32,7 +32,7 @@ export function parseFrontmatter(content: string): Record<string, string> {
 
 export async function listSkillsFromDir<T>(
   skillsDir: string,
-  mapFn: (name: string, frontmatter: Record<string, string>, filePath: string) => T,
+  mapFn: (name: string, frontmatter: Record<string, string>, filePath: string) => T
 ): Promise<T[]> {
   if (!(await exists(skillsDir))) {
     return []

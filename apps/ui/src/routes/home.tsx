@@ -1,12 +1,12 @@
-import { createRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { rootRoute } from "./__root";
-import { api } from "../api/client";
-import { ToolCardCompact } from "../components/ToolCardCompact";
-import { ErrorContainer } from "../components/ErrorContainer";
-import { H1 } from "../components/typography";
-import { Lead } from "../components/typography";
-import { Skeleton } from "../components/ui/skeleton";
+import { createRoute } from '@tanstack/react-router'
+import { useQuery } from '@tanstack/react-query'
+import { rootRoute } from './__root'
+import { api } from '../api/client'
+import { ToolCardCompact } from '../components/ToolCardCompact'
+import { ErrorContainer } from '../components/ErrorContainer'
+import { H1 } from '../components/typography'
+import { Lead } from '../components/typography'
+import { Skeleton } from '../components/ui/skeleton'
 
 function HomePage() {
   const {
@@ -14,9 +14,9 @@ function HomePage() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["tools"],
+    queryKey: ['tools'],
     queryFn: api.tools.list,
-  });
+  })
 
   if (error) {
     return (
@@ -25,11 +25,11 @@ function HomePage() {
         message={(error as Error).message}
         onRetry={() => window.location.reload()}
       />
-    );
+    )
   }
 
-  const connectedCount = tools?.filter((t) => t.detected).length ?? 0;
-  const totalSkills = tools?.reduce((sum, t) => sum + t.skillCount, 0) ?? 0;
+  const connectedCount = tools?.filter((t) => t.detected).length ?? 0
+  const totalSkills = tools?.reduce((sum, t) => sum + t.skillCount, 0) ?? 0
 
   return (
     <div className="space-y-8">
@@ -39,7 +39,7 @@ function HomePage() {
         {tools && (
           <p className="text-sm text-muted-foreground">
             {connectedCount} connected · {totalSkills} total skill
-            {totalSkills !== 1 && "s"}
+            {totalSkills !== 1 && 's'}
           </p>
         )}
       </div>
@@ -66,11 +66,11 @@ function HomePage() {
         </div>
       )}
     </div>
-  );
+  )
 }
 
 export const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/",
+  path: '/',
   component: HomePage,
-});
+})

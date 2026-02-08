@@ -1,21 +1,21 @@
-import { Link } from "@tanstack/react-router";
-import { AlertCircleIcon, ArrowLeftIcon, RotateCcwIcon } from "lucide-react";
-import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
-import { Button } from "./ui/button";
+import { Link } from '@tanstack/react-router'
+import { AlertCircleIcon, ArrowLeftIcon, RotateCcwIcon } from 'lucide-react'
+import { Alert, AlertTitle, AlertDescription } from './ui/alert'
+import { Button } from './ui/button'
 
 interface ErrorContainerProps {
-  title?: string;
-  message: string;
-  backTo?: string;
-  backLabel?: string;
-  onRetry?: () => void;
+  title?: string
+  message: string
+  backTo?: string
+  backLabel?: string
+  onRetry?: () => void
 }
 
 export function ErrorContainer({
-  title = "Something went wrong",
+  title = 'Something went wrong',
   message,
   backTo,
-  backLabel = "Go back",
+  backLabel = 'Go back',
   onRetry,
 }: ErrorContainerProps) {
   return (
@@ -44,5 +44,5 @@ export function ErrorContainer({
         </div>
       )}
     </div>
-  );
+  )
 }

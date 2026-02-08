@@ -13,7 +13,7 @@ export async function listOpenCodeSkills(): Promise<OpenCodeSkill[]> {
       name: frontmatter['name'] || name,
       description: frontmatter['description'] || 'Skill',
       filePath,
-    }),
+    })
   )
 
   return skills.sort((a, b) => a.name.localeCompare(b.name))

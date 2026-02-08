@@ -7,14 +7,11 @@ import { exists, listSkillsFromDir } from '../utils'
 export async function listCodexSkills(): Promise<CodexSkill[]> {
   const skillsDir = join(homedir(), '.agents', 'skills')
 
-  const skills = await listSkillsFromDir<CodexSkill>(
-    skillsDir,
-    (name, frontmatter, filePath) => ({
-      name: frontmatter['name'] || name,
-      description: frontmatter['description'] || 'Skill',
-      filePath,
-    }),
-  )
+  const skills = await listSkillsFromDir<CodexSkill>(skillsDir, (name, frontmatter, filePath) => ({
+    name: frontmatter['name'] || name,
+    description: frontmatter['description'] || 'Skill',
+    filePath,
+  }))
 
   return skills.sort((a, b) => a.name.localeCompare(b.name))
 }

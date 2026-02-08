@@ -1,44 +1,44 @@
-import { createRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { rootRoute } from "./__root";
-import { api } from "../api/client";
-import { getToolConfig } from "../components/ToolCardCompact";
-import { ToolCard } from "../components/ToolCard";
-import { ErrorContainer } from "../components/ErrorContainer";
-import { Skeleton } from "../components/ui/skeleton";
-import { cn } from "@/lib/utils";
-import type { SkillItem } from "@skillforge/core";
+import { createRoute } from '@tanstack/react-router'
+import { useQuery } from '@tanstack/react-query'
+import { rootRoute } from './__root'
+import { api } from '../api/client'
+import { getToolConfig } from '../components/ToolCardCompact'
+import { ToolCard } from '../components/ToolCard'
+import { ErrorContainer } from '../components/ErrorContainer'
+import { Skeleton } from '../components/ui/skeleton'
+import { cn } from '@/lib/utils'
+import type { SkillItem } from '@skillforge/core'
 
 const skillsQueryMap: Record<string, () => Promise<SkillItem[]>> = {
-  "claude-code": api.tools.claudeCodeSkills,
+  'claude-code': api.tools.claudeCodeSkills,
   cursor: api.tools.cursorSkills,
   codex: api.tools.codexSkills,
-  "gemini-cli": api.tools.geminiCliSkills,
+  'gemini-cli': api.tools.geminiCliSkills,
   opencode: api.tools.openCodeSkills,
-};
+}
 
 function ToolDetailPage() {
-  const { name } = toolDetailRoute.useParams();
-  const config = getToolConfig(name);
+  const { name } = toolDetailRoute.useParams()
+  const config = getToolConfig(name)
 
   const { data: tools, isLoading: toolsLoading } = useQuery({
-    queryKey: ["tools"],
+    queryKey: ['tools'],
     queryFn: api.tools.list,
-  });
+  })
 
   const { data: commands } = useQuery({
-    queryKey: ["tools", name, "commands"],
+    queryKey: ['tools', name, 'commands'],
     queryFn: api.tools.claudeCodeCommands,
-    enabled: name === "claude-code",
-  });
+    enabled: name === 'claude-code',
+  })
 
   const { data: skills } = useQuery({
-    queryKey: ["tools", name, "skills"],
+    queryKey: ['tools', name, 'skills'],
     queryFn: skillsQueryMap[name],
     enabled: !!skillsQueryMap[name],
-  });
+  })
 
-  const tool = tools?.find((t) => t.name === name);
+  const tool = tools?.find((t) => t.name === name)
 
   if (toolsLoading) {
     return (
@@ -46,7 +46,7 @@ function ToolDetailPage() {
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-64 w-full" />
       </div>
-    );
+    )
   }
 
   if (!tool) {
@@ -57,27 +57,20 @@ function ToolDetailPage() {
         backTo="/"
         backLabel="Back to tools"
       />
-    );
+    )
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <div
-          className={cn(
-            "flex size-10 items-center justify-center rounded-lg",
-            config.accent,
-          )}
-        >
+        <div className={cn('flex size-10 items-center justify-center rounded-lg', config.accent)}>
           <img
             src={config.logo}
             alt={config.displayName}
-            className={cn("size-6", config.invert && "dark:invert")}
+            className={cn('size-6', config.invert && 'dark:invert')}
           />
         </div>
-        <h1 className="text-2xl font-bold text-foreground">
-          {config.displayName}
-        </h1>
+        <h1 className="text-2xl font-bold text-foreground">{config.displayName}</h1>
       </div>
 
       <ToolCard
@@ -85,14 +78,14 @@ function ToolDetailPage() {
         displayName={config.displayName}
         commands={commands}
         skills={skills}
-        showCommands={name === "claude-code"}
+        showCommands={name === 'claude-code'}
       />
     </div>
-  );
+  )
 }
 
 export const toolDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/tools/$name",
+  path: '/tools/$name',
   component: ToolDetailPage,
-});
+})
