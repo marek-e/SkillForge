@@ -40,3 +40,10 @@ export interface ClaudeCodeSkill {
   description: string
   filePath: string
 }
+
+export interface CursorSkill {
+  name: string
+  description: string
+  filePath: string
+  isBuiltIn: boolean
+}
