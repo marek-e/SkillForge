@@ -33,10 +33,7 @@ function parseFrontmatter(content: string): Record<string, string> {
   return frontmatter
 }
 
-async function listSkillsFromDir(
-  skillsDir: string,
-  isBuiltIn: boolean
-): Promise<CursorSkill[]> {
+async function listSkillsFromDir(skillsDir: string, isBuiltIn: boolean): Promise<CursorSkill[]> {
   if (!(await exists(skillsDir))) {
     return []
   }
@@ -68,16 +65,10 @@ export async function listCursorSkills(): Promise<CursorSkill[]> {
   const cursorDir = homedir()
 
   // User skills from ~/.cursor/skills/
-  const userSkills = await listSkillsFromDir(
-    join(cursorDir, '.cursor', 'skills'),
-    false
-  )
+  const userSkills = await listSkillsFromDir(join(cursorDir, '.cursor', 'skills'), false)
 
   // Built-in skills from ~/.cursor/skills-cursor/
-  const builtInSkills = await listSkillsFromDir(
-    join(cursorDir, '.cursor', 'skills-cursor'),
-    true
-  )
+  const builtInSkills = await listSkillsFromDir(join(cursorDir, '.cursor', 'skills-cursor'), true)
 
   const allSkills = [...builtInSkills, ...userSkills]
   return allSkills.sort((a, b) => a.name.localeCompare(b.name))

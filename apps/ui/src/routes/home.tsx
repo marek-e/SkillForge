@@ -6,7 +6,11 @@ import { ClaudeCodeCard, CursorCard } from '../components/ToolCard'
 import { Skeleton } from '../components/ui/skeleton'
 
 function HomePage() {
-  const { data: tools, isLoading: toolsLoading, error: toolsError } = useQuery({
+  const {
+    data: tools,
+    isLoading: toolsLoading,
+    error: toolsError,
+  } = useQuery({
     queryKey: ['tools'],
     queryFn: api.tools.list,
   })
@@ -26,13 +30,12 @@ function HomePage() {
     queryFn: api.tools.cursorSkills,
   })
 
-  const isLoading = toolsLoading || claudeCommandsLoading || claudeSkillsLoading || cursorSkillsLoading
+  const isLoading =
+    toolsLoading || claudeCommandsLoading || claudeSkillsLoading || cursorSkillsLoading
 
   if (toolsError) {
     return (
-      <div className="text-destructive">
-        Error loading tools: {(toolsError as Error).message}
-      </div>
+      <div className="text-destructive">Error loading tools: {(toolsError as Error).message}</div>
     )
   }
 
@@ -56,18 +59,9 @@ function HomePage() {
       ) : (
         <div className="grid gap-6">
           {claudeCodeTool && (
-            <ClaudeCodeCard
-              tool={claudeCodeTool}
-              commands={claudeCommands}
-              skills={claudeSkills}
-            />
+            <ClaudeCodeCard tool={claudeCodeTool} commands={claudeCommands} skills={claudeSkills} />
           )}
-          {cursorTool && (
-            <CursorCard
-              tool={cursorTool}
-              skills={cursorSkills}
-            />
-          )}
+          {cursorTool && <CursorCard tool={cursorTool} skills={cursorSkills} />}
         </div>
       )}
     </div>

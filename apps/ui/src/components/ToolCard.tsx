@@ -38,9 +38,7 @@ export function ToolCard({
           <Icon className="size-5" />
           {name}
         </CardTitle>
-        <CardDescription>
-          {tool.detected ? tool.paths.globalDir : 'Not detected'}
-        </CardDescription>
+        <CardDescription>{tool.detected ? tool.paths.globalDir : 'Not detected'}</CardDescription>
         <CardAction>
           <Badge variant={tool.detected ? 'default' : 'secondary'}>
             {tool.detected ? 'Ready' : 'Not Detected'}
@@ -77,7 +75,8 @@ export function ToolCard({
                           <div className="space-y-2 pl-6">
                             {cmd.allowedTools && (
                               <p className="text-sm">
-                                <span className="text-muted-foreground">Tools:</span> {cmd.allowedTools}
+                                <span className="text-muted-foreground">Tools:</span>{' '}
+                                {cmd.allowedTools}
                               </p>
                             )}
                             {cmd.argumentHint && (
@@ -108,7 +107,9 @@ export function ToolCard({
                           <WrenchIcon className="size-4 text-muted-foreground" />
                           <span className="font-medium">{skill.name}</span>
                           {isBuiltInSkill(skill) && (
-                            <Badge variant="outline" className="text-xs">Built-in</Badge>
+                            <Badge variant="outline" className="text-xs">
+                              Built-in
+                            </Badge>
                           )}
                           <span className="text-muted-foreground">- {skill.description}</span>
                         </span>
@@ -152,13 +153,7 @@ export function ClaudeCodeCard({
   )
 }
 
-export function CursorCard({
-  tool,
-  skills,
-}: {
-  tool: ToolStatus
-  skills?: CursorSkill[]
-}) {
+export function CursorCard({ tool, skills }: { tool: ToolStatus; skills?: CursorSkill[] }) {
   return (
     <ToolCard
       tool={tool}
