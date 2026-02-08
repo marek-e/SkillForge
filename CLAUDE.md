@@ -7,7 +7,8 @@ SkillForge is a local-first tool to visualize and manage agent skills across age
 - **Package manager:** pnpm
 - **Dev server:** `pnpm dev` (runtime :4321, UI :4320)
 - **Type check:** `pnpm typecheck` (run before committing)
-- **Lint:** `pnpm lint` (run before committing, when available)
+- **Lint:** `pnpm lint` (run before committing)
+- **Format:** `pnpm format` (run before committing)
 
 ## Detailed Docs
 

@@ -17,5 +17,6 @@ One logical change per commit.
 
 ```bash
 pnpm typecheck
-pnpm lint        # when available
+pnpm lint
+pnpm format
 ```
