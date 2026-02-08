@@ -1,3 +1,6 @@
 export * from './types'
 export { claudeCodeConnector, listGlobalCommands, listGlobalSkills } from './claude-code'
 export { cursorConnector, listCursorSkills } from './cursor'
+export { codexConnector, listCodexSkills } from './codex'
+export { geminiCliConnector, listGeminiCliSkills } from './gemini-cli'
+export { openCodeConnector, listOpenCodeSkills } from './opencode'
