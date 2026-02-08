@@ -2,7 +2,7 @@ import { createRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { rootRoute } from './__root'
 import { api } from '../api/client'
-import { ToolCard } from '../components/ToolCard'
+import { ClaudeCodeCard, CursorCard } from '../components/ToolCard'
 import { Skeleton } from '../components/ui/skeleton'
 
 function HomePage() {
@@ -11,17 +11,22 @@ function HomePage() {
     queryFn: api.tools.list,
   })
 
-  const { data: commands, isLoading: commandsLoading } = useQuery({
+  const { data: claudeCommands, isLoading: claudeCommandsLoading } = useQuery({
     queryKey: ['tools', 'claude-code', 'commands'],
     queryFn: api.tools.claudeCodeCommands,
   })
 
-  const { data: skills, isLoading: skillsLoading } = useQuery({
+  const { data: claudeSkills, isLoading: claudeSkillsLoading } = useQuery({
     queryKey: ['tools', 'claude-code', 'skills'],
     queryFn: api.tools.claudeCodeSkills,
   })
 
-  const isLoading = toolsLoading || commandsLoading || skillsLoading
+  const { data: cursorSkills, isLoading: cursorSkillsLoading } = useQuery({
+    queryKey: ['tools', 'cursor', 'skills'],
+    queryFn: api.tools.cursorSkills,
+  })
+
+  const isLoading = toolsLoading || claudeCommandsLoading || claudeSkillsLoading || cursorSkillsLoading
 
   if (toolsError) {
     return (
@@ -30,6 +35,9 @@ function HomePage() {
       </div>
     )
   }
+
+  const claudeCodeTool = tools?.find((t) => t.name === 'claude-code')
+  const cursorTool = tools?.find((t) => t.name === 'cursor')
 
   return (
     <div className="space-y-6">
@@ -43,17 +51,23 @@ function HomePage() {
       {isLoading ? (
         <div className="space-y-4">
           <Skeleton className="h-64 w-full" />
+          <Skeleton className="h-64 w-full" />
         </div>
       ) : (
         <div className="grid gap-6">
-          {tools?.map((tool) => (
-            <ToolCard
-              key={tool.name}
-              tool={tool}
-              commands={tool.name === 'claude-code' ? commands : undefined}
-              skills={tool.name === 'claude-code' ? skills : undefined}
+          {claudeCodeTool && (
+            <ClaudeCodeCard
+              tool={claudeCodeTool}
+              commands={claudeCommands}
+              skills={claudeSkills}
             />
-          ))}
+          )}
+          {cursorTool && (
+            <CursorCard
+              tool={cursorTool}
+              skills={cursorSkills}
+            />
+          )}
         </div>
       )}
     </div>
