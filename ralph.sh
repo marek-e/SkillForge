@@ -31,7 +31,7 @@ echo ""
 for ((i=1; i<=$ITERATIONS; i++)); do
   echo "=== Iteration $i of $ITERATIONS ==="
 
-  result=$(claude -p \
+  result=$(docker sandbox run claude -p \
 "@prd.json @progress.txt @AGENTS.md
 
 You are running in Ralph Wiggum mode - an autonomous coding loop.
