@@ -1,11 +1,27 @@
-import type { ToolStatus, ClaudeCodeCommand, ClaudeCodeSkill, CursorSkill } from '@skillforge/core'
+import type {
+  ToolStatus,
+  ClaudeCodeCommand,
+  ClaudeCodeSkill,
+  CursorSkill,
+  CodexSkill,
+  GeminiCliSkill,
+  OpenCodeSkill,
+} from '@skillforge/core'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardAction } from './ui/card'
 import { Badge } from './ui/badge'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './ui/accordion'
-import { TerminalIcon, WrenchIcon, MousePointer2Icon, type LucideIcon } from 'lucide-react'
+import {
+  TerminalIcon,
+  WrenchIcon,
+  MousePointer2Icon,
+  BrainCircuitIcon,
+  SparklesIcon,
+  CodeIcon,
+  type LucideIcon,
+} from 'lucide-react'
 
-type SkillItem = ClaudeCodeSkill | CursorSkill
+type SkillItem = ClaudeCodeSkill | CursorSkill | CodexSkill | GeminiCliSkill | OpenCodeSkill
 
 interface ToolCardProps {
   tool: ToolStatus
@@ -159,6 +175,42 @@ export function CursorCard({ tool, skills }: { tool: ToolStatus; skills?: Cursor
       tool={tool}
       icon={MousePointer2Icon}
       displayName="Cursor"
+      skills={skills}
+      showCommands={false}
+    />
+  )
+}
+
+export function CodexCard({ tool, skills }: { tool: ToolStatus; skills?: CodexSkill[] }) {
+  return (
+    <ToolCard
+      tool={tool}
+      icon={BrainCircuitIcon}
+      displayName="Codex"
+      skills={skills}
+      showCommands={false}
+    />
+  )
+}
+
+export function GeminiCliCard({ tool, skills }: { tool: ToolStatus; skills?: GeminiCliSkill[] }) {
+  return (
+    <ToolCard
+      tool={tool}
+      icon={SparklesIcon}
+      displayName="Gemini CLI"
+      skills={skills}
+      showCommands={false}
+    />
+  )
+}
+
+export function OpenCodeCard({ tool, skills }: { tool: ToolStatus; skills?: OpenCodeSkill[] }) {
+  return (
+    <ToolCard
+      tool={tool}
+      icon={CodeIcon}
+      displayName="OpenCode"
       skills={skills}
       showCommands={false}
     />

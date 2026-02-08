@@ -7,6 +7,9 @@ import type {
   ClaudeCodeCommand,
   ClaudeCodeSkill,
   CursorSkill,
+  CodexSkill,
+  GeminiCliSkill,
+  OpenCodeSkill,
 } from '@skillforge/core'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4321/api'
@@ -38,5 +41,8 @@ export const api = {
     claudeCodeCommands: () => fetchApi<ClaudeCodeCommand[]>('/tools/claude-code/commands'),
     claudeCodeSkills: () => fetchApi<ClaudeCodeSkill[]>('/tools/claude-code/skills'),
     cursorSkills: () => fetchApi<CursorSkill[]>('/tools/cursor/skills'),
+    codexSkills: () => fetchApi<CodexSkill[]>('/tools/codex/skills'),
+    geminiCliSkills: () => fetchApi<GeminiCliSkill[]>('/tools/gemini-cli/skills'),
+    openCodeSkills: () => fetchApi<OpenCodeSkill[]>('/tools/opencode/skills'),
   },
 }
