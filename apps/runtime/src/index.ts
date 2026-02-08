@@ -1,23 +1,9 @@
 import { serve } from '@hono/node-server'
-import { Hono } from 'hono'
-import { cors } from 'hono/cors'
-import { logger } from 'hono/logger'
-import { routes } from './routes'
+import { createApp } from './app'
 
-const app = new Hono()
-
-app.use('*', logger())
-app.use(
-  '*',
-  cors({
-    origin: ['http://localhost:4320'],
-    allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
-  })
-)
-
-app.route('/api', routes)
-
-app.get('/', (c) => c.redirect('/api/health'))
+const app = createApp({
+  corsOrigins: ['http://localhost:4320'],
+})
 
 const PORT = process.env.PORT || 4321
 

@@ -2,6 +2,17 @@
   "name": "@skillforge/runtime",
   "version": "0.1.0",
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./app": {
+      "types": "./dist/app.d.ts",
+      "import": "./src/app.ts",
+      "default": "./dist/app.js"
+    }
+  },
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
