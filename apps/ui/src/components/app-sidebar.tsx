@@ -1,5 +1,5 @@
-import { Link, useLocation } from '@tanstack/react-router'
-import { NavMain } from '@/components/nav-main'
+import { Link, useLocation } from "@tanstack/react-router";
+import { NavMain } from "@/components/nav-main";
 import {
   Sidebar,
   SidebarContent,
@@ -9,40 +9,39 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from '@/components/ui/sidebar'
-import { BotIcon, BookOpenIcon, SettingsIcon } from 'lucide-react'
-import { ComponentProps } from 'react'
+} from "@/components/ui/sidebar";
+import { BotIcon, BookOpenIcon, SettingsIcon } from "lucide-react";
+import { ComponentProps } from "react";
 
 const navItems = [
   {
-    title: 'Agents',
-    url: '/agents',
+    title: "Agents",
+    url: "/agents",
     icon: <BotIcon />,
   },
   {
-    title: 'Skills',
-    url: '/skills',
+    title: "Skills",
+    url: "/skills",
     icon: <BookOpenIcon />,
   },
-]
+];
 
 export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
-  const location = useLocation()
+  const location = useLocation();
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <div className="flex items-center gap-2 px-2 py-2 group-data-[collapsible=icon]:justify-center">
-          <Link
-            to="/"
-            className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center"
-          >
-            <img src="/logo.svg" alt="SkillForge" className="size-8" />
-            <span className="font-semibold font-serif text-lg group-data-[collapsible=icon]:hidden">
+        <Link to="/" className="flex items-center">
+          <div className="flex items-center justify-center p-1 size-8 group-data-[collapsible=icon]:hover:bg-sidebar-accent rounded-md">
+            <img src="/logo.svg" alt="SkillForge" className="size-6" />
+          </div>
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="font-semibold font-serif text-lg truncate">
               SkillForge
             </span>
-          </Link>
-        </div>
+          </div>
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navItems} />
@@ -53,7 +52,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton
               asChild
               tooltip="Settings"
-              isActive={location.pathname === '/settings'}
+              isActive={location.pathname === "/settings"}
             >
               <Link to="/settings">
                 <SettingsIcon />
@@ -65,5 +64,5 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }
