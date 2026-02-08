@@ -1,71 +1,73 @@
-import { createRoute } from '@tanstack/react-router'
-import { rootRoute } from './__root'
-import { useToolsData } from '../hooks/use-tools-data'
-import {
-  ClaudeCodeCard,
-  CursorCard,
-  CodexCard,
-  GeminiCliCard,
-  OpenCodeCard,
-} from '../components/ToolCard'
-import { Skeleton } from '../components/ui/skeleton'
+import { createRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { rootRoute } from "./__root";
+import { api } from "../api/client";
+import { ToolCardCompact } from "../components/ToolCardCompact";
+import { H1 } from "../components/typography";
+import { Lead } from "../components/typography";
+import { Skeleton } from "../components/ui/skeleton";
 
 function HomePage() {
   const {
-    tools,
-    claudeCommands,
-    claudeSkills,
-    cursorSkills,
-    codexSkills,
-    geminiCliSkills,
-    openCodeSkills,
+    data: tools,
     isLoading,
-    toolsError,
-  } = useToolsData()
+    error,
+  } = useQuery({
+    queryKey: ["tools"],
+    queryFn: api.tools.list,
+  });
 
-  if (toolsError) {
+  if (error) {
     return (
-      <div className="text-destructive">Error loading tools: {(toolsError as Error).message}</div>
-    )
+      <div className="text-destructive">
+        Error loading tools: {(error as Error).message}
+      </div>
+    );
   }
 
-  const claudeCodeTool = tools?.find((t) => t.name === 'claude-code')
-  const cursorTool = tools?.find((t) => t.name === 'cursor')
-  const codexTool = tools?.find((t) => t.name === 'codex')
-  const geminiCliTool = tools?.find((t) => t.name === 'gemini-cli')
-  const openCodeTool = tools?.find((t) => t.name === 'opencode')
+  const connectedCount = tools?.filter((t) => t.detected).length ?? 0;
+  const totalSkills = tools?.reduce((sum, t) => sum + t.skillCount, 0) ?? 0;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">Your AI Tools</h1>
-        <p className="text-muted-foreground mt-1">
-          Visualize, manage, and normalize agent skills across tools.
-        </p>
+    <div className="space-y-8">
+      <div className="space-y-2">
+        <H1>Your AI Tools</H1>
+        <Lead>Visualize, manage, and normalize agent skills across tools.</Lead>
+        {tools && (
+          <p className="text-sm text-muted-foreground">
+            {connectedCount} connected · {totalSkills} total skill
+            {totalSkills !== 1 && "s"}
+          </p>
+        )}
       </div>
 
       {isLoading ? (
-        <div className="space-y-4">
-          <Skeleton className="h-64 w-full" />
-          <Skeleton className="h-64 w-full" />
+        <div className="flex flex-wrap gap-4">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton
+              key={i}
+              className="h-36 w-full rounded-xl sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.75rem)]"
+            />
+          ))}
         </div>
       ) : (
-        <div className="grid gap-6">
-          {claudeCodeTool && (
-            <ClaudeCodeCard tool={claudeCodeTool} commands={claudeCommands} skills={claudeSkills} />
-          )}
-          {cursorTool && <CursorCard tool={cursorTool} skills={cursorSkills} />}
-          {codexTool && <CodexCard tool={codexTool} skills={codexSkills} />}
-          {geminiCliTool && <GeminiCliCard tool={geminiCliTool} skills={geminiCliSkills} />}
-          {openCodeTool && <OpenCodeCard tool={openCodeTool} skills={openCodeSkills} />}
+        <div className="flex flex-wrap justify-center gap-4">
+          {tools?.map((tool) => (
+            <div
+              key={tool.name}
+              className="w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.75rem)]"
+            >
+              <ToolCardCompact tool={tool} />
+            </div>
+          ))}
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/',
+  path: "/",
   component: HomePage,
-})
+});
