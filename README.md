@@ -1,6 +1,6 @@
 <div align="center">
-  <a href="https://raw.githubusercontent.com/marek-e/SkillForge/refs/heads/main/apps/ui/public/logo.svg">
-    <img width="180" src="https://raw.githubusercontent.com/marek-e/SkillForge/refs/heads/main/apps/ui/public/logo.svg" alt="SkillForge Logo" />
+  <a href="https://raw.githubusercontent.com/marek-e/SkillForge/refs/heads/main/apps/ui/public/anvil.svg">
+    <img width="180" src="https://raw.githubusercontent.com/marek-e/SkillForge/refs/heads/main/apps/ui/public/anvil.svg" alt="SkillForge Logo" />
   </a>
 </div>
 <br />
@@ -27,10 +27,11 @@ SkillForge is a local-first developer tool that makes invisible agent configurat
 
 ```bash
 pnpm install
-pnpm dev          # Starts runtime (:4321) and UI (:4320)
+pnpm web:dev        # Starts runtime (:4321) and UI (:4320)
+pnpm electron:dev   # Run as desktop app (Electron)
 ```
 
-Open http://localhost:4320 to see the dashboard.
+Open http://localhost:4320 to see the web dashboard, or use `electron:dev` for the desktop app.
 
 ## Supported Tools
 
@@ -44,6 +45,7 @@ Open http://localhost:4320 to see the dashboard.
 apps/
   ui/           # Vite + React frontend
   runtime/      # Node.js local runtime (localhost API)
+  electron/     # Electron desktop wrapper
 packages/
   core/         # Canonical models and shared logic
   connectors/   # Per-tool adapters
@@ -52,15 +54,24 @@ packages/
 ## Development
 
 ```bash
-# Run both services
-pnpm dev
+# Web app mode
+pnpm web:dev                            # Runtime + UI (:4321, :4320)
+
+# Desktop app mode
+pnpm electron:dev                       # UI + Electron
 
 # Individual services
 pnpm --filter @skillforge/runtime dev   # Runtime only (:4321)
 pnpm --filter @skillforge/ui dev        # UI only (:4320)
+pnpm --filter @skillforge/electron dev  # Electron only (requires UI running)
 
-# Type checking
-pnpm typecheck
+# Code quality
+pnpm typecheck                          # Type checking
+pnpm lint                               # Linting
+pnpm format                             # Code formatting
+
+# Build for distribution
+pnpm electron:build                     # Build Electron app (dmg/nsis/AppImage)
 ```
 
 ## Contributing

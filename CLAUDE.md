@@ -5,7 +5,8 @@ SkillForge is a local-first tool to visualize and manage agent skills across age
 ## Essentials
 
 - **Package manager:** pnpm
-- **Dev server:** `pnpm dev` (runtime :4321, UI :4320)
+- **Web dev server:** `pnpm web:dev` (runtime :4321, UI :4320)
+- **Electron dev:** `pnpm electron:dev` (UI :4320, Electron app)
 - **Type check:** `pnpm typecheck` (run before committing)
 - **Lint:** `pnpm lint` (run before committing)
 - **Format:** `pnpm format` (run before committing)
@@ -13,6 +14,7 @@ SkillForge is a local-first tool to visualize and manage agent skills across age
 ## Detailed Docs
 
 - [Architecture](docs/architecture.md) — Monorepo structure, tech stack, constraints
+- [Architecture Diagram](docs/architecture-diagram.md) — Visual dependency graph
 - [UI Components](docs/ui-components.md) — Component library reference
 - [Domain Models](docs/domain-models.md) — Agent and Skill schemas
 - [Connectors](docs/connectors.md) — How to build tool adapters

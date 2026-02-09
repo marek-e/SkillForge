@@ -6,7 +6,8 @@ SkillForge uses a component library built on shadcn/ui (Radix Nova style) with T
 
 - **`ui/`** — Base UI components (shadcn/ui primitives)
 - **`typography/`** — Typography elements
-- **Custom components** — Application-specific components (AgentList, SkillList, etc.)
+- **Custom components** — Application-specific components (Layout, AppSidebar, etc.)
+- **`electron-titlebar.tsx`** — Electron-only custom titlebar (hidden in web mode)
 
 ## Typography Components
 
@@ -135,3 +136,45 @@ import { H1, P } from '@/components/typography'
 ## Styling
 
 Components use Tailwind CSS with CSS variables for theming. The theme is defined in `src/index.css` and supports light/dark modes.
+
+## Electron-Specific Components
+
+### ElectronTitlebar
+
+**Location:** `components/electron-titlebar.tsx`
+
+A custom titlebar component that only renders when running in Electron. Features:
+
+- **Height:** 36px (h-9)
+- **Drag region:** Full bar is draggable via `.drag` class
+- **macOS:** Reserves 80px left space for traffic lights, centered "SkillForge" title
+- **Windows/Linux:** Custom minimize/maximize/close buttons on the right
+- **Styling:** Uses sidebar theme colors for consistency
+
+The component conditionally renders in `Layout.tsx`:
+
+```tsx
+{
+  isElectron && <ElectronTitlebar />
+}
+```
+
+### Electron Detection
+
+The UI detects Electron mode via `window.electronAPI`:
+
+```tsx
+import type { ElectronWindow } from '@/lib/electron'
+
+const isElectron =
+  typeof window !== 'undefined' && !!(window as ElectronWindow).electronAPI?.isElectron
+```
+
+### Electron CSS Classes
+
+**`.electron-app`** — Applied to the root layout div in Electron mode. Used to offset the fixed sidebar below the titlebar.
+
+**`.drag`** / **`.no-drag`** — Control window drag regions:
+
+- `.drag` — Makes an element draggable (titlebar)
+- `.no-drag` — Excludes an element from dragging (buttons, inputs)
