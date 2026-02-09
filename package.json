@@ -19,5 +19,9 @@
     "oxlint": "^1.43.0",
     "typescript": "^5.9.3"
   },
+  "engines": {
+    "node": "21.7.3",
+    "pnpm": "9.15.9"
+  },
   "packageManager": "pnpm@9.15.9"
 }
