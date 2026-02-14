@@ -1,5 +1,14 @@
 {
   "permissions": {
-    "allow": ["Bash(pnpm typecheck:*)", "Bash(pnpm lint:*)", "Bash(pnpm format:*)"]
+    "allow": [
+      "Bash(pnpm typecheck:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm format:*)",
+      "Bash(git -C /Users/mareke/Documents/Projects/SkillForge status)",
+      "Bash(git -C /Users/mareke/Documents/Projects/SkillForge diff)",
+      "Bash(git -C /Users/mareke/Documents/Projects/SkillForge log --oneline -10)",
+      "Bash(git -C /Users/mareke/Documents/Projects/SkillForge diff *)",
+      "Bash(git -C /Users/mareke/Documents/Projects/SkillForge show *)"
+    ]
   }
 }
