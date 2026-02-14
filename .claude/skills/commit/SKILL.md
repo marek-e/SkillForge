@@ -1,7 +1,8 @@
 ---
-name: Commit
+name: commit
 description: Create atomic git commits following Conventional Commits, ordered by dependency layers
 model: claude-haiku-4-5
+disable-model-invocation: false
 ---
 
 <role>
