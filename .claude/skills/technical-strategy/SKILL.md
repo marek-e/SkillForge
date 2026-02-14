@@ -1,6 +1,6 @@
 ---
 description: Create technical implementation plan from product requirements through discovery, discussion, and strategy phases
-argument-hint: "[feature-or-PRD-link]"
+argument-hint: '[feature-or-PRD-link]'
 disable-model-invocation: true
 ---
 

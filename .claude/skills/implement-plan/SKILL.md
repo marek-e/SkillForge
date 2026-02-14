@@ -1,6 +1,6 @@
 ---
 description: Implement a technical strategy following the dependency graph (Core → Store → API → UI)
-argument-hint: "[strategy-doc.md]"
+argument-hint: '[strategy-doc.md]'
 disable-model-invocation: true
 ---
 
