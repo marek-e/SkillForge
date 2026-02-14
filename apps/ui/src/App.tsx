@@ -6,8 +6,9 @@ import { TooltipProvider } from './components/ui/tooltip'
 import {
   rootRoute,
   indexRoute,
-  agentsRoute,
-  skillsRoute,
+  toolsRoute,
+  skillLibraryRoute,
+  projectsRoute,
   settingsRoute,
   toolDetailRoute,
 } from './routes'
@@ -16,8 +17,9 @@ const queryClient = new QueryClient()
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
-  agentsRoute,
-  skillsRoute,
+  toolsRoute,
+  skillLibraryRoute,
+  projectsRoute,
   settingsRoute,
   toolDetailRoute,
 ])

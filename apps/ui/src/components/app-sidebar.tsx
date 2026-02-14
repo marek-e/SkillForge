@@ -10,19 +10,24 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar'
-import { BotIcon, BookOpenIcon, SettingsIcon } from 'lucide-react'
+import { WrenchIcon, SettingsIcon, FolderOpenIcon, LibraryBigIcon } from 'lucide-react'
 import { ComponentProps } from 'react'
 
 const navItems = [
   {
-    title: 'Agents',
-    url: '/agents',
-    icon: <BotIcon />,
+    title: 'Tools',
+    url: '/tools',
+    icon: <WrenchIcon />,
   },
   {
-    title: 'Skills',
-    url: '/skills',
-    icon: <BookOpenIcon />,
+    title: 'Skill Library',
+    url: '/skill-library',
+    icon: <LibraryBigIcon />,
+  },
+  {
+    title: 'Projects',
+    url: '/projects',
+    icon: <FolderOpenIcon />,
   },
 ]
 

@@ -20,8 +20,9 @@ const isElectron =
 
 const routeLabels: Record<string, string> = {
   '/': 'Home',
-  '/agents': 'Agents',
-  '/skills': 'Skills',
+  '/tools': 'Tools',
+  '/skill-library': 'Skill Library',
+  '/projects': 'Projects',
   '/settings': 'Settings',
 }
 
@@ -91,7 +92,7 @@ export function Layout() {
             </div>
             <ModeToggle />
           </header>
-          <main className="flex flex-1 flex-col gap-4 p-4">
+          <main className="flex flex-1 flex-col gap-4 p-4 container mx-auto">
             <Outlet />
           </main>
         </SidebarInset>
