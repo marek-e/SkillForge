@@ -12,7 +12,7 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   clean: true,
-  external: ['electron'],
+  external: ['electron', 'better-sqlite3'],
   noExternal: [
     '@skillforge/runtime',
     '@skillforge/connectors',

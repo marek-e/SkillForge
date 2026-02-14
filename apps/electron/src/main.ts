@@ -5,6 +5,13 @@ import { startRuntime, stopRuntime } from './runtime-bridge'
 const PORT = 4321
 let mainWindow: BrowserWindow | null = null
 
+function getMigrationsFolder(): string {
+  if (app.isPackaged) {
+    return path.join(process.resourcesPath, 'drizzle')
+  }
+  return path.join(__dirname, '../../runtime/drizzle')
+}
+
 function createWindow(url: string) {
   mainWindow = new BrowserWindow({
     width: 1280,
@@ -48,6 +55,7 @@ async function bootstrap() {
     // Dev mode: runtime with CORS for Vite dev server, load UI from Vite
     await startRuntime({
       port: PORT,
+      migrationsFolder: getMigrationsFolder(),
       corsOrigins: ['http://localhost:4320'],
     })
 
@@ -59,6 +67,7 @@ async function bootstrap() {
 
     await startRuntime({
       port: PORT,
+      migrationsFolder: getMigrationsFolder(),
       staticDir: uiPath,
     })
 

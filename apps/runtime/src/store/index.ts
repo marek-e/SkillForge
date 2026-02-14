@@ -1,68 +1,134 @@
 import type { Agent, Skill } from '@skillforge/core'
-import { randomUUID } from 'crypto'
+import { eq } from 'drizzle-orm'
+import { getDb } from './db'
+import { agents, skills } from './schema'
 
-const agents: Map<string, Agent> = new Map()
-const skills: Map<string, Skill> = new Map()
+type AgentRow = typeof agents.$inferSelect
+type SkillRow = typeof skills.$inferSelect
 
-// Seed with sample data
-const sampleSkill: Skill = {
-  id: randomUUID(),
-  name: 'file-read',
-  description: 'Read contents of a file from the filesystem',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      path: { type: 'string', description: 'File path to read' },
-    },
-    required: ['path'],
-  },
-  source: 'manual',
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+function agentFromRow(row: AgentRow): Agent {
+  return {
+    id: row.id,
+    name: row.name,
+    sourceTool: row.sourceTool as Agent['sourceTool'],
+    enabledSkills: JSON.parse(row.enabledSkills),
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  }
 }
-skills.set(sampleSkill.id, sampleSkill)
 
-const sampleAgent: Agent = {
-  id: randomUUID(),
-  name: 'Default Agent',
-  sourceTool: 'generic',
-  enabledSkills: [{ skillId: sampleSkill.id, enabled: true }],
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+function skillFromRow(row: SkillRow): Skill {
+  return {
+    id: row.id,
+    name: row.name,
+    description: row.description,
+    inputSchema: row.inputSchema ? JSON.parse(row.inputSchema) : undefined,
+    outputSchema: row.outputSchema ? JSON.parse(row.outputSchema) : undefined,
+    implementationRef: row.implementationRef ?? undefined,
+    source: row.source as Skill['source'],
+    originalTool: (row.originalTool as Skill['originalTool']) ?? undefined,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  }
 }
-agents.set(sampleAgent.id, sampleAgent)
 
 export const store = {
   agents: {
-    getAll: () => Array.from(agents.values()),
-    getById: (id: string) => agents.get(id),
-    create: (agent: Agent) => {
-      agents.set(agent.id, agent)
+    getAll: (): Agent[] => {
+      const rows = getDb().select().from(agents).all()
+      return rows.map(agentFromRow)
+    },
+    getById: (id: string): Agent | undefined => {
+      const row = getDb().select().from(agents).where(eq(agents.id, id)).get()
+      return row ? agentFromRow(row) : undefined
+    },
+    create: (agent: Agent): Agent => {
+      getDb()
+        .insert(agents)
+        .values({
+          id: agent.id,
+          name: agent.name,
+          sourceTool: agent.sourceTool,
+          enabledSkills: JSON.stringify(agent.enabledSkills),
+          createdAt: agent.createdAt,
+          updatedAt: agent.updatedAt,
+        })
+        .run()
       return agent
     },
-    update: (id: string, updates: Partial<Agent>) => {
-      const existing = agents.get(id)
-      if (!existing) return null
+    update: (id: string, updates: Partial<Agent>): Agent | null => {
+      const row = getDb().select().from(agents).where(eq(agents.id, id)).get()
+      if (!row) return null
+      const existing = agentFromRow(row)
       const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() }
-      agents.set(id, updated)
+      getDb()
+        .update(agents)
+        .set({
+          name: updated.name,
+          sourceTool: updated.sourceTool,
+          enabledSkills: JSON.stringify(updated.enabledSkills),
+          updatedAt: updated.updatedAt,
+        })
+        .where(eq(agents.id, id))
+        .run()
       return updated
     },
-    delete: (id: string) => agents.delete(id),
+    delete: (id: string): boolean => {
+      const result = getDb().delete(agents).where(eq(agents.id, id)).run()
+      return result.changes > 0
+    },
   },
   skills: {
-    getAll: () => Array.from(skills.values()),
-    getById: (id: string) => skills.get(id),
-    create: (skill: Skill) => {
-      skills.set(skill.id, skill)
+    getAll: (): Skill[] => {
+      const rows = getDb().select().from(skills).all()
+      return rows.map(skillFromRow)
+    },
+    getById: (id: string): Skill | undefined => {
+      const row = getDb().select().from(skills).where(eq(skills.id, id)).get()
+      return row ? skillFromRow(row) : undefined
+    },
+    create: (skill: Skill): Skill => {
+      getDb()
+        .insert(skills)
+        .values({
+          id: skill.id,
+          name: skill.name,
+          description: skill.description,
+          inputSchema: skill.inputSchema ? JSON.stringify(skill.inputSchema) : null,
+          outputSchema: skill.outputSchema ? JSON.stringify(skill.outputSchema) : null,
+          implementationRef: skill.implementationRef ?? null,
+          source: skill.source,
+          originalTool: skill.originalTool ?? null,
+          createdAt: skill.createdAt,
+          updatedAt: skill.updatedAt,
+        })
+        .run()
       return skill
     },
-    update: (id: string, updates: Partial<Skill>) => {
-      const existing = skills.get(id)
-      if (!existing) return null
+    update: (id: string, updates: Partial<Skill>): Skill | null => {
+      const row = getDb().select().from(skills).where(eq(skills.id, id)).get()
+      if (!row) return null
+      const existing = skillFromRow(row)
       const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() }
-      skills.set(id, updated)
+      getDb()
+        .update(skills)
+        .set({
+          name: updated.name,
+          description: updated.description,
+          inputSchema: updated.inputSchema ? JSON.stringify(updated.inputSchema) : null,
+          outputSchema: updated.outputSchema ? JSON.stringify(updated.outputSchema) : null,
+          implementationRef: updated.implementationRef ?? null,
+          source: updated.source,
+          originalTool: updated.originalTool ?? null,
+          updatedAt: updated.updatedAt,
+        })
+        .where(eq(skills.id, id))
+        .run()
       return updated
     },
-    delete: (id: string) => skills.delete(id),
+    delete: (id: string): boolean => {
+      const result = getDb().delete(skills).where(eq(skills.id, id)).run()
+      return result.changes > 0
+    },
   },
 }

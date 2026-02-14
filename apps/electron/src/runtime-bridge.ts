@@ -1,5 +1,6 @@
 import { serve } from '@hono/node-server'
 import { createApp } from '@skillforge/runtime/app'
+import { closeDb, initDb } from '@skillforge/runtime/db'
 import { serveStatic } from '@hono/node-server/serve-static'
 import type { ServerType } from '@hono/node-server'
 
@@ -7,6 +8,7 @@ let server: ServerType | null = null
 
 export interface StartRuntimeOptions {
   port: number
+  migrationsFolder: string
   corsOrigins?: string[]
   staticDir?: string
 }
@@ -21,12 +23,14 @@ async function isPortInUse(port: number): Promise<boolean> {
 }
 
 export async function startRuntime(options: StartRuntimeOptions): Promise<number> {
-  const { port, corsOrigins, staticDir } = options
+  const { port, migrationsFolder, corsOrigins, staticDir } = options
 
   if (await isPortInUse(port)) {
     console.log(`SkillForge Runtime already running on http://localhost:${port}, reusing`)
     return port
   }
+
+  initDb(migrationsFolder)
 
   const app = createApp({ corsOrigins })
 
@@ -63,9 +67,11 @@ export function stopRuntime(): Promise<void> {
     if (server) {
       server.close(() => {
         server = null
+        closeDb()
         resolve()
       })
     } else {
+      closeDb()
       resolve()
     }
   })

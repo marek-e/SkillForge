@@ -3,15 +3,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "web:dev": "concurrently --names ui,runtime \"pnpm --filter @skillforge/ui dev\" \"pnpm --filter @skillforge/runtime dev\"",
+    "web:dev": "pnpm rebuild better-sqlite3 && concurrently --names ui,runtime \"pnpm --filter @skillforge/ui dev\" \"pnpm --filter @skillforge/runtime dev\"",
     "build": "pnpm -r build",
     "lint": "oxlint apps packages",
     "lint:fix": "oxlint --fix apps packages",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
     "typecheck": "pnpm -r typecheck",
-    "electron:dev": "concurrently --names ui,electron \"pnpm --filter @skillforge/ui dev\" \"pnpm --filter @skillforge/electron dev\"",
-    "electron:build": "pnpm build && pnpm --filter @skillforge/electron build && pnpm --filter @skillforge/electron dist"
+    "electron:dev": "pnpm --filter @skillforge/electron rebuild-sqlite && concurrently --names ui,electron \"pnpm --filter @skillforge/ui dev\" \"pnpm --filter @skillforge/electron dev\"",
+    "electron:build": "pnpm --filter @skillforge/electron rebuild-sqlite && pnpm build && pnpm --filter @skillforge/electron build && pnpm --filter @skillforge/electron dist"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",

@@ -8,13 +8,16 @@
     "dev": "tsup --watch --onSuccess \"electron .\"",
     "build": "tsup",
     "dist": "electron-builder",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "rebuild-sqlite": "electron-rebuild -f -w better-sqlite3"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.9",
-    "@skillforge/runtime": "workspace:*"
+    "@skillforge/runtime": "workspace:*",
+    "better-sqlite3": "^12.6.2"
   },
   "devDependencies": {
+    "@electron/rebuild": "^3.7.1",
     "@types/node": "^25.2.2",
     "electron": "^40.2.1",
     "electron-builder": "^26.7.0",
@@ -30,12 +33,20 @@
     },
     "files": [
       "dist/**/*",
-      "icon.png"
+      "icon.png",
+      "node_modules/better-sqlite3/**/*"
+    ],
+    "asarUnpack": [
+      "node_modules/better-sqlite3/**/*"
     ],
     "extraResources": [
       {
         "from": "../ui/dist",
         "to": "ui"
+      },
+      {
+        "from": "../runtime/drizzle",
+        "to": "drizzle"
       }
     ],
     "mac": {
