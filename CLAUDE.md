@@ -11,6 +11,10 @@ SkillForge is a local-first tool to visualize and manage agent skills across age
 - **Lint:** `pnpm lint` (run before committing)
 - **Format:** `pnpm format` (run before committing)
 
+## Dependencies
+
+- to add a new dependency, run `pnpm add <package>` never update manually the package.json so it always use the latest version of the package.
+
 ## Detailed Docs
 
 - [Architecture](docs/architecture.md) — Monorepo structure, tech stack, constraints
