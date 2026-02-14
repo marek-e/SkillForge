@@ -24,9 +24,10 @@ Then the magic: **"Apply your best Cursor rules from Project A to Project B as a
 
 This is the import/export loop. It's the entire product. Without it, SkillForge is a read-only dashboard - nice, but not a tool you come back to.
 
-**Why it's #1:** It solves a pain point that exists *today* and gets worse every week as people use more AI tools. There is zero tooling for this right now. People are manually copy-pasting between `.cursorrules`, `CLAUDE.md`, and `AGENTS.md` files.
+**Why it's #1:** It solves a pain point that exists _today_ and gets worse every week as people use more AI tools. There is zero tooling for this right now. People are manually copy-pasting between `.cursorrules`, `CLAUDE.md`, and `AGENTS.md` files.
 
 **Concrete scope:**
+
 - Import: read tool configs into canonical model
 - Export: write canonical model back to tool-specific format
 - The lossy conversion warnings are critical here
@@ -50,6 +51,7 @@ This is the import/export loop. It's the entire product. Without it, SkillForge 
 **Why this beats a marketplace:** Developers trust their own battle-tested instructions more than generic community ones. Start personal, add sharing later.
 
 **Concrete scope:**
+
 - Tag/categorize skills
 - Star/favorite the ones that work well
 - Quick "add to project X" action
@@ -88,13 +90,13 @@ Or: "You updated your global coding standards in Project A but 6 other projects 
 
 ## Recommended Priority
 
-| Phase | What | Why |
-|-------|------|-----|
-| **Now** | Import/Export loop (#1) | Without this, the product is a dashboard. With it, it's a tool. |
-| **Next** | Project-scoped view + quick apply (#2) | Makes the tool feel project-aware, not tool-aware. |
-| **Then** | Skill library + tagging (#3) | Turns one-time use into a growing personal asset. |
-| **Later** | Drift detection (#4) | Retention mechanism, justifies Electron/background process. |
-| **Future** | Team bundles (#5) | Growth vector once core is solid. |
+| Phase      | What                                   | Why                                                             |
+| ---------- | -------------------------------------- | --------------------------------------------------------------- |
+| **Now**    | Import/Export loop (#1)                | Without this, the product is a dashboard. With it, it's a tool. |
+| **Next**   | Project-scoped view + quick apply (#2) | Makes the tool feel project-aware, not tool-aware.              |
+| **Then**   | Skill library + tagging (#3)           | Turns one-time use into a growing personal asset.               |
+| **Later**  | Drift detection (#4)                   | Retention mechanism, justifies Electron/background process.     |
+| **Future** | Team bundles (#5)                      | Growth vector once core is solid.                               |
 
 ---
 
