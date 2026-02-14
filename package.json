@@ -11,10 +11,12 @@
     "format:check": "oxfmt --check .",
     "typecheck": "pnpm -r typecheck",
     "electron:dev": "pnpm --filter @skillforge/electron rebuild-sqlite && concurrently --names ui,electron \"pnpm --filter @skillforge/ui dev\" \"pnpm --filter @skillforge/electron dev\"",
-    "electron:build": "pnpm --filter @skillforge/electron rebuild-sqlite && pnpm build && pnpm --filter @skillforge/electron build && pnpm --filter @skillforge/electron dist"
+    "electron:build": "pnpm --filter @skillforge/electron rebuild-sqlite && pnpm build && pnpm --filter @skillforge/electron build && pnpm --filter @skillforge/electron dist",
+    "knip": "knip"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",
+    "knip": "^5.83.1",
     "oxfmt": "^0.28.0",
     "oxlint": "^1.47.0",
     "typescript": "^5.9.3"
