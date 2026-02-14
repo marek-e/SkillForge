@@ -22,5 +22,6 @@ SkillForge is a local-first tool to visualize and manage agent skills across age
 - [UI Components](docs/ui-components.md) — Component library reference
 - [Domain Models](docs/domain-models.md) — Agent and Skill schemas
 - [Connectors](docs/connectors.md) — How to build tool adapters
+- [Database & Migrations](docs/database.md) — SQLite, Drizzle ORM, schema changes
 - [Code Quality](docs/code-quality.md) — TypeScript rules, testing, commits
 - [Ralph Wiggum](docs/ralph-wiggum.md) — Autonomous coding loop pattern
