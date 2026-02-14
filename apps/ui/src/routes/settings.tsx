@@ -4,6 +4,7 @@ import { rootRoute } from './__root'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { MonitorIcon, SunIcon, MoonIcon } from 'lucide-react'
+import { H1, Lead } from '@/components/typography'
 
 export const settingsRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -17,8 +18,8 @@ function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Settings</h1>
-        <p className="text-muted-foreground">Manage your application preferences.</p>
+        <H1>Settings</H1>
+        <Lead>Manage your application preferences.</Lead>
       </div>
 
       <div className="space-y-4">
