@@ -12,7 +12,14 @@ import type {
   OpenCodeSkill,
 } from '@skillforge/core'
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4321/api'
+function getApiBase(): string {
+  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL
+  if (typeof window !== 'undefined' && window.location?.protocol === 'skillforge:') {
+    return `${window.location.origin}/api`
+  }
+  return 'http://localhost:4321/api'
+}
+const API_BASE = getApiBase()
 
 async function fetchApi<T>(endpoint: string): Promise<T> {
   const response = await fetch(`${API_BASE}${endpoint}`)

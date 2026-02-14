@@ -5,15 +5,14 @@ import { defineConfig } from 'vite'
 
 const csp = [
   "default-src 'self'",
-  "script-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  "connect-src 'self' http://localhost:4320 ws://localhost:4320 http://localhost:4321 http://127.0.0.1:4320 ws://127.0.0.1:4320 http://127.0.0.1:4321",
+  "connect-src 'self' skillforge: http://localhost:* ws://localhost:* http://127.0.0.1:* ws://127.0.0.1:*",
   "worker-src 'self' blob:",
   "object-src 'none'",
   "base-uri 'self'",
-  "frame-ancestors 'none'",
 ].join('; ')
 
 export default defineConfig({
