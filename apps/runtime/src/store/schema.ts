@@ -1,4 +1,4 @@
-import { sqliteTable, text } from 'drizzle-orm/sqlite-core'
+import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 
 export const skills = sqliteTable('skills', {
   id: text('id').primaryKey(),
@@ -18,6 +18,17 @@ export const agents = sqliteTable('agents', {
   name: text('name').notNull(),
   sourceTool: text('source_tool').notNull(),
   enabledSkills: text('enabled_skills').notNull().default('[]'),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+})
+
+export const projects = sqliteTable('projects', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  path: text('path').notNull().unique(),
+  iconPath: text('icon_path'),
+  isFavorite: integer('is_favorite', { mode: 'boolean' }).notNull().default(false),
+  detectedTools: text('detected_tools').notNull().default('[]'),
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
 })

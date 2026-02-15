@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `agents` (
+CREATE TABLE `agents` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
 	`source_tool` text NOT NULL,
@@ -7,7 +7,19 @@ CREATE TABLE IF NOT EXISTS `agents` (
 	`updated_at` text NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS `skills` (
+CREATE TABLE `projects` (
+	`id` text PRIMARY KEY NOT NULL,
+	`name` text NOT NULL,
+	`path` text NOT NULL,
+	`icon_path` text,
+	`is_favorite` integer DEFAULT false NOT NULL,
+	`detected_tools` text DEFAULT '[]' NOT NULL,
+	`created_at` text NOT NULL,
+	`updated_at` text NOT NULL
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `projects_path_unique` ON `projects` (`path`);--> statement-breakpoint
+CREATE TABLE `skills` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
 	`description` text NOT NULL,
