@@ -1,5 +1,8 @@
 import type {
   Agent,
+  CreateProject,
+  UpdateProject,
+  Project,
   Skill,
   HealthResponse,
   ApiResult,
@@ -33,6 +36,29 @@ async function fetchApi<T>(endpoint: string): Promise<T> {
   return result.data as T
 }
 
+async function mutateApi<T>(
+  endpoint: string,
+  options: { method: string; body?: unknown }
+): Promise<T> {
+  const response = await fetch(`${API_BASE}${endpoint}`, {
+    method: options.method,
+    headers: options.body ? { 'Content-Type': 'application/json' } : undefined,
+    body: options.body ? JSON.stringify(options.body) : undefined,
+  })
+  if (!response.ok) {
+    const result = await response.json().catch(() => null)
+    if (result && 'error' in result && result.error) {
+      throw new Error(result.error.message)
+    }
+    throw new Error(`API error: ${response.statusText}`)
+  }
+  const result: ApiResult<T> = await response.json()
+  if ('error' in result && result.error) {
+    throw new Error(result.error.message)
+  }
+  return result.data as T
+}
+
 export const api = {
   health: () => fetchApi<HealthResponse>('/health'),
   agents: {
@@ -42,6 +68,18 @@ export const api = {
   skills: {
     list: () => fetchApi<Skill[]>('/skills'),
     get: (id: string) => fetchApi<Skill>(`/skills/${id}`),
+  },
+  projects: {
+    list: () => fetchApi<Project[]>('/projects'),
+    get: (id: string) => fetchApi<Project>(`/projects/${id}`),
+    create: (data: CreateProject) =>
+      mutateApi<Project>('/projects', { method: 'POST', body: data }),
+    update: (id: string, data: UpdateProject) =>
+      mutateApi<Project>(`/projects/${id}`, { method: 'PATCH', body: data }),
+    delete: (id: string) =>
+      mutateApi<{ success: boolean }>(`/projects/${id}`, { method: 'DELETE' }),
+    toggleFavorite: (id: string) =>
+      mutateApi<Project>(`/projects/${id}/favorite`, { method: 'PATCH' }),
   },
   tools: {
     list: () => fetchApi<ToolStatus[]>('/tools'),

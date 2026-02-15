@@ -53,8 +53,7 @@ function Breadcrumbs() {
   for (let i = 0; i < segments.length; i++) {
     const path = '/' + segments.slice(0, i + 1).join('/')
     const label =
-      routeLabels[path] ||
-      segments[i].replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase())
+      routeLabels[path] || segments[i].replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase())
     crumbs.push({ label, path })
   }
 
