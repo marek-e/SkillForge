@@ -9,6 +9,7 @@ import {
   toolsRoute,
   skillLibraryRoute,
   projectsRoute,
+  projectDetailRoute,
   settingsRoute,
   toolDetailRoute,
 } from './routes'
@@ -20,6 +21,7 @@ const routeTree = rootRoute.addChildren([
   toolsRoute,
   skillLibraryRoute,
   projectsRoute,
+  projectDetailRoute,
   settingsRoute,
   toolDetailRoute,
 ])
