@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "web:dev": "pnpm rebuild better-sqlite3 && concurrently --names ui,runtime \"pnpm --filter @skillforge/ui dev\" \"pnpm --filter @skillforge/runtime dev\"",
+    "rebuild-sqlite:node": "cd $(node -e \"const p=require.resolve('better-sqlite3',{paths:['apps/runtime']});console.log(p.slice(0,p.indexOf('/lib/')))\") && npx --yes node-gyp rebuild",
+    "web:dev": "pnpm rebuild-sqlite:node && concurrently --names ui,runtime \"pnpm --filter @skillforge/ui dev\" \"pnpm --filter @skillforge/runtime dev\"",
     "build": "pnpm -r build",
     "lint": "oxlint apps packages",
     "lint:fix": "oxlint --fix apps packages",
