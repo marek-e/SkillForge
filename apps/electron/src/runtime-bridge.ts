@@ -34,13 +34,31 @@ export interface StartRuntimeOptions {
   userDataPath?: string
 }
 
+async function isSkillForgeRuntimeOnPort(port: number): Promise<boolean> {
+  try {
+    const response = await fetch(`http://localhost:${port}/api/health`)
+    if (!response.ok) return false
+    const payload = await response.json()
+    if (!payload || typeof payload !== 'object') return false
+    return 'status' in payload && payload.status === 'ok'
+  } catch {
+    return false
+  }
+}
+
 export async function startRuntime(options: StartRuntimeOptions): Promise<RuntimeEndpointInfo> {
   const { port, migrationsFolder, corsOrigins, staticDir, useIpc, userDataPath } = options
 
   if (!useIpc || !userDataPath) {
     if (await isPortInUse(port)) {
-      console.log(`SkillForge Runtime already running on http://localhost:${port}, reusing`)
-      return { transport: 'tcp', baseUrl: `http://localhost:${port}`, port }
+      const skillForgeRuntimeRunning = await isSkillForgeRuntimeOnPort(port)
+      if (skillForgeRuntimeRunning) {
+        console.log(`SkillForge Runtime already running on http://localhost:${port}, reusing`)
+        return { transport: 'tcp', baseUrl: `http://localhost:${port}`, port }
+      }
+      throw new Error(
+        `Port ${port} is already in use by another process. Stop that process or set VITE_API_URL to a different runtime base URL.`
+      )
     }
     initDb(migrationsFolder)
     const app = createApp({ corsOrigins })
