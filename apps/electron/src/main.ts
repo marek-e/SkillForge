@@ -49,6 +49,13 @@ ipcMain.handle('window:maximize', () => {
   }
 })
 ipcMain.handle('window:close', () => getMainWindow()?.close())
+ipcMain.handle('dialog:openFolder', async () => {
+  const win = getMainWindow()
+  if (!win) return null
+  const result = await dialog.showOpenDialog(win, { properties: ['openDirectory'] })
+  if (result.canceled || result.filePaths.length === 0) return null
+  return result.filePaths[0]
+})
 
 app
   .whenReady()
