@@ -46,14 +46,17 @@ function Breadcrumbs() {
     )
   }
 
-  // Get the label for current route
-  const currentLabel =
-    routeLabels[currentPath] ||
-    currentPath
-      .split('/')
-      .pop()
-      ?.replace(/^\w/, (c) => c.toUpperCase()) ||
-    'Page'
+  // Build breadcrumb segments from the path
+  const segments = currentPath.split('/').filter(Boolean)
+  const crumbs: { label: string; path: string }[] = []
+
+  for (let i = 0; i < segments.length; i++) {
+    const path = '/' + segments.slice(0, i + 1).join('/')
+    const label =
+      routeLabels[path] ||
+      segments[i].replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase())
+    crumbs.push({ label, path })
+  }
 
   return (
     <Breadcrumb>
@@ -65,10 +68,23 @@ function Breadcrumbs() {
             </Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
-        <BreadcrumbSeparator className="hidden md:block" />
-        <BreadcrumbItem>
-          <BreadcrumbPage>{currentLabel}</BreadcrumbPage>
-        </BreadcrumbItem>
+        {crumbs.map((crumb, i) => {
+          const isLast = i === crumbs.length - 1
+          return (
+            <span key={crumb.path} className="contents">
+              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbItem className={isLast ? undefined : 'hidden md:block'}>
+                {isLast ? (
+                  <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                ) : (
+                  <BreadcrumbLink asChild>
+                    <Link to={crumb.path}>{crumb.label}</Link>
+                  </BreadcrumbLink>
+                )}
+              </BreadcrumbItem>
+            </span>
+          )
+        })}
       </BreadcrumbList>
     </Breadcrumb>
   )
