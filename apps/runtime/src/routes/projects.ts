@@ -28,12 +28,21 @@ projectRoutes.get('/:id', (c) => {
 
 projectRoutes.post('/', async (c) => {
   const body = await c.req.json<{ path?: string }>()
+  const projectPath = body.path?.trim()
 
-  if (!body.path?.trim()) {
+  if (!projectPath) {
     return c.json({ error: { message: 'Path is required', code: 'VALIDATION_ERROR' } }, 400)
   }
-  if (!existsSync(body.path)) {
-    return c.json({ error: { message: 'Directory does not exist', code: 'VALIDATION_ERROR' } }, 400)
+  if (!existsSync(projectPath)) {
+    return c.json(
+      {
+        error: {
+          message: 'Directory does not exist',
+          code: 'VALIDATION_ERROR',
+        },
+      },
+      400
+    )
   }
 
   const connectors = [
@@ -46,16 +55,16 @@ projectRoutes.post('/', async (c) => {
 
   const results = await Promise.all(
     connectors.map(async ({ name, connector }) => {
-      const result = await connector.detect(body.path!)
-      return { name, detected: result.detected } satisfies DetectedTool
+      const { detected } = await connector.detectProject(projectPath)
+      return { name, detected } satisfies DetectedTool
     })
   )
 
   const now = new Date().toISOString()
   const project: Project = {
     id: randomUUID(),
-    name: path.basename(body.path.trim()),
-    path: body.path.trim(),
+    name: path.basename(projectPath),
+    path: projectPath,
     iconPath: null,
     isFavorite: false,
     detectedTools: results,
@@ -68,7 +77,12 @@ projectRoutes.post('/', async (c) => {
   } catch (err) {
     if (err instanceof Error && err.message.includes('UNIQUE constraint')) {
       return c.json(
-        { error: { message: 'Project at this path already exists', code: 'CONFLICT' } },
+        {
+          error: {
+            message: 'Project at this path already exists',
+            code: 'CONFLICT',
+          },
+        },
         409
       )
     }
@@ -93,6 +107,31 @@ projectRoutes.delete('/:id', (c) => {
     return c.json({ error: { message: 'Project not found', code: 'NOT_FOUND' } }, 404)
   }
   return c.json({ data: { success: true } })
+})
+
+projectRoutes.post('/:id/refresh-tools', async (c) => {
+  const project = store.projects.getById(c.req.param('id'))
+  if (!project) {
+    return c.json({ error: { message: 'Project not found', code: 'NOT_FOUND' } }, 404)
+  }
+
+  const connectors = [
+    { name: 'claude-code', connector: claudeCodeConnector },
+    { name: 'cursor', connector: cursorConnector },
+    { name: 'codex', connector: codexConnector },
+    { name: 'gemini-cli', connector: geminiCliConnector },
+    { name: 'opencode', connector: openCodeConnector },
+  ]
+
+  const results = await Promise.all(
+    connectors.map(async ({ name, connector }) => {
+      const { detected } = await connector.detectProject(project.path)
+      return { name, detected } satisfies DetectedTool
+    })
+  )
+
+  const updated = store.projects.updateDetectedTools(project.id, results)
+  return c.json({ data: updated })
 })
 
 projectRoutes.patch('/:id/favorite', (c) => {

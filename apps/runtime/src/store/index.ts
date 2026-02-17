@@ -213,5 +213,20 @@ export const store = {
         .run()
       return updated
     },
+    updateDetectedTools: (id: string, detectedTools: DetectedTool[]): Project | null => {
+      const row = getDb().select().from(projects).where(eq(projects.id, id)).get()
+      if (!row) return null
+      const existing = projectFromRow(row)
+      const updated = { ...existing, detectedTools, updatedAt: new Date().toISOString() }
+      getDb()
+        .update(projects)
+        .set({
+          detectedTools: JSON.stringify(detectedTools),
+          updatedAt: updated.updatedAt,
+        })
+        .where(eq(projects.id, id))
+        .run()
+      return updated
+    },
   },
 }
