@@ -48,3 +48,30 @@ export function useRefreshProjectTools(projectId: string) {
     onError: () => toast.error('Failed to refresh tools'),
   })
 }
+
+export function useToggleFavoriteProject(projectId: string) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: () => api.projects.toggleFavorite(projectId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
+      queryClient.invalidateQueries({ queryKey: ['projects', projectId] })
+    },
+    onError: () => toast.error('Failed to update favorite'),
+  })
+}
+
+export function useDeleteProject(projectId: string) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: () => api.projects.delete(projectId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
+      queryClient.invalidateQueries({ queryKey: ['projects', projectId] })
+      toast.success('Project deleted')
+    },
+    onError: () => toast.error('Failed to delete project'),
+  })
+}

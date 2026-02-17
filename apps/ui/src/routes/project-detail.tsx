@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
-import { createRoute, Link } from '@tanstack/react-router'
-import { ArrowLeftIcon, PencilIcon } from 'lucide-react'
+import { createRoute, Link, useNavigate } from '@tanstack/react-router'
+import { ArrowLeftIcon, PencilIcon, StarIcon, Trash2Icon } from 'lucide-react'
 import { rootRoute } from './__root'
 import {
   useProject,
   useRenameProject,
   useUpdateProjectIcon,
   useRefreshProjectTools,
+  useToggleFavoriteProject,
+  useDeleteProject,
 } from '@/hooks/use-project-detail'
 import { ErrorContainer } from '@/components/ErrorContainer'
 import { H1 } from '@/components/typography'
@@ -17,6 +19,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { RenameProjectDialog } from '@/components/project-detail/RenameProjectDialog'
 import { ProjectIconForm } from '@/components/project-detail/ProjectIconForm'
 import { DetectedToolsList } from '@/components/project-detail/DetectedToolsList'
+import { DeleteProjectDialog } from '@/components/projects/DeleteProjectDialog'
+import { cn } from '@/lib/utils'
 
 export const projectDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -26,15 +30,19 @@ export const projectDetailRoute = createRoute({
 
 function ProjectDetailPage() {
   const { projectId } = projectDetailRoute.useParams()
+  const navigate = useNavigate()
 
   const { data: project, isLoading, error } = useProject(projectId)
   const renameMutation = useRenameProject(projectId)
   const updateIconMutation = useUpdateProjectIcon(projectId)
   const refreshToolsMutation = useRefreshProjectTools(projectId)
+  const favoriteMutation = useToggleFavoriteProject(projectId)
+  const deleteMutation = useDeleteProject(projectId)
 
   const [renameOpen, setRenameOpen] = useState(false)
   const [renameDraft, setRenameDraft] = useState('')
   const [iconPath, setIconPath] = useState('')
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
   useEffect(() => {
     if (project) {
@@ -89,19 +97,49 @@ function ProjectDetailPage() {
             />
             <AvatarFallback>{project.name.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             <H1>{project.name}</H1>
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              className="text-muted-foreground hover:text-foreground"
-              onClick={() => {
-                setRenameDraft(project.name)
-                setRenameOpen(true)
-              }}
-            >
-              <PencilIcon className="size-4" />
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                className={cn(
+                  project.isFavorite && 'text-yellow-400 hover:text-yellow-400',
+                  !project.isFavorite &&
+                    'text-muted-foreground hover:text-yellow-400 hover:bg-yellow-400/10 dark:hover:bg-yellow-400/20'
+                )}
+                onClick={() => favoriteMutation.mutate()}
+              >
+                <StarIcon
+                  className={cn(
+                    'size-4',
+                    project.isFavorite && 'fill-yellow-400 group-hover/button:fill-yellow-400/50'
+                  )}
+                />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                className="text-muted-foreground hover:text-foreground"
+                onClick={() => {
+                  setRenameDraft(project.name)
+                  setRenameOpen(true)
+                }}
+              >
+                <PencilIcon className="size-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                className="hover:text-destructive text-muted-foreground hover:bg-destructive/10 dark:hover:bg-destructive/20"
+                onClick={() => {
+                  deleteMutation.reset()
+                  setDeleteDialogOpen(true)
+                }}
+              >
+                <Trash2Icon className="size-4" />
+              </Button>
+            </div>
           </div>
         </div>
         <p className="text-muted-foreground font-mono text-sm ml-[52px]">{project.path}</p>
@@ -127,6 +165,20 @@ function ProjectDetailPage() {
         tools={project.detectedTools.filter((t) => t.detected)}
         onRefresh={() => refreshToolsMutation.mutate()}
         isRefreshing={refreshToolsMutation.isPending}
+      />
+
+      <DeleteProjectDialog
+        project={deleteDialogOpen ? project : null}
+        onOpenChange={(open) => !open && setDeleteDialogOpen(false)}
+        onConfirm={() => {
+          deleteMutation.mutate(undefined, {
+            onSuccess: () => {
+              setDeleteDialogOpen(false)
+              navigate({ to: '/projects' })
+            },
+          })
+        }}
+        isPending={deleteMutation.isPending}
       />
     </div>
   )
