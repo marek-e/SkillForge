@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
 
-const h1Variants = cva('scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl', {
+const h1Variants = cva('scroll-m-20 text-4xl font-extrabold tracking-tight', {
   variants: {
     variant: {
       default: '',
