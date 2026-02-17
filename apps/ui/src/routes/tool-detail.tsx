@@ -8,6 +8,7 @@ import { ErrorContainer } from '../components/ErrorContainer'
 import { Skeleton } from '../components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import type { SkillItem } from '@skillforge/core'
+import { H1 } from '@/components/typography'
 
 const skillsQueryMap: Record<string, () => Promise<SkillItem[]>> = {
   'claude-code': api.tools.claudeCodeSkills,
@@ -70,7 +71,7 @@ function ToolDetailPage() {
             className={cn('size-6', config.invert && 'dark:invert')}
           />
         </div>
-        <h1 className="text-2xl font-bold text-foreground">{config.displayName}</h1>
+        <H1>{config.displayName}</H1>
       </div>
 
       <ToolCard
