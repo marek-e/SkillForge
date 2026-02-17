@@ -13,6 +13,7 @@ function ToolsPage() {
     data: tools,
     isLoading,
     error,
+    refetch,
   } = useQuery({
     queryKey: ['tools'],
     queryFn: api.tools.list,
@@ -22,8 +23,8 @@ function ToolsPage() {
     return (
       <ErrorContainer
         title="Failed to load tools"
-        message={(error as Error).message}
-        onRetry={() => window.location.reload()}
+        message={error.message}
+        onRetry={() => refetch()}
       />
     )
   }

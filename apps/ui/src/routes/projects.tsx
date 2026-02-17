@@ -13,7 +13,7 @@ import type { Project } from '@skillforge/core'
 import { FolderOpenIcon, PlusIcon, StarIcon, Trash2Icon, ArrowUpDownIcon } from 'lucide-react'
 import { rootRoute } from './__root'
 import { api } from '../api/client'
-import { getToolConfig } from '../components/ToolCardCompact'
+import { getToolConfig } from '@/lib/tool-config'
 import { ErrorContainer } from '../components/ErrorContainer'
 import { H1, Lead } from '../components/typography'
 import { Button } from '../components/ui/button'
@@ -68,6 +68,7 @@ function ProjectsPage() {
     data: projects,
     isLoading,
     error,
+    refetch,
   } = useQuery({
     queryKey: ['projects'],
     queryFn: api.projects.list,
@@ -220,7 +221,7 @@ function ProjectsPage() {
       <ErrorContainer
         title="Failed to load projects"
         message={error.message}
-        onRetry={() => window.location.reload()}
+        onRetry={() => refetch()}
       />
     )
   }
