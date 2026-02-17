@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { createRoute, Link } from '@tanstack/react-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { ArrowLeftIcon } from 'lucide-react'
+import { ArrowLeftIcon, RefreshCwIcon } from 'lucide-react'
 import { rootRoute } from './__root'
 import { api } from '../api/client'
 import { getToolConfig } from '../components/ToolCardCompact'
@@ -48,6 +48,14 @@ function ProjectDetailPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] })
       queryClient.invalidateQueries({ queryKey: ['projects', projectId] })
+    },
+  })
+
+  const refreshToolsMutation = useMutation({
+    mutationFn: () => api.projects.refreshTools(projectId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects', projectId] })
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
     },
   })
 
@@ -122,9 +130,22 @@ function ProjectDetailPage() {
         )}
       </div>
 
-      {detectedTools.length > 0 && (
-        <div className="space-y-2">
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
           <Label>Detected tools</Label>
+          <Button
+            variant="ghost"
+            size="icon-xs"
+            onClick={() => refreshToolsMutation.mutate()}
+            disabled={refreshToolsMutation.isPending}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <RefreshCwIcon
+              className={`size-3.5 ${refreshToolsMutation.isPending ? 'animate-spin' : ''}`}
+            />
+          </Button>
+        </div>
+        {detectedTools.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {detectedTools.map((t) => {
               const config = getToolConfig(t.name)
@@ -135,8 +156,10 @@ function ProjectDetailPage() {
               )
             })}
           </div>
-        </div>
-      )}
+        ) : (
+          <p className="text-sm text-muted-foreground">No tools detected</p>
+        )}
+      </div>
     </div>
   )
 }
