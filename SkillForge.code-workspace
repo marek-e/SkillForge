@@ -22,6 +22,12 @@
     "[typescriptreact]": {
       "editor.defaultFormatter": "oxc.oxc-vscode",
     },
+    "[typescript]": {
+      "editor.defaultFormatter": "oxc.oxc-vscode",
+    },
+    "[json,yaml,markdown]": {
+      "editor.defaultFormatter": "oxc.oxc-vscode",
+    },
   },
   "extensions": {
     "recommendations": ["oxc.oxc-vscode"],
