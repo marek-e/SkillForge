@@ -1,9 +1,13 @@
 import type { Agent, Skill } from '@skillforge/core'
 
-export interface DetectionResult {
+export interface GlobalDetectionResult {
+  detected: boolean
+  globalDir?: string
+}
+
+export interface ProjectDetectionResult {
   detected: boolean
   paths: {
-    globalDir?: string
     projectConfig?: string
     projectDir?: string
   }
@@ -17,7 +21,8 @@ export interface ImportResult {
 
 export interface Connector {
   name: string
-  detect(projectPath?: string): Promise<DetectionResult>
+  detectGlobal(): Promise<GlobalDetectionResult>
+  detectProject(projectPath: string): Promise<ProjectDetectionResult>
   import(projectPath?: string): Promise<ImportResult>
   export(agents: Agent[], skills: Skill[], projectPath?: string): Promise<void>
 }
