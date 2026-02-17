@@ -30,6 +30,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
@@ -59,6 +60,7 @@ function ProjectsPage() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const [webDialogOpen, setWebDialogOpen] = useState(false)
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null)
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'isFavorite', desc: true },
     { id: 'name', desc: false },
@@ -114,6 +116,11 @@ function ProjectsPage() {
         <Button
           variant="ghost"
           size="icon-xs"
+          className={cn(
+            row.original.isFavorite && 'text-yellow-400 hover:text-yellow-400',
+            !row.original.isFavorite &&
+              'text-muted-foreground hover:text-yellow-400 hover:bg-yellow-400/10 dark:hover:bg-yellow-400/20'
+          )}
           onClick={(e) => {
             e.stopPropagation()
             favoriteMutation.mutate(row.original.id)
@@ -122,7 +129,7 @@ function ProjectsPage() {
           <StarIcon
             className={cn(
               'size-4',
-              row.original.isFavorite ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'
+              row.original.isFavorite && 'fill-yellow-400 group-hover/button:fill-yellow-400/50'
             )}
           />
         </Button>
@@ -188,12 +195,14 @@ function ProjectsPage() {
         <Button
           variant="ghost"
           size="icon-xs"
+          className="hover:text-destructive text-muted-foreground hover:bg-destructive/10 dark:hover:bg-destructive/20"
           onClick={(e) => {
             e.stopPropagation()
-            deleteMutation.mutate(row.original.id)
+            deleteMutation.reset()
+            setProjectToDelete(row.original)
           }}
         >
-          <Trash2Icon className="size-4 text-muted-foreground" />
+          <Trash2Icon className="size-4" />
         </Button>
       ),
     },
@@ -299,6 +308,44 @@ function ProjectsPage() {
       {createMutation.isError && (
         <p className="text-sm text-destructive">{createMutation.error.message}</p>
       )}
+
+      <Dialog open={!!projectToDelete} onOpenChange={(open) => !open && setProjectToDelete(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete project?</DialogTitle>
+            <DialogDescription>
+              This will remove <span className="font-bold">{projectToDelete?.name}</span> from your
+              project list.
+            </DialogDescription>
+          </DialogHeader>
+          {deleteMutation.isError && (
+            <p className="text-sm text-destructive">{deleteMutation.error.message}</p>
+          )}
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setProjectToDelete(null)}
+              disabled={deleteMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              disabled={deleteMutation.isPending || !projectToDelete}
+              onClick={() => {
+                if (!projectToDelete) return
+                deleteMutation.mutate(projectToDelete.id, {
+                  onSuccess: () => setProjectToDelete(null),
+                })
+              }}
+            >
+              {deleteMutation.isPending ? 'Deleting...' : 'Delete project'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <AddProjectWebDialog
         open={webDialogOpen}
