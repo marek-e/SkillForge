@@ -1,4 +1,4 @@
-import type { ElectronWindow } from '@/lib/electron'
+import { isElectron } from '@/lib/electron'
 import { Outlet, useMatches, Link } from '@tanstack/react-router'
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { AppSidebar } from './app-sidebar'
@@ -14,9 +14,6 @@ import {
 } from './ui/breadcrumb'
 import { HomeIcon } from 'lucide-react'
 import { ModeToggle } from './mode-toggle'
-
-const isElectron =
-  typeof window !== 'undefined' && !!(window as ElectronWindow).electronAPI?.isElectron
 
 const routeLabels: Record<string, string> = {
   '/': 'Home',

@@ -45,10 +45,8 @@ import {
   EmptyDescription,
 } from '../components/ui/empty'
 import { cn } from '@/lib/utils'
+import { isElectron } from '@/lib/electron'
 import type { ElectronWindow } from '@/lib/electron'
-
-const isElectron =
-  typeof window !== 'undefined' && !!(window as ElectronWindow).electronAPI?.isElectron
 
 export const projectsRoute = createRoute({
   getParentRoute: () => rootRoute,

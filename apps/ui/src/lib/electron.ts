@@ -8,3 +8,6 @@ export interface ElectronAPI {
 }
 
 export type ElectronWindow = Window & { electronAPI?: ElectronAPI }
+
+export const isElectron =
+  typeof window !== 'undefined' && !!(window as ElectronWindow).electronAPI?.isElectron
