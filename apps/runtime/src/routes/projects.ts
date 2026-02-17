@@ -2,13 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { Hono } from 'hono'
-import {
-  claudeCodeConnector,
-  cursorConnector,
-  codexConnector,
-  geminiCliConnector,
-  openCodeConnector,
-} from '@skillforge/connectors'
+import { allConnectors } from '@skillforge/connectors'
 import type { DetectedTool, Project } from '@skillforge/core'
 import { store } from '../store'
 
@@ -45,18 +39,10 @@ projectRoutes.post('/', async (c) => {
     )
   }
 
-  const connectors = [
-    { name: 'claude-code', connector: claudeCodeConnector },
-    { name: 'cursor', connector: cursorConnector },
-    { name: 'codex', connector: codexConnector },
-    { name: 'gemini-cli', connector: geminiCliConnector },
-    { name: 'opencode', connector: openCodeConnector },
-  ]
-
   const results = await Promise.all(
-    connectors.map(async ({ name, connector }) => {
+    allConnectors.map(async (connector) => {
       const { detected } = await connector.detectProject(projectPath)
-      return { name, detected } satisfies DetectedTool
+      return { name: connector.name, detected } satisfies DetectedTool
     })
   )
 
@@ -115,18 +101,10 @@ projectRoutes.post('/:id/refresh-tools', async (c) => {
     return c.json({ error: { message: 'Project not found', code: 'NOT_FOUND' } }, 404)
   }
 
-  const connectors = [
-    { name: 'claude-code', connector: claudeCodeConnector },
-    { name: 'cursor', connector: cursorConnector },
-    { name: 'codex', connector: codexConnector },
-    { name: 'gemini-cli', connector: geminiCliConnector },
-    { name: 'opencode', connector: openCodeConnector },
-  ]
-
   const results = await Promise.all(
-    connectors.map(async ({ name, connector }) => {
+    allConnectors.map(async (connector) => {
       const { detected } = await connector.detectProject(project.path)
-      return { name, detected } satisfies DetectedTool
+      return { name: connector.name, detected } satisfies DetectedTool
     })
   )
 

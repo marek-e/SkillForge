@@ -1,10 +1,6 @@
 import { Hono } from 'hono'
 import {
-  claudeCodeConnector,
-  cursorConnector,
-  codexConnector,
-  geminiCliConnector,
-  openCodeConnector,
+  allConnectors,
   listGlobalCommands,
   listGlobalSkills,
   listCursorSkills,
@@ -17,79 +13,27 @@ import type { ToolStatus } from '@skillforge/core'
 export const toolRoutes = new Hono()
 
 toolRoutes.get('/', async (c) => {
-  const [
-    claudeDetection,
-    cursorDetection,
-    codexDetection,
-    geminiCliDetection,
-    openCodeDetection,
-    commands,
-    claudeSkills,
-    cursorSkills,
-    codexSkills,
-    geminiCliSkills,
-    openCodeSkills,
-  ] = await Promise.all([
-    claudeCodeConnector.detectGlobal(),
-    cursorConnector.detectGlobal(),
-    codexConnector.detectGlobal(),
-    geminiCliConnector.detectGlobal(),
-    openCodeConnector.detectGlobal(),
+  const skillListers: Record<string, () => Promise<unknown[]>> = {
+    'claude-code': listGlobalSkills,
+    cursor: listCursorSkills,
+    codex: listCodexSkills,
+    'gemini-cli': listGeminiCliSkills,
+    opencode: listOpenCodeSkills,
+  }
+
+  const [detections, commands, ...skillResults] = await Promise.all([
+    Promise.all(allConnectors.map((c) => c.detectGlobal())),
     listGlobalCommands(),
-    listGlobalSkills(),
-    listCursorSkills(),
-    listCodexSkills(),
-    listGeminiCliSkills(),
-    listOpenCodeSkills(),
+    ...allConnectors.map((c) => skillListers[c.name]()),
   ])
 
-  const tools: ToolStatus[] = [
-    {
-      name: 'claude-code',
-      detected: claudeDetection.detected,
-      paths: {
-        globalDir: claudeDetection.globalDir,
-      },
-      commandCount: commands.length,
-      skillCount: claudeSkills.length,
-    },
-    {
-      name: 'cursor',
-      detected: cursorDetection.detected,
-      paths: {
-        globalDir: cursorDetection.globalDir,
-      },
-      commandCount: 0,
-      skillCount: cursorSkills.length,
-    },
-    {
-      name: 'codex',
-      detected: codexDetection.detected,
-      paths: {
-        globalDir: codexDetection.globalDir,
-      },
-      commandCount: 0,
-      skillCount: codexSkills.length,
-    },
-    {
-      name: 'gemini-cli',
-      detected: geminiCliDetection.detected,
-      paths: {
-        globalDir: geminiCliDetection.globalDir,
-      },
-      commandCount: 0,
-      skillCount: geminiCliSkills.length,
-    },
-    {
-      name: 'opencode',
-      detected: openCodeDetection.detected,
-      paths: {
-        globalDir: openCodeDetection.globalDir,
-      },
-      commandCount: 0,
-      skillCount: openCodeSkills.length,
-    },
-  ]
+  const tools: ToolStatus[] = allConnectors.map((connector, i) => ({
+    name: connector.name,
+    detected: detections[i].detected,
+    paths: { globalDir: detections[i].globalDir },
+    commandCount: connector.name === 'claude-code' ? commands.length : 0,
+    skillCount: skillResults[i].length,
+  }))
 
   return c.json({ data: tools })
 })

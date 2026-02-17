@@ -1,4 +1,5 @@
 import type { Agent, DetectedTool, Project, Skill } from '@skillforge/core'
+import { AgentSchema, ProjectSchema, SkillSchema } from '@skillforge/core'
 import { eq } from 'drizzle-orm'
 import { getDb } from './db'
 import { agents, projects, skills } from './schema'
@@ -8,42 +9,27 @@ type SkillRow = typeof skills.$inferSelect
 type ProjectRow = typeof projects.$inferSelect
 
 function agentFromRow(row: AgentRow): Agent {
-  return {
-    id: row.id,
-    name: row.name,
-    sourceTool: row.sourceTool as Agent['sourceTool'],
+  return AgentSchema.parse({
+    ...row,
     enabledSkills: JSON.parse(row.enabledSkills),
-    createdAt: row.createdAt,
-    updatedAt: row.updatedAt,
-  }
+  })
 }
 
 function projectFromRow(row: ProjectRow): Project {
-  return {
-    id: row.id,
-    name: row.name,
-    path: row.path,
-    iconPath: row.iconPath,
-    isFavorite: row.isFavorite,
-    detectedTools: JSON.parse(row.detectedTools) as DetectedTool[],
-    createdAt: row.createdAt,
-    updatedAt: row.updatedAt,
-  }
+  return ProjectSchema.parse({
+    ...row,
+    detectedTools: JSON.parse(row.detectedTools),
+  })
 }
 
 function skillFromRow(row: SkillRow): Skill {
-  return {
-    id: row.id,
-    name: row.name,
-    description: row.description,
+  return SkillSchema.parse({
+    ...row,
     inputSchema: row.inputSchema ? JSON.parse(row.inputSchema) : undefined,
     outputSchema: row.outputSchema ? JSON.parse(row.outputSchema) : undefined,
     implementationRef: row.implementationRef ?? undefined,
-    source: row.source as Skill['source'],
-    originalTool: (row.originalTool as Skill['originalTool']) ?? undefined,
-    createdAt: row.createdAt,
-    updatedAt: row.updatedAt,
-  }
+    originalTool: row.originalTool ?? undefined,
+  })
 }
 
 export const store = {
