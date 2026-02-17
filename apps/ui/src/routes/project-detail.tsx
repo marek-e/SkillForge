@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { createRoute, Link } from '@tanstack/react-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { ArrowLeftIcon, RefreshCwIcon } from 'lucide-react'
+import { ArrowLeftIcon, PencilIcon, RefreshCwIcon } from 'lucide-react'
 import { rootRoute } from './__root'
 import { api } from '../api/client'
 import { getToolConfig } from '../components/ToolCardCompact'
@@ -9,6 +9,13 @@ import { ErrorContainer } from '../components/ErrorContainer'
 import { H1 } from '../components/typography'
 import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../components/ui/dialog'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { Skeleton } from '../components/ui/skeleton'
@@ -32,12 +39,12 @@ function ProjectDetailPage() {
     queryFn: () => api.projects.get(projectId),
   })
 
-  const [name, setName] = useState('')
+  const [renameOpen, setRenameOpen] = useState(false)
+  const [renameDraft, setRenameDraft] = useState('')
   const [iconPath, setIconPath] = useState('')
 
   useEffect(() => {
     if (project) {
-      setName(project.name)
       setIconPath(project.iconPath ?? '')
     }
   }, [project])
@@ -59,9 +66,14 @@ function ProjectDetailPage() {
     },
   })
 
-  function handleSave() {
+  function handleRename() {
+    const trimmed = renameDraft.trim()
+    if (!trimmed) return
+    updateMutation.mutate({ name: trimmed }, { onSuccess: () => setRenameOpen(false) })
+  }
+
+  function handleSaveIcon() {
     updateMutation.mutate({
-      name: name.trim(),
       iconPath: iconPath.trim() || null,
     })
   }
@@ -101,15 +113,61 @@ function ProjectDetailPage() {
       </Link>
 
       <div>
-        <H1>{project.name}</H1>
+        <div className="flex items-center gap-2">
+          <H1>{project.name}</H1>
+          <Button
+            variant="ghost"
+            size="icon-xs"
+            className="text-muted-foreground hover:text-foreground"
+            onClick={() => {
+              setRenameDraft(project.name)
+              setRenameOpen(true)
+            }}
+          >
+            <PencilIcon className="size-4" />
+          </Button>
+        </div>
         <p className="text-muted-foreground font-mono text-sm">{project.path}</p>
       </div>
 
+      <Dialog open={renameOpen} onOpenChange={setRenameOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rename project</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="rename-input">Project name</Label>
+            <Input
+              id="rename-input"
+              value={renameDraft}
+              onChange={(e) => setRenameDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleRename()
+              }}
+            />
+          </div>
+          {updateMutation.isError && (
+            <p className="text-sm text-destructive">{updateMutation.error.message}</p>
+          )}
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setRenameOpen(false)}
+              disabled={updateMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleRename}
+              disabled={updateMutation.isPending || !renameDraft.trim()}
+            >
+              {updateMutation.isPending ? 'Saving...' : 'Save'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className="space-y-4 max-w-md">
-        <div className="space-y-2">
-          <Label htmlFor="project-name">Project name</Label>
-          <Input id="project-name" value={name} onChange={(e) => setName(e.target.value)} />
-        </div>
         <div className="space-y-2">
           <Label htmlFor="project-icon">Icon path</Label>
           <Input
@@ -119,7 +177,7 @@ function ProjectDetailPage() {
             placeholder="logo.svg"
           />
         </div>
-        <Button onClick={handleSave} disabled={updateMutation.isPending}>
+        <Button onClick={handleSaveIcon} disabled={updateMutation.isPending}>
           {updateMutation.isPending ? 'Saving...' : 'Save'}
         </Button>
         {updateMutation.isError && (
