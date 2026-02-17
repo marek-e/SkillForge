@@ -49,9 +49,17 @@ function ProjectDetailPage() {
     }
   }, [project])
 
-  const updateMutation = useMutation({
-    mutationFn: (data: { name?: string; iconPath?: string | null }) =>
-      api.projects.update(projectId, data),
+  const renameMutation = useMutation({
+    mutationFn: (data: { name: string }) => api.projects.update(projectId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
+      queryClient.invalidateQueries({ queryKey: ['projects', projectId] })
+      setRenameOpen(false)
+    },
+  })
+
+  const updateIconMutation = useMutation({
+    mutationFn: (data: { iconPath: string | null }) => api.projects.update(projectId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] })
       queryClient.invalidateQueries({ queryKey: ['projects', projectId] })
@@ -69,11 +77,11 @@ function ProjectDetailPage() {
   function handleRename() {
     const trimmed = renameDraft.trim()
     if (!trimmed) return
-    updateMutation.mutate({ name: trimmed }, { onSuccess: () => setRenameOpen(false) })
+    renameMutation.mutate({ name: trimmed })
   }
 
   function handleSaveIcon() {
-    updateMutation.mutate({
+    updateIconMutation.mutate({
       iconPath: iconPath.trim() || null,
     })
   }
@@ -146,22 +154,22 @@ function ProjectDetailPage() {
               }}
             />
           </div>
-          {updateMutation.isError && (
-            <p className="text-sm text-destructive">{updateMutation.error.message}</p>
+          {renameMutation.isError && (
+            <p className="text-sm text-destructive">{renameMutation.error.message}</p>
           )}
           <DialogFooter>
             <Button
               variant="outline"
               onClick={() => setRenameOpen(false)}
-              disabled={updateMutation.isPending}
+              disabled={renameMutation.isPending}
             >
               Cancel
             </Button>
             <Button
               onClick={handleRename}
-              disabled={updateMutation.isPending || !renameDraft.trim()}
+              disabled={renameMutation.isPending || !renameDraft.trim()}
             >
-              {updateMutation.isPending ? 'Saving...' : 'Save'}
+              {renameMutation.isPending ? 'Saving...' : 'Save'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -177,13 +185,13 @@ function ProjectDetailPage() {
             placeholder="logo.svg"
           />
         </div>
-        <Button onClick={handleSaveIcon} disabled={updateMutation.isPending}>
-          {updateMutation.isPending ? 'Saving...' : 'Save'}
+        <Button onClick={handleSaveIcon} disabled={updateIconMutation.isPending}>
+          {updateIconMutation.isPending ? 'Saving...' : 'Save'}
         </Button>
-        {updateMutation.isError && (
-          <p className="text-sm text-destructive">{updateMutation.error.message}</p>
+        {updateIconMutation.isError && (
+          <p className="text-sm text-destructive">{updateIconMutation.error.message}</p>
         )}
-        {updateMutation.isSuccess && (
+        {updateIconMutation.isSuccess && (
           <p className="text-sm text-muted-foreground">Saved successfully.</p>
         )}
       </div>
