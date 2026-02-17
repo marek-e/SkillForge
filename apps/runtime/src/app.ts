@@ -17,7 +17,7 @@ export function createApp(options: CreateAppOptions = {}) {
       '*',
       cors({
         origin: options.corsOrigins,
-        allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
+        allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
       })
     )
   }
