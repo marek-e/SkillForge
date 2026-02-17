@@ -2,18 +2,18 @@ import { z } from 'zod'
 import { SourceToolSchema } from './skill'
 
 export const SkillRefSchema = z.object({
-  skillId: z.string().uuid(),
+  skillId: z.uuid(),
   enabled: z.boolean().default(true),
 })
 export type SkillRef = z.infer<typeof SkillRefSchema>
 
 export const AgentSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string().min(1),
   sourceTool: SourceToolSchema,
   enabledSkills: z.array(SkillRefSchema),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
 })
 
 export type Agent = z.infer<typeof AgentSchema>

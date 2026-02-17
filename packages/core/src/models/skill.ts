@@ -7,7 +7,7 @@ export const SourceToolSchema = z.enum(['cursor', 'claude', 'openai', 'gemini', 
 export type SourceTool = z.infer<typeof SourceToolSchema>
 
 export const SkillSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string().min(1),
   description: z.string(),
   inputSchema: z.record(z.string(), z.unknown()).optional(),
@@ -15,8 +15,8 @@ export const SkillSchema = z.object({
   implementationRef: z.string().optional(),
   source: SkillSourceSchema,
   originalTool: SourceToolSchema.optional(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
 })
 
 export type Skill = z.infer<typeof SkillSchema>
