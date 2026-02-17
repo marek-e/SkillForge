@@ -8,27 +8,7 @@ import type {
   ImportResult,
 } from '../types'
 import type { ClaudeCodeCommand, ClaudeCodeSkill } from '@skillforge/core'
-import { exists } from '../utils'
-
-function parseFrontmatter(content: string): { frontmatter: Record<string, string>; body: string } {
-  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/)
-  if (!match) {
-    return { frontmatter: {}, body: content }
-  }
-
-  const frontmatter: Record<string, string> = {}
-  const lines = match[1].split('\n')
-  for (const line of lines) {
-    const colonIndex = line.indexOf(':')
-    if (colonIndex > 0) {
-      const key = line.slice(0, colonIndex).trim()
-      const value = line.slice(colonIndex + 1).trim()
-      frontmatter[key] = value
-    }
-  }
-
-  return { frontmatter, body: match[2] }
-}
+import { exists, parseFrontmatter, listSkillsFromDir } from '../utils'
 
 function extractFirstLine(content: string): string {
   const lines = content.trim().split('\n')
@@ -75,29 +55,11 @@ export async function listGlobalCommands(): Promise<ClaudeCodeCommand[]> {
 
 export async function listGlobalSkills(): Promise<ClaudeCodeSkill[]> {
   const skillsDir = join(homedir(), '.claude', 'skills')
-  if (!(await exists(skillsDir))) {
-    return []
-  }
-
-  const entries = await readdir(skillsDir, { withFileTypes: true })
-  const skills: ClaudeCodeSkill[] = []
-
-  for (const entry of entries) {
-    if (!entry.isDirectory()) continue
-
-    const skillMdPath = join(skillsDir, entry.name, 'SKILL.md')
-    if (!(await exists(skillMdPath))) continue
-
-    const content = await readFile(skillMdPath, 'utf-8')
-    const description = extractFirstLine(content)
-
-    skills.push({
-      name: entry.name,
-      description: description || 'Skill',
-      filePath: skillMdPath,
-    })
-  }
-
+  const skills = await listSkillsFromDir(skillsDir, (name, _frontmatter, filePath, body) => ({
+    name,
+    description: extractFirstLine(body) || 'Skill',
+    filePath,
+  }))
   return skills.sort((a, b) => a.name.localeCompare(b.name))
 }
 

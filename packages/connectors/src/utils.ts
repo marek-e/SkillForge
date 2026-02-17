@@ -10,10 +10,13 @@ export async function exists(path: string): Promise<boolean> {
   }
 }
 
-export function parseFrontmatter(content: string): Record<string, string> {
-  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/)
+export function parseFrontmatter(content: string): {
+  frontmatter: Record<string, string>
+  body: string
+} {
+  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/)
   if (!match) {
-    return {}
+    return { frontmatter: {}, body: content }
   }
 
   const frontmatter: Record<string, string> = {}
@@ -27,12 +30,12 @@ export function parseFrontmatter(content: string): Record<string, string> {
     }
   }
 
-  return frontmatter
+  return { frontmatter, body: match[2] }
 }
 
 export async function listSkillsFromDir<T>(
   skillsDir: string,
-  mapFn: (name: string, frontmatter: Record<string, string>, filePath: string) => T
+  mapFn: (name: string, frontmatter: Record<string, string>, filePath: string, body: string) => T
 ): Promise<T[]> {
   if (!(await exists(skillsDir))) {
     return []
@@ -48,9 +51,9 @@ export async function listSkillsFromDir<T>(
     if (!(await exists(skillMdPath))) continue
 
     const content = await readFile(skillMdPath, 'utf-8')
-    const frontmatter = parseFrontmatter(content)
+    const { frontmatter, body } = parseFrontmatter(content)
 
-    skills.push(mapFn(entry.name, frontmatter, skillMdPath))
+    skills.push(mapFn(entry.name, frontmatter, skillMdPath, body))
   }
 
   return skills
