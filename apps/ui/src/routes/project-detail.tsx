@@ -57,6 +57,7 @@ function ProjectDetailPage() {
       queryClient.invalidateQueries({ queryKey: ['projects', projectId] })
       setRenameOpen(false)
     },
+    onError: () => toast.error('Failed to rename project'),
   })
 
   const updateIconMutation = useMutation({
@@ -64,7 +65,9 @@ function ProjectDetailPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] })
       queryClient.invalidateQueries({ queryKey: ['projects', projectId] })
+      toast.success('Icon path saved')
     },
+    onError: () => toast.error('Failed to save icon path'),
   })
 
   const refreshToolsMutation = useMutation({
@@ -73,6 +76,7 @@ function ProjectDetailPage() {
       queryClient.invalidateQueries({ queryKey: ['projects', projectId] })
       queryClient.invalidateQueries({ queryKey: ['projects'] })
     },
+    onError: () => toast.error('Failed to refresh tools'),
   })
 
   function handleRename() {
@@ -155,9 +159,6 @@ function ProjectDetailPage() {
               }}
             />
           </div>
-          {renameMutation.isError && (
-            <p className="text-sm text-destructive">{renameMutation.error.message}</p>
-          )}
           <DialogFooter>
             <Button
               variant="outline"
@@ -189,12 +190,6 @@ function ProjectDetailPage() {
         <Button onClick={handleSaveIcon} disabled={updateIconMutation.isPending}>
           {updateIconMutation.isPending ? 'Saving...' : 'Save'}
         </Button>
-        {updateIconMutation.isError && (
-          <p className="text-sm text-destructive">{updateIconMutation.error.message}</p>
-        )}
-        {updateIconMutation.isSuccess && (
-          <p className="text-sm text-muted-foreground">Saved successfully.</p>
-        )}
       </div>
 
       <div className="space-y-2">

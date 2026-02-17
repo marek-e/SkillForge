@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { createRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import {
   flexRender,
   getCoreRowModel,
@@ -83,16 +84,22 @@ function ProjectsPage() {
         params: { projectId: project.id },
       })
     },
+    onError: () => toast.error('Failed to add project'),
   })
 
   const deleteMutation = useMutation({
     mutationFn: api.projects.delete,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['projects'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
+      toast.success('Project deleted')
+    },
+    onError: () => toast.error('Failed to delete project'),
   })
 
   const favoriteMutation = useMutation({
     mutationFn: api.projects.toggleFavorite,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['projects'] }),
+    onError: () => toast.error('Failed to update favorite'),
   })
 
   async function handleAddProject() {
@@ -304,10 +311,6 @@ function ProjectsPage() {
         </Table>
       )}
 
-      {createMutation.isError && (
-        <p className="text-sm text-destructive">{createMutation.error.message}</p>
-      )}
-
       <Dialog open={!!projectToDelete} onOpenChange={(open) => !open && setProjectToDelete(null)}>
         <DialogContent>
           <DialogHeader>
@@ -317,9 +320,6 @@ function ProjectsPage() {
               project list.
             </DialogDescription>
           </DialogHeader>
-          {deleteMutation.isError && (
-            <p className="text-sm text-destructive">{deleteMutation.error.message}</p>
-          )}
           <DialogFooter>
             <Button
               type="button"
@@ -351,7 +351,6 @@ function ProjectsPage() {
         onOpenChange={setWebDialogOpen}
         onSubmit={(path) => createMutation.mutate({ path })}
         isPending={createMutation.isPending}
-        error={createMutation.isError ? createMutation.error.message : undefined}
       />
     </div>
   )
