@@ -1,25 +1,20 @@
 import { useState, useEffect } from 'react'
 import { createRoute, Link } from '@tanstack/react-router'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { toast } from 'sonner'
-import { ArrowLeftIcon, PencilIcon, RefreshCwIcon } from 'lucide-react'
+import { ArrowLeftIcon, PencilIcon } from 'lucide-react'
 import { rootRoute } from './__root'
-import { api } from '../api/client'
-import { getToolConfig } from '@/lib/tool-config'
-import { ErrorContainer } from '../components/ErrorContainer'
-import { H1 } from '../components/typography'
-import { Button } from '../components/ui/button'
-import { Badge } from '../components/ui/badge'
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '../components/ui/dialog'
-import { Input } from '../components/ui/input'
-import { Label } from '../components/ui/label'
-import { Skeleton } from '../components/ui/skeleton'
+  useProject,
+  useRenameProject,
+  useUpdateProjectIcon,
+  useRefreshProjectTools,
+} from '@/hooks/use-project-detail'
+import { ErrorContainer } from '@/components/ErrorContainer'
+import { H1 } from '@/components/typography'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
+import { RenameProjectDialog } from '@/components/project-detail/RenameProjectDialog'
+import { ProjectIconForm } from '@/components/project-detail/ProjectIconForm'
+import { DetectedToolsList } from '@/components/project-detail/DetectedToolsList'
 
 export const projectDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -29,16 +24,11 @@ export const projectDetailRoute = createRoute({
 
 function ProjectDetailPage() {
   const { projectId } = projectDetailRoute.useParams()
-  const queryClient = useQueryClient()
 
-  const {
-    data: project,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ['projects', projectId],
-    queryFn: () => api.projects.get(projectId),
-  })
+  const { data: project, isLoading, error } = useProject(projectId)
+  const renameMutation = useRenameProject(projectId)
+  const updateIconMutation = useUpdateProjectIcon(projectId)
+  const refreshToolsMutation = useRefreshProjectTools(projectId)
 
   const [renameOpen, setRenameOpen] = useState(false)
   const [renameDraft, setRenameDraft] = useState('')
@@ -50,45 +40,10 @@ function ProjectDetailPage() {
     }
   }, [project])
 
-  const renameMutation = useMutation({
-    mutationFn: (data: { name: string }) => api.projects.update(projectId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] })
-      queryClient.invalidateQueries({ queryKey: ['projects', projectId] })
-      setRenameOpen(false)
-    },
-    onError: () => toast.error('Failed to rename project'),
-  })
-
-  const updateIconMutation = useMutation({
-    mutationFn: (data: { iconPath: string | null }) => api.projects.update(projectId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] })
-      queryClient.invalidateQueries({ queryKey: ['projects', projectId] })
-      toast.success('Icon path saved')
-    },
-    onError: () => toast.error('Failed to save icon path'),
-  })
-
-  const refreshToolsMutation = useMutation({
-    mutationFn: () => api.projects.refreshTools(projectId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects', projectId] })
-      queryClient.invalidateQueries({ queryKey: ['projects'] })
-    },
-    onError: () => toast.error('Failed to refresh tools'),
-  })
-
   function handleRename() {
     const trimmed = renameDraft.trim()
     if (!trimmed) return
-    renameMutation.mutate({ name: trimmed })
-  }
-
-  function handleSaveIcon() {
-    updateIconMutation.mutate({
-      iconPath: iconPath.trim() || null,
-    })
+    renameMutation.mutate({ name: trimmed }, { onSuccess: () => setRenameOpen(false) })
   }
 
   if (error) {
@@ -112,8 +67,6 @@ function ProjectDetailPage() {
   }
 
   if (!project) return null
-
-  const detectedTools = project.detectedTools.filter((t) => t.detected)
 
   return (
     <div className="space-y-6">
@@ -143,85 +96,27 @@ function ProjectDetailPage() {
         <p className="text-muted-foreground font-mono text-sm">{project.path}</p>
       </div>
 
-      <Dialog open={renameOpen} onOpenChange={setRenameOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Rename project</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-2">
-            <Label htmlFor="rename-input">Project name</Label>
-            <Input
-              id="rename-input"
-              value={renameDraft}
-              onChange={(e) => setRenameDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleRename()
-              }}
-            />
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setRenameOpen(false)}
-              disabled={renameMutation.isPending}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleRename}
-              disabled={renameMutation.isPending || !renameDraft.trim()}
-            >
-              {renameMutation.isPending ? 'Saving...' : 'Save'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <RenameProjectDialog
+        open={renameOpen}
+        onOpenChange={setRenameOpen}
+        name={renameDraft}
+        onNameChange={setRenameDraft}
+        onSubmit={handleRename}
+        isPending={renameMutation.isPending}
+      />
 
-      <div className="space-y-4 max-w-md">
-        <div className="space-y-2">
-          <Label htmlFor="project-icon">Icon path</Label>
-          <Input
-            id="project-icon"
-            value={iconPath}
-            onChange={(e) => setIconPath(e.target.value)}
-            placeholder="logo.svg"
-          />
-        </div>
-        <Button onClick={handleSaveIcon} disabled={updateIconMutation.isPending}>
-          {updateIconMutation.isPending ? 'Saving...' : 'Save'}
-        </Button>
-      </div>
+      <ProjectIconForm
+        iconPath={iconPath}
+        onIconPathChange={setIconPath}
+        onSave={() => updateIconMutation.mutate({ iconPath: iconPath.trim() || null })}
+        isPending={updateIconMutation.isPending}
+      />
 
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <Label>Detected tools</Label>
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            onClick={() => refreshToolsMutation.mutate()}
-            disabled={refreshToolsMutation.isPending}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <RefreshCwIcon
-              className={`size-3.5 ${refreshToolsMutation.isPending ? 'animate-spin' : ''}`}
-            />
-          </Button>
-        </div>
-        {detectedTools.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {detectedTools.map((t) => {
-              const config = getToolConfig(t.name)
-              return (
-                <Badge key={t.name} variant="secondary">
-                  {config.displayName}
-                </Badge>
-              )
-            })}
-          </div>
-        ) : (
-          <p className="text-sm text-muted-foreground">No tools detected</p>
-        )}
-      </div>
+      <DetectedToolsList
+        tools={project.detectedTools.filter((t) => t.detected)}
+        onRefresh={() => refreshToolsMutation.mutate()}
+        isRefreshing={refreshToolsMutation.isPending}
+      />
     </div>
   )
 }
