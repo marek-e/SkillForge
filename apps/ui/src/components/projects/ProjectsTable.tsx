@@ -10,8 +10,10 @@ import {
 import type { Project } from '@skillforge/core'
 import { StarIcon, Trash2Icon, ArrowUpDownIcon } from 'lucide-react'
 import { getToolConfig } from '@/lib/tool-config'
+import { getProjectIconSource } from '@/lib/project-icon'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import {
   Table,
   TableHeader,
@@ -80,7 +82,19 @@ export function ProjectsTable({
           <ArrowUpDownIcon className="size-3.5" />
         </Button>
       ),
-      cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
+      cell: ({ row }) => {
+        const project = row.original
+        const iconSrc = getProjectIconSource(project.iconPath, project.path)
+        return (
+          <div className="flex items-center gap-2">
+            <Avatar size="sm">
+              <AvatarImage src={iconSrc} alt={project.name} />
+              <AvatarFallback>{project.name.charAt(0).toUpperCase()}</AvatarFallback>
+            </Avatar>
+            <span className="font-medium">{project.name}</span>
+          </div>
+        )
+      },
     },
     {
       accessorKey: 'path',

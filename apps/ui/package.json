@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",
+    "@dicebear/collection": "^9.3.1",
+    "@dicebear/core": "^9.3.1",
     "@fontsource-variable/geist": "^5.2.8",
     "@fontsource/medievalsharp": "^5.2.8",
     "@skillforge/core": "workspace:*",

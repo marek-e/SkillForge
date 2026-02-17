@@ -10,7 +10,9 @@ import {
 } from '@/hooks/use-project-detail'
 import { ErrorContainer } from '@/components/ErrorContainer'
 import { H1 } from '@/components/typography'
+import { getProjectIconSource } from '@/lib/project-icon'
 import { Button } from '@/components/ui/button'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { RenameProjectDialog } from '@/components/project-detail/RenameProjectDialog'
 import { ProjectIconForm } from '@/components/project-detail/ProjectIconForm'
@@ -79,21 +81,30 @@ function ProjectDetailPage() {
       </Link>
 
       <div>
-        <div className="flex items-center gap-2">
-          <H1>{project.name}</H1>
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            className="text-muted-foreground hover:text-foreground"
-            onClick={() => {
-              setRenameDraft(project.name)
-              setRenameOpen(true)
-            }}
-          >
-            <PencilIcon className="size-4" />
-          </Button>
+        <div className="flex items-center gap-3">
+          <Avatar size="lg">
+            <AvatarImage
+              src={getProjectIconSource(project.iconPath, project.path)}
+              alt={project.name}
+            />
+            <AvatarFallback>{project.name.charAt(0).toUpperCase()}</AvatarFallback>
+          </Avatar>
+          <div className="flex items-center gap-2">
+            <H1>{project.name}</H1>
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              className="text-muted-foreground hover:text-foreground"
+              onClick={() => {
+                setRenameDraft(project.name)
+                setRenameOpen(true)
+              }}
+            >
+              <PencilIcon className="size-4" />
+            </Button>
+          </div>
         </div>
-        <p className="text-muted-foreground font-mono text-sm">{project.path}</p>
+        <p className="text-muted-foreground font-mono text-sm ml-[52px]">{project.path}</p>
       </div>
 
       <RenameProjectDialog
