@@ -1,6 +1,11 @@
 import { homedir } from 'node:os'
 import { join } from 'node:path'
-import type { Connector, DetectionResult, ImportResult } from '../types'
+import type {
+  Connector,
+  GlobalDetectionResult,
+  ProjectDetectionResult,
+  ImportResult,
+} from '../types'
 import type { CodexSkill } from '@skillforge/core'
 import { exists, listSkillsFromDir } from '../utils'
 
@@ -19,22 +24,27 @@ export async function listCodexSkills(): Promise<CodexSkill[]> {
 export const codexConnector: Connector = {
   name: 'codex',
 
-  async detect(projectPath?: string): Promise<DetectionResult> {
-    const paths: DetectionResult['paths'] = {}
-    let detected = false
-
+  async detectGlobal(): Promise<GlobalDetectionResult> {
     const globalDir = join(homedir(), '.agents')
     if (await exists(globalDir)) {
-      paths.globalDir = globalDir
+      return { detected: true, globalDir }
+    }
+    return { detected: false }
+  },
+
+  async detectProject(projectPath: string): Promise<ProjectDetectionResult> {
+    const paths: ProjectDetectionResult['paths'] = {}
+    let detected = false
+
+    const projectDir = join(projectPath, '.agents')
+    if (await exists(projectDir)) {
+      paths.projectDir = projectDir
       detected = true
     }
-
-    if (projectPath) {
-      const projectDir = join(projectPath, '.agents')
-      if (await exists(projectDir)) {
-        paths.projectDir = projectDir
-        detected = true
-      }
+    const codexDir = join(projectPath, '.codex')
+    if (await exists(codexDir)) {
+      paths.projectDir = codexDir
+      detected = true
     }
 
     return { detected, paths }

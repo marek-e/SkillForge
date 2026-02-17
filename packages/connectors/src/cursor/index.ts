@@ -1,6 +1,11 @@
 import { homedir } from 'node:os'
 import { join } from 'node:path'
-import type { Connector, DetectionResult, ImportResult } from '../types'
+import type {
+  Connector,
+  GlobalDetectionResult,
+  ProjectDetectionResult,
+  ImportResult,
+} from '../types'
 import type { CursorSkill } from '@skillforge/core'
 import { exists, listSkillsFromDir } from '../utils'
 
@@ -35,24 +40,22 @@ export async function listCursorSkills(): Promise<CursorSkill[]> {
 export const cursorConnector: Connector = {
   name: 'cursor',
 
-  async detect(projectPath?: string): Promise<DetectionResult> {
-    const paths: DetectionResult['paths'] = {}
-    let detected = false
-
-    // Check for global ~/.cursor directory
+  async detectGlobal(): Promise<GlobalDetectionResult> {
     const globalDir = join(homedir(), '.cursor')
     if (await exists(globalDir)) {
-      paths.globalDir = globalDir
-      detected = true
+      return { detected: true, globalDir }
     }
+    return { detected: false }
+  },
 
-    // Check for project-level .cursorrules file
-    if (projectPath) {
-      const cursorRules = join(projectPath, '.cursorrules')
-      if (await exists(cursorRules)) {
-        paths.projectConfig = cursorRules
-        detected = true
-      }
+  async detectProject(projectPath: string): Promise<ProjectDetectionResult> {
+    const paths: ProjectDetectionResult['paths'] = {}
+    let detected = false
+
+    const cursorRules = join(projectPath, '.cursor')
+    if (await exists(cursorRules)) {
+      paths.projectConfig = cursorRules
+      detected = true
     }
 
     return { detected, paths }

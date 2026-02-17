@@ -1,7 +1,12 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join, basename } from 'node:path'
-import type { Connector, DetectionResult, ImportResult } from '../types'
+import type {
+  Connector,
+  GlobalDetectionResult,
+  ProjectDetectionResult,
+  ImportResult,
+} from '../types'
 import type { ClaudeCodeCommand, ClaudeCodeSkill } from '@skillforge/core'
 import { exists } from '../utils'
 
@@ -99,32 +104,30 @@ export async function listGlobalSkills(): Promise<ClaudeCodeSkill[]> {
 export const claudeCodeConnector: Connector = {
   name: 'claude-code',
 
-  async detect(projectPath?: string): Promise<DetectionResult> {
-    const paths: DetectionResult['paths'] = {}
-    let detected = false
-
-    // Check for global ~/.claude directory
+  async detectGlobal(): Promise<GlobalDetectionResult> {
     const globalDir = join(homedir(), '.claude')
     if (await exists(globalDir)) {
-      paths.globalDir = globalDir
+      return { detected: true, globalDir }
+    }
+    return { detected: false }
+  },
+
+  async detectProject(projectPath: string): Promise<ProjectDetectionResult> {
+    const paths: ProjectDetectionResult['paths'] = {}
+    let detected = false
+
+    // Check for CLAUDE.md in project root
+    const claudeMd = join(projectPath, 'CLAUDE.md')
+    if (await exists(claudeMd)) {
+      paths.projectConfig = claudeMd
       detected = true
     }
 
-    // Check for project-level files if projectPath is provided
-    if (projectPath) {
-      // Check for CLAUDE.md in project root
-      const claudeMd = join(projectPath, 'CLAUDE.md')
-      if (await exists(claudeMd)) {
-        paths.projectConfig = claudeMd
-        detected = true
-      }
-
-      // Check for .claude/ project directory
-      const projectClaudeDir = join(projectPath, '.claude')
-      if (await exists(projectClaudeDir)) {
-        paths.projectDir = projectClaudeDir
-        detected = true
-      }
+    // Check for .claude/ project directory
+    const projectClaudeDir = join(projectPath, '.claude')
+    if (await exists(projectClaudeDir)) {
+      paths.projectDir = projectClaudeDir
+      detected = true
     }
 
     return { detected, paths }

@@ -1,6 +1,11 @@
 import { homedir } from 'node:os'
 import { join } from 'node:path'
-import type { Connector, DetectionResult, ImportResult } from '../types'
+import type {
+  Connector,
+  GlobalDetectionResult,
+  ProjectDetectionResult,
+  ImportResult,
+} from '../types'
 import type { GeminiCliSkill } from '@skillforge/core'
 import { exists, listSkillsFromDir } from '../utils'
 
@@ -22,22 +27,22 @@ export async function listGeminiCliSkills(): Promise<GeminiCliSkill[]> {
 export const geminiCliConnector: Connector = {
   name: 'gemini-cli',
 
-  async detect(projectPath?: string): Promise<DetectionResult> {
-    const paths: DetectionResult['paths'] = {}
-    let detected = false
-
+  async detectGlobal(): Promise<GlobalDetectionResult> {
     const globalDir = join(homedir(), '.gemini')
     if (await exists(globalDir)) {
-      paths.globalDir = globalDir
-      detected = true
+      return { detected: true, globalDir }
     }
+    return { detected: false }
+  },
 
-    if (projectPath) {
-      const projectDir = join(projectPath, '.gemini')
-      if (await exists(projectDir)) {
-        paths.projectDir = projectDir
-        detected = true
-      }
+  async detectProject(projectPath: string): Promise<ProjectDetectionResult> {
+    const paths: ProjectDetectionResult['paths'] = {}
+    let detected = false
+
+    const projectDir = join(projectPath, '.gemini')
+    if (await exists(projectDir)) {
+      paths.projectDir = projectDir
+      detected = true
     }
 
     return { detected, paths }
