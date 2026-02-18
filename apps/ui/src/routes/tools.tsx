@@ -1,7 +1,7 @@
 import { createRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { rootRoute } from './__root'
-import { api } from '../api/client'
+import { api, queryKeys } from '../api/client'
 import { ToolCardCompact } from '../components/ToolCardCompact'
 import { ErrorContainer } from '../components/ErrorContainer'
 import { H1 } from '../components/typography'
@@ -15,7 +15,7 @@ function ToolsPage() {
     error,
     refetch,
   } = useQuery({
-    queryKey: ['tools'],
+    queryKey: queryKeys.tools.lists(),
     queryFn: api.tools.list,
   })
 

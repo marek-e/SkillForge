@@ -1,7 +1,7 @@
 import { createRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { rootRoute } from './__root'
-import { api } from '../api/client'
+import { api, queryKeys } from '../api/client'
 import { getToolConfig } from '@/lib/tool-config'
 import { ToolCard } from '../components/ToolCard'
 import { ErrorContainer } from '../components/ErrorContainer'
@@ -25,18 +25,18 @@ function ToolDetailPage() {
   useBreadcrumb(`/tools/${name}`, config.displayName)
 
   const { data: tools, isLoading: toolsLoading } = useQuery({
-    queryKey: ['tools'],
+    queryKey: queryKeys.tools.lists(),
     queryFn: api.tools.list,
   })
 
   const { data: commands } = useQuery({
-    queryKey: ['tools', name, 'commands'],
+    queryKey: queryKeys.tools.commands(name),
     queryFn: api.tools.claudeCodeCommands,
     enabled: name === 'claude-code',
   })
 
   const { data: skills } = useQuery({
-    queryKey: ['tools', name, 'skills'],
+    queryKey: queryKeys.tools.skills(name),
     queryFn: skillsQueryMap[name],
     enabled: !!skillsQueryMap[name],
   })

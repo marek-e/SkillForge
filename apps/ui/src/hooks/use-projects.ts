@@ -1,11 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { toast } from '@/components/ui/toaster'
-import { api } from '@/api/client'
+import { api, queryKeys } from '@/api/client'
 
 export function useProjects() {
   return useQuery({
-    queryKey: ['projects'],
+    queryKey: queryKeys.projects.lists(),
     queryFn: api.projects.list,
   })
 }
@@ -17,7 +17,7 @@ export function useCreateProject() {
   return useMutation({
     mutationFn: api.projects.create,
     onSuccess: (project) => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all() })
       navigate({
         to: '/projects/$projectId',
         params: { projectId: project.id },
@@ -33,7 +33,7 @@ export function useDeleteProject() {
   return useMutation({
     mutationFn: api.projects.delete,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all() })
       toast.success({ title: 'Project deleted' })
     },
     onError: () => toast.error({ title: 'Failed to delete project' }),
@@ -45,7 +45,7 @@ export function useToggleFavorite() {
 
   return useMutation({
     mutationFn: api.projects.toggleFavorite,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['projects'] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.projects.all() }),
     onError: () => toast.error({ title: 'Failed to update favorite' }),
   })
 }
