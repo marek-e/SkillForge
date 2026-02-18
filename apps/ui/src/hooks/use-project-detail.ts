@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { toast } from 'sonner'
+import { toast } from '@/components/ui/toaster'
 import { api } from '@/api/client'
 
 export function useProject(projectId: string) {
@@ -18,7 +18,7 @@ export function useRenameProject(projectId: string) {
       queryClient.invalidateQueries({ queryKey: ['projects'] })
       queryClient.invalidateQueries({ queryKey: ['projects', projectId] })
     },
-    onError: () => toast.error('Failed to rename project'),
+    onError: () => toast.error({ title: 'Failed to rename project' }),
   })
 }
 
@@ -30,9 +30,9 @@ export function useUpdateProjectIcon(projectId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] })
       queryClient.invalidateQueries({ queryKey: ['projects', projectId] })
-      toast.success('Icon path saved')
+      toast.success({ title: 'Icon path saved' })
     },
-    onError: () => toast.error('Failed to save icon path'),
+    onError: () => toast.error({ title: 'Failed to save icon path' }),
   })
 }
 
@@ -45,7 +45,7 @@ export function useRefreshProjectTools(projectId: string) {
       queryClient.invalidateQueries({ queryKey: ['projects', projectId] })
       queryClient.invalidateQueries({ queryKey: ['projects'] })
     },
-    onError: () => toast.error('Failed to refresh tools'),
+    onError: () => toast.error({ title: 'Failed to refresh tools' }),
   })
 }
 
@@ -58,7 +58,7 @@ export function useToggleFavoriteProject(projectId: string) {
       queryClient.invalidateQueries({ queryKey: ['projects'] })
       queryClient.invalidateQueries({ queryKey: ['projects', projectId] })
     },
-    onError: () => toast.error('Failed to update favorite'),
+    onError: () => toast.error({ title: 'Failed to update favorite' }),
   })
 }
 
@@ -70,8 +70,8 @@ export function useDeleteProject(projectId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] })
       queryClient.invalidateQueries({ queryKey: ['projects', projectId] })
-      toast.success('Project deleted')
+      toast.success({ title: 'Project deleted' })
     },
-    onError: () => toast.error('Failed to delete project'),
+    onError: () => toast.error({ title: 'Failed to delete project' }),
   })
 }
