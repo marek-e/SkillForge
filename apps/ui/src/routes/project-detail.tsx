@@ -142,8 +142,9 @@ function ProjectDetailPage() {
 
       <ProjectIconForm
         iconPath={iconPath}
+        projectPath={project.path}
         onIconPathChange={setIconPath}
-        onSave={() => updateIconMutation.mutate({ iconPath: iconPath.trim() || null })}
+        onApplyIcon={(value) => updateIconMutation.mutate({ iconPath: value })}
         isPending={updateIconMutation.isPending}
       />
 
