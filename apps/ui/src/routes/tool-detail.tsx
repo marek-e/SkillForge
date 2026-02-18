@@ -9,6 +9,7 @@ import { Skeleton } from '../components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import type { SkillItem } from '@skillforge/core'
 import { H1 } from '@/components/typography'
+import { useBreadcrumb } from '@/lib/breadcrumbs'
 
 const skillsQueryMap: Record<string, () => Promise<SkillItem[]>> = {
   'claude-code': api.tools.claudeCodeSkills,
@@ -21,6 +22,7 @@ const skillsQueryMap: Record<string, () => Promise<SkillItem[]>> = {
 function ToolDetailPage() {
   const { name } = toolDetailRoute.useParams()
   const config = getToolConfig(name)
+  useBreadcrumb(`/tools/${name}`, config.displayName)
 
   const { data: tools, isLoading: toolsLoading } = useQuery({
     queryKey: ['tools'],

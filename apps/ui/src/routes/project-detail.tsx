@@ -21,6 +21,7 @@ import { ProjectIconForm } from '@/components/project-detail/ProjectIconForm'
 import { DetectedToolsList } from '@/components/project-detail/DetectedToolsList'
 import { DeleteProjectDialog } from '@/components/projects/DeleteProjectDialog'
 import { cn } from '@/lib/utils'
+import { useBreadcrumb } from '@/lib/breadcrumbs'
 
 export const projectDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -33,6 +34,7 @@ function ProjectDetailPage() {
   const navigate = useNavigate()
 
   const { data: project, isLoading, error } = useProject(projectId)
+  useBreadcrumb(`/projects/${projectId}`, project?.name)
   const renameMutation = useRenameProject(projectId)
   const updateIconMutation = useUpdateProjectIcon(projectId)
   const refreshToolsMutation = useRefreshProjectTools(projectId)
