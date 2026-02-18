@@ -47,9 +47,7 @@ function ProjectsPage() {
 
   const availableTools = useMemo(() => {
     const names = new Set(
-      (projects ?? []).flatMap((p) =>
-        p.detectedTools.filter((t) => t.detected).map((t) => t.name)
-      )
+      (projects ?? []).flatMap((p) => p.detectedTools.filter((t) => t.detected).map((t) => t.name))
     )
     return ALL_TOOL_NAMES.filter((name) => names.has(name))
   }, [projects])
@@ -64,9 +62,7 @@ function ProjectsPage() {
     }
     if (selectedTools.length > 0) {
       result = result.filter((p) =>
-        selectedTools.every((tool) =>
-          p.detectedTools.some((t) => t.name === tool && t.detected)
-        )
+        selectedTools.every((tool) => p.detectedTools.some((t) => t.name === tool && t.detected))
       )
     }
     return result

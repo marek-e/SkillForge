@@ -32,9 +32,7 @@ export function ProjectAvatar({ project, size = 'default' }: ProjectAvatarProps)
         alt={project.name}
         className="rounded-lg"
       />
-      <AvatarFallback className="rounded-lg">
-        {project.name.charAt(0).toUpperCase()}
-      </AvatarFallback>
+      <AvatarFallback className="rounded-lg">{project.name.charAt(0).toUpperCase()}</AvatarFallback>
     </Avatar>
   )
 }
