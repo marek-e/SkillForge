@@ -7,4 +7,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   maximizeWindow: () => ipcRenderer.invoke('window:maximize'),
   closeWindow: () => ipcRenderer.invoke('window:close'),
   openFolderDialog: () => ipcRenderer.invoke('dialog:openFolder'),
+  openFileDialog: (projectPath: string) => ipcRenderer.invoke('dialog:openFile', projectPath),
 })

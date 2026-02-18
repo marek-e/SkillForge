@@ -56,6 +56,57 @@ ipcMain.handle('dialog:openFolder', async () => {
   if (result.canceled || result.filePaths.length === 0) return null
   return result.filePaths[0]
 })
+ipcMain.handle('dialog:openFile', async (_, projectPath: string) => {
+  const win = getMainWindow()
+  if (!win) return null
+
+  const result = await dialog.showOpenDialog(win, {
+    defaultPath: projectPath,
+    properties: ['openFile'],
+    filters: [
+      {
+        name: 'Images',
+        extensions: ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'bmp', 'ico', 'avif'],
+      },
+    ],
+  })
+
+  if (result.canceled || result.filePaths.length === 0) return null
+
+  const selectedPath = result.filePaths[0]
+  const resolvedSelected = path.resolve(selectedPath)
+  const resolvedProject = path.resolve(projectPath)
+
+  // Security: reject if outside project directory
+  if (!resolvedSelected.startsWith(resolvedProject + path.sep)) {
+    return { error: 'Image must be inside the project directory' }
+  }
+
+  const { readFile } = await import('node:fs/promises')
+  const buffer = await readFile(resolvedSelected)
+
+  // 2MB limit
+  if (buffer.byteLength > 2 * 1024 * 1024) {
+    return { error: 'Image must be smaller than 2MB' }
+  }
+
+  const ext = path.extname(selectedPath).slice(1).toLowerCase()
+  const mimeMap: Record<string, string> = {
+    png: 'image/png',
+    jpg: 'image/jpeg',
+    jpeg: 'image/jpeg',
+    gif: 'image/gif',
+    svg: 'image/svg+xml',
+    webp: 'image/webp',
+    bmp: 'image/bmp',
+    ico: 'image/x-icon',
+    avif: 'image/avif',
+  }
+  const mime = mimeMap[ext] ?? 'image/png'
+  const dataUrl = `data:${mime};base64,${buffer.toString('base64')}`
+
+  return { dataUrl }
+})
 
 app
   .whenReady()
