@@ -44,6 +44,8 @@ const toolConfig: Record<string, ToolConfig> = {
   },
 }
 
+export const ALL_TOOL_NAMES = Object.keys(toolConfig)
+
 export function getToolConfig(name: string): ToolConfig {
   return (
     toolConfig[name] ?? {

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { createRoute, useNavigate } from '@tanstack/react-router'
 import type { SortingState } from '@tanstack/react-table'
 import type { Project } from '@skillforge/core'
@@ -12,12 +12,14 @@ import {
 } from '@/hooks/use-projects'
 import { isElectron } from '@/lib/electron'
 import type { ElectronWindow } from '@/lib/electron'
+import { ALL_TOOL_NAMES } from '@/lib/tool-config'
 import { ErrorContainer } from '@/components/ErrorContainer'
 import { H1, Lead } from '@/components/typography'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 import { ProjectsTable } from '@/components/projects/ProjectsTable'
+import { ProjectsFilterBar } from '@/components/projects/ProjectsFilterBar'
 import { DeleteProjectDialog } from '@/components/projects/DeleteProjectDialog'
 import { AddProjectWebDialog } from '@/components/projects/AddProjectWebDialog'
 
@@ -35,11 +37,46 @@ function ProjectsPage() {
     { id: 'isFavorite', desc: true },
     { id: 'name', desc: false },
   ])
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedTools, setSelectedTools] = useState<string[]>([])
 
   const { data: projects, isLoading, error, refetch } = useProjects()
   const createMutation = useCreateProject()
   const deleteMutation = useDeleteProject()
   const favoriteMutation = useToggleFavorite()
+
+  const availableTools = useMemo(() => {
+    const names = new Set(
+      (projects ?? []).flatMap((p) =>
+        p.detectedTools.filter((t) => t.detected).map((t) => t.name)
+      )
+    )
+    return ALL_TOOL_NAMES.filter((name) => names.has(name))
+  }, [projects])
+
+  const filteredProjects = useMemo(() => {
+    let result = projects ?? []
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase()
+      result = result.filter(
+        (p) => p.name.toLowerCase().includes(q) || p.path.toLowerCase().includes(q)
+      )
+    }
+    if (selectedTools.length > 0) {
+      result = result.filter((p) =>
+        selectedTools.every((tool) =>
+          p.detectedTools.some((t) => t.name === tool && t.detected)
+        )
+      )
+    }
+    return result
+  }, [projects, searchQuery, selectedTools])
+
+  function handleToolToggle(tool: string) {
+    setSelectedTools((prev) =>
+      prev.includes(tool) ? prev.filter((t) => t !== tool) : [...prev, tool]
+    )
+  }
 
   async function handleAddProject() {
     if (isElectron) {
@@ -62,6 +99,8 @@ function ProjectsPage() {
     )
   }
 
+  const isFiltered = searchQuery.trim().length > 0 || selectedTools.length > 0
+
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between">
@@ -70,7 +109,9 @@ function ProjectsPage() {
           <Lead>Manage your projects and their configurations.</Lead>
           {projects && (
             <p className="text-sm text-muted-foreground">
-              {projects.length} project{projects.length !== 1 && 's'}
+              {isFiltered
+                ? `${filteredProjects.length} of ${projects.length} project${projects.length !== 1 ? 's' : ''}`
+                : `${projects.length} project${projects.length !== 1 ? 's' : ''}`}
             </p>
           )}
         </div>
@@ -103,22 +144,37 @@ function ProjectsPage() {
           </Button>
         </Empty>
       ) : (
-        <ProjectsTable
-          projects={projects ?? []}
-          sorting={sorting}
-          onSortingChange={setSorting}
-          onRowClick={(project) =>
-            navigate({
-              to: '/projects/$projectId',
-              params: { projectId: project.id },
-            })
-          }
-          onFavoriteToggle={(id) => favoriteMutation.mutate(id)}
-          onDeleteClick={(project) => {
-            deleteMutation.reset()
-            setProjectToDelete(project)
-          }}
-        />
+        <div className="space-y-4">
+          <ProjectsFilterBar
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            availableTools={availableTools}
+            selectedTools={selectedTools}
+            onToolToggle={handleToolToggle}
+          />
+          {filteredProjects.length === 0 ? (
+            <p className="py-8 text-center text-sm text-muted-foreground">
+              No projects match your filters.
+            </p>
+          ) : (
+            <ProjectsTable
+              projects={filteredProjects}
+              sorting={sorting}
+              onSortingChange={setSorting}
+              onRowClick={(project) =>
+                navigate({
+                  to: '/projects/$projectId',
+                  params: { projectId: project.id },
+                })
+              }
+              onFavoriteToggle={(id) => favoriteMutation.mutate(id)}
+              onDeleteClick={(project) => {
+                deleteMutation.reset()
+                setProjectToDelete(project)
+              }}
+            />
+          )}
+        </div>
       )}
 
       <DeleteProjectDialog
