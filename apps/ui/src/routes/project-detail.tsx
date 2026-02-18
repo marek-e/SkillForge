@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { createRoute, Link, useNavigate } from '@tanstack/react-router'
-import { ArrowLeftIcon, PencilIcon, StarIcon, Trash2Icon } from 'lucide-react'
+import { createRoute, useNavigate } from '@tanstack/react-router'
+import { PencilIcon, StarIcon, Trash2Icon } from 'lucide-react'
 import { rootRoute } from './__root'
 import {
   useProject,
@@ -12,9 +12,8 @@ import {
 } from '@/hooks/use-project-detail'
 import { ErrorContainer } from '@/components/ErrorContainer'
 import { H1 } from '@/components/typography'
-import { getProjectIconSource } from '@/lib/project-icon'
 import { Button } from '@/components/ui/button'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { ProjectAvatar } from '@/components/project-avatar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { RenameProjectDialog } from '@/components/project-detail/RenameProjectDialog'
 import { ProjectIconForm } from '@/components/project-detail/ProjectIconForm'
@@ -79,26 +78,11 @@ function ProjectDetailPage() {
   }
 
   if (!project) return null
-
   return (
     <div className="space-y-6">
-      <Link
-        to="/projects"
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeftIcon className="size-4" />
-        Back to projects
-      </Link>
-
       <div>
         <div className="flex items-center gap-3">
-          <Avatar size="lg">
-            <AvatarImage
-              src={getProjectIconSource(project.iconPath, project.path)}
-              alt={project.name}
-            />
-            <AvatarFallback>{project.name.charAt(0).toUpperCase()}</AvatarFallback>
-          </Avatar>
+          <ProjectAvatar project={project} size="lg" />
           <div className="flex items-center gap-4">
             <H1>{project.name}</H1>
             <div className="flex items-center gap-1">
