@@ -1,6 +1,6 @@
 import { Link, useLocation } from '@tanstack/react-router'
-import { NavMain } from '@/components/nav-main'
-import { NavProjects } from '@/components/nav-projects'
+import { NavMain } from '@/components/app-sidebar/nav-main'
+import { NavProjects } from '@/components/app-sidebar/nav-projects'
 import {
   Sidebar,
   SidebarContent,
