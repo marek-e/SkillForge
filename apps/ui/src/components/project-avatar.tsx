@@ -8,10 +8,33 @@ interface ProjectAvatarProps {
 }
 
 export function ProjectAvatar({ project, size = 'default' }: ProjectAvatarProps) {
+  const hasCustomIcon = Boolean(project.iconPath?.trim())
+
+  if (hasCustomIcon) {
+    return (
+      <Avatar size={size} className="rounded-none after:border-0 after:rounded-none">
+        <AvatarImage
+          src={getProjectIconSource(project.iconPath, project.path)}
+          alt={project.name}
+          className="rounded-none"
+        />
+        <AvatarFallback className="rounded-none">
+          {project.name.charAt(0).toUpperCase()}
+        </AvatarFallback>
+      </Avatar>
+    )
+  }
+
   return (
-    <Avatar size={size}>
-      <AvatarImage src={getProjectIconSource(project.iconPath, project.path)} alt={project.name} />
-      <AvatarFallback>{project.name.charAt(0).toUpperCase()}</AvatarFallback>
+    <Avatar size={size} className="rounded-lg after:rounded-lg">
+      <AvatarImage
+        src={getProjectIconSource(project.iconPath, project.path)}
+        alt={project.name}
+        className="rounded-lg"
+      />
+      <AvatarFallback className="rounded-lg">
+        {project.name.charAt(0).toUpperCase()}
+      </AvatarFallback>
     </Avatar>
   )
 }
