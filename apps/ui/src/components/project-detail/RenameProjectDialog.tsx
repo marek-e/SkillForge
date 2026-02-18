@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -31,6 +32,7 @@ export function RenameProjectDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Rename project</DialogTitle>
+          <DialogDescription>Update the project name shown in your workspace.</DialogDescription>
         </DialogHeader>
         <div className="space-y-2">
           <Label htmlFor="rename-input">Project name</Label>
