@@ -11,7 +11,7 @@ export function Layout() {
   return (
     <div className={`flex h-screen flex-col ${isElectron ? 'electron-app' : ''}`}>
       {isElectron && <ElectronTitlebar />}
-      <SidebarProvider className="flex-1 min-h-0!">
+      <SidebarProvider className="flex-1 min-h-0! overflow-hidden">
         <AppSidebar />
         <BreadcrumbProvider>
           <SidebarInset>
@@ -26,7 +26,7 @@ export function Layout() {
               </div>
               <ModeToggle />
             </header>
-            <main className="flex flex-1 flex-col gap-4 p-4 container mx-auto">
+            <main className="flex flex-1 flex-col gap-4 p-4 container mx-auto overflow-y-auto">
               <Outlet />
             </main>
           </SidebarInset>
