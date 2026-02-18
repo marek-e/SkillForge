@@ -1,5 +1,6 @@
 import { Link, useLocation } from '@tanstack/react-router'
 import { NavMain } from '@/components/nav-main'
+import { NavProjects } from '@/components/nav-projects'
 import {
   Sidebar,
   SidebarContent,
@@ -48,6 +49,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navItems} />
+        <NavProjects />
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
