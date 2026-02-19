@@ -84,11 +84,6 @@ function SkillLibraryPage() {
                       </Badge>
                     </div>
                     <p className="text-sm text-muted-foreground">{skill.description}</p>
-                    {skill.implementationRef && (
-                      <p className="text-xs text-muted-foreground font-mono mt-0.5">
-                        {skill.implementationRef}
-                      </p>
-                    )}
                   </div>
                 </div>
               )

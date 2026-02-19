@@ -85,7 +85,6 @@ export function ProjectSkillsSection({
                     </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">{skill.description}</p>
-                  <p className="text-xs text-muted-foreground font-mono mt-0.5">{skill.filePath}</p>
                 </div>
                 <Button
                   variant="ghost"
