@@ -10,6 +10,8 @@ export const SkillSchema = z.object({
   id: z.uuid(),
   name: z.string().min(1),
   description: z.string(),
+  body: z.string().optional(),
+  frontmatter: z.record(z.string(), z.string()).optional(),
   inputSchema: z.record(z.string(), z.unknown()).optional(),
   outputSchema: z.record(z.string(), z.unknown()).optional(),
   implementationRef: z.string().optional(),
