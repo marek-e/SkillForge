@@ -9,13 +9,20 @@ import type {
 import type { CodexSkill } from '@skillforge/core'
 import { exists, listSkillsFromDir } from '../utils'
 
+function extraFrontmatter(frontmatter: Record<string, string>): Record<string, string> | undefined {
+  const { name: _n, description: _d, ...rest } = frontmatter
+  return Object.keys(rest).length > 0 ? rest : undefined
+}
+
 export async function listProjectCodexSkills(projectPath: string): Promise<CodexSkill[]> {
   const skills = await listSkillsFromDir<CodexSkill>(
     join(projectPath, '.agents', 'skills'),
-    (name, frontmatter, filePath) => ({
+    (name, frontmatter, filePath, body) => ({
       name: frontmatter['name'] || name,
       description: frontmatter['description'] || 'Skill',
       filePath,
+      body,
+      frontmatter: extraFrontmatter(frontmatter),
     })
   )
   return skills.sort((a, b) => a.name.localeCompare(b.name))
@@ -24,11 +31,16 @@ export async function listProjectCodexSkills(projectPath: string): Promise<Codex
 export async function listCodexSkills(): Promise<CodexSkill[]> {
   const skillsDir = join(homedir(), '.agents', 'skills')
 
-  const skills = await listSkillsFromDir<CodexSkill>(skillsDir, (name, frontmatter, filePath) => ({
-    name: frontmatter['name'] || name,
-    description: frontmatter['description'] || 'Skill',
-    filePath,
-  }))
+  const skills = await listSkillsFromDir<CodexSkill>(
+    skillsDir,
+    (name, frontmatter, filePath, body) => ({
+      name: frontmatter['name'] || name,
+      description: frontmatter['description'] || 'Skill',
+      filePath,
+      body,
+      frontmatter: extraFrontmatter(frontmatter),
+    })
+  )
 
   return skills.sort((a, b) => a.name.localeCompare(b.name))
 }

@@ -10,20 +10,6 @@ import type {
 import type { ClaudeCodeCommand, ClaudeCodeSkill } from '@skillforge/core'
 import { exists, parseFrontmatter, listSkillsFromDir } from '../utils'
 
-function extractFirstLine(content: string): string {
-  const lines = content.trim().split('\n')
-  for (const line of lines) {
-    const trimmed = line.trim()
-    if (trimmed && !trimmed.startsWith('#')) {
-      return trimmed.slice(0, 100)
-    }
-    if (trimmed.startsWith('# ')) {
-      return trimmed.slice(2).slice(0, 100)
-    }
-  }
-  return ''
-}
-
 export async function listGlobalCommands(): Promise<ClaudeCodeCommand[]> {
   const commandsDir = join(homedir(), '.claude', 'commands')
   if (!(await exists(commandsDir))) {
@@ -38,12 +24,12 @@ export async function listGlobalCommands(): Promise<ClaudeCodeCommand[]> {
 
     const filePath = join(commandsDir, file)
     const content = await readFile(filePath, 'utf-8')
-    const { frontmatter, body } = parseFrontmatter(content)
+    const { frontmatter } = parseFrontmatter(content)
 
     const name = basename(file, '.md')
     commands.push({
       name,
-      description: frontmatter['description'] || extractFirstLine(body) || 'Custom command',
+      description: frontmatter['description'] ?? 'Custom command',
       allowedTools: frontmatter['allowed-tools'],
       argumentHint: frontmatter['argument-hint'],
       filePath,
@@ -53,22 +39,31 @@ export async function listGlobalCommands(): Promise<ClaudeCodeCommand[]> {
   return commands.sort((a, b) => a.name.localeCompare(b.name))
 }
 
+function extraFrontmatter(frontmatter: Record<string, string>): Record<string, string> | undefined {
+  const { name: _n, description: _d, ...rest } = frontmatter
+  return Object.keys(rest).length > 0 ? rest : undefined
+}
+
 export async function listGlobalSkills(): Promise<ClaudeCodeSkill[]> {
   const skillsDir = join(homedir(), '.claude', 'skills')
-  const skills = await listSkillsFromDir(skillsDir, (name, _frontmatter, filePath, body) => ({
+  const skills = await listSkillsFromDir(skillsDir, (name, frontmatter, filePath, body) => ({
     name,
-    description: extractFirstLine(body) || 'Skill',
+    description: frontmatter['description'] ?? 'Skill',
     filePath,
+    body,
+    frontmatter: extraFrontmatter(frontmatter),
   }))
   return skills.sort((a, b) => a.name.localeCompare(b.name))
 }
 
 export async function listProjectClaudeCodeSkills(projectPath: string): Promise<ClaudeCodeSkill[]> {
   const skillsDir = join(projectPath, '.claude', 'skills')
-  const skills = await listSkillsFromDir(skillsDir, (name, _frontmatter, filePath, body) => ({
+  const skills = await listSkillsFromDir(skillsDir, (name, frontmatter, filePath, body) => ({
     name,
-    description: extractFirstLine(body) || 'Skill',
+    description: frontmatter['description'] ?? 'Skill',
     filePath,
+    body,
+    frontmatter: extraFrontmatter(frontmatter),
   }))
   return skills.sort((a, b) => a.name.localeCompare(b.name))
 }

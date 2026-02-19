@@ -9,15 +9,22 @@ import type {
 import type { CursorSkill } from '@skillforge/core'
 import { exists, listSkillsFromDir } from '../utils'
 
+function extraFrontmatter(frontmatter: Record<string, string>): Record<string, string> | undefined {
+  const { name: _n, description: _d, ...rest } = frontmatter
+  return Object.keys(rest).length > 0 ? rest : undefined
+}
+
 async function listSkillsFromCursorDir(
   skillsDir: string,
   isBuiltIn: boolean
 ): Promise<CursorSkill[]> {
-  return listSkillsFromDir(skillsDir, (name, frontmatter, filePath) => ({
+  return listSkillsFromDir(skillsDir, (name, frontmatter, filePath, body) => ({
     name: frontmatter['name'] || name,
     description: frontmatter['description'] || 'Skill',
     filePath,
     isBuiltIn,
+    body,
+    frontmatter: extraFrontmatter(frontmatter),
   }))
 }
 

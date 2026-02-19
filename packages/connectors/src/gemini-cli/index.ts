@@ -9,13 +9,20 @@ import type {
 import type { GeminiCliSkill } from '@skillforge/core'
 import { exists, listSkillsFromDir } from '../utils'
 
+function extraFrontmatter(frontmatter: Record<string, string>): Record<string, string> | undefined {
+  const { name: _n, description: _d, ...rest } = frontmatter
+  return Object.keys(rest).length > 0 ? rest : undefined
+}
+
 export async function listProjectGeminiCliSkills(projectPath: string): Promise<GeminiCliSkill[]> {
   const skills = await listSkillsFromDir<GeminiCliSkill>(
     join(projectPath, '.gemini', 'skills'),
-    (name, frontmatter, filePath) => ({
+    (name, frontmatter, filePath, body) => ({
       name: frontmatter['name'] || name,
       description: frontmatter['description'] || 'Skill',
       filePath,
+      body,
+      frontmatter: extraFrontmatter(frontmatter),
     })
   )
   return skills.sort((a, b) => a.name.localeCompare(b.name))
@@ -26,10 +33,12 @@ export async function listGeminiCliSkills(): Promise<GeminiCliSkill[]> {
 
   const skills = await listSkillsFromDir<GeminiCliSkill>(
     skillsDir,
-    (name, frontmatter, filePath) => ({
+    (name, frontmatter, filePath, body) => ({
       name: frontmatter['name'] || name,
       description: frontmatter['description'] || 'Skill',
       filePath,
+      body,
+      frontmatter: extraFrontmatter(frontmatter),
     })
   )
 
