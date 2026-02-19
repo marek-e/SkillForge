@@ -4,6 +4,8 @@ export const skills = sqliteTable('skills', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
   description: text('description').notNull(),
+  body: text('body'),
+  frontmatter: text('frontmatter'),
   inputSchema: text('input_schema'),
   outputSchema: text('output_schema'),
   implementationRef: text('implementation_ref'),

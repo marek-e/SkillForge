@@ -10,6 +10,8 @@ type SkillRow = typeof skills.$inferSelect
 function skillFromRow(row: SkillRow): Skill {
   return SkillSchema.parse({
     ...row,
+    body: row.body ?? undefined,
+    frontmatter: row.frontmatter ? deserializeJsonField(row.frontmatter) : undefined,
     inputSchema: row.inputSchema ? deserializeJsonField(row.inputSchema) : undefined,
     outputSchema: row.outputSchema ? deserializeJsonField(row.outputSchema) : undefined,
     implementationRef: row.implementationRef ?? undefined,
@@ -33,6 +35,8 @@ export const skillsStore = {
         id: skill.id,
         name: skill.name,
         description: skill.description,
+        body: skill.body ?? null,
+        frontmatter: serializeNullableJsonField(skill.frontmatter),
         inputSchema: serializeNullableJsonField(skill.inputSchema),
         outputSchema: serializeNullableJsonField(skill.outputSchema),
         implementationRef: skill.implementationRef ?? null,
@@ -54,6 +58,8 @@ export const skillsStore = {
       .set({
         name: updated.name,
         description: updated.description,
+        body: updated.body ?? null,
+        frontmatter: serializeNullableJsonField(updated.frontmatter),
         inputSchema: serializeNullableJsonField(updated.inputSchema),
         outputSchema: serializeNullableJsonField(updated.outputSchema),
         implementationRef: updated.implementationRef ?? null,
