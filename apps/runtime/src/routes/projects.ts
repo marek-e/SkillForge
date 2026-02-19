@@ -2,7 +2,14 @@ import { randomUUID } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { Hono } from 'hono'
-import { allConnectors } from '@skillforge/connectors'
+import {
+  allConnectors,
+  listProjectClaudeCodeSkills,
+  listProjectCursorSkills,
+  listProjectCodexSkills,
+  listProjectGeminiCliSkills,
+  listProjectOpenCodeSkills,
+} from '@skillforge/connectors'
 import type { DetectedTool, Project } from '@skillforge/core'
 import { store } from '../store'
 
@@ -110,6 +117,32 @@ projectRoutes.post('/:id/refresh-tools', async (c) => {
 
   const updated = store.projects.updateDetectedTools(project.id, results)
   return c.json({ data: updated })
+})
+
+projectRoutes.get('/:id/skills', async (c) => {
+  const project = store.projects.getById(c.req.param('id'))
+  if (!project) {
+    return c.json({ error: { message: 'Project not found', code: 'NOT_FOUND' } }, 404)
+  }
+
+  const [claudeCodeSkills, cursorSkills, codexSkills, geminiCliSkills, opencodeSkills] =
+    await Promise.all([
+      listProjectClaudeCodeSkills(project.path),
+      listProjectCursorSkills(project.path),
+      listProjectCodexSkills(project.path),
+      listProjectGeminiCliSkills(project.path),
+      listProjectOpenCodeSkills(project.path),
+    ])
+
+  return c.json({
+    data: {
+      'claude-code': claudeCodeSkills,
+      cursor: cursorSkills,
+      codex: codexSkills,
+      'gemini-cli': geminiCliSkills,
+      opencode: opencodeSkills,
+    },
+  })
 })
 
 projectRoutes.patch('/:id/favorite', (c) => {
