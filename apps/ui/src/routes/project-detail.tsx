@@ -21,8 +21,7 @@ import { Button } from '@/components/ui/button'
 import { ProjectAvatar } from '@/components/project-avatar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { RenameProjectDialog } from '@/components/project-detail/RenameProjectDialog'
-import { ProjectIconForm } from '@/components/project-detail/ProjectIconForm'
-import { DetectedToolsList } from '@/components/project-detail/DetectedToolsList'
+import { ProjectOverviewCard } from '@/components/project-detail/ProjectOverviewCard'
 import { ProjectSkillsSection } from '@/components/project-detail/ProjectSkillsSection'
 import { DeleteProjectDialog } from '@/components/projects/DeleteProjectDialog'
 import { cn } from '@/lib/utils'
@@ -160,7 +159,6 @@ function ProjectDetailPage() {
             </div>
           </div>
         </div>
-        <p className="text-muted-foreground font-mono text-sm ml-[52px]">{project.path}</p>
       </div>
 
       <RenameProjectDialog
@@ -172,17 +170,13 @@ function ProjectDetailPage() {
         isPending={renameMutation.isPending}
       />
 
-      <ProjectIconForm
+      <ProjectOverviewCard
+        project={project}
         iconPath={iconPath}
-        projectPath={project.path}
         onIconPathChange={setIconPath}
-        onApplyIcon={(value) => updateIconMutation.mutate({ iconPath: value })}
-        isPending={updateIconMutation.isPending}
-      />
-
-      <DetectedToolsList
-        tools={project.detectedTools.filter((t) => t.detected)}
-        onRefresh={() => refreshToolsMutation.mutate()}
+        onApplyIcon={(v) => updateIconMutation.mutate({ iconPath: v })}
+        isIconPending={updateIconMutation.isPending}
+        onRefreshTools={() => refreshToolsMutation.mutate()}
         isRefreshing={refreshToolsMutation.isPending}
       />
 
