@@ -9,6 +9,18 @@ import type {
 import type { OpenCodeSkill } from '@skillforge/core'
 import { exists, listSkillsFromDir } from '../utils'
 
+export async function listProjectOpenCodeSkills(projectPath: string): Promise<OpenCodeSkill[]> {
+  const skills = await listSkillsFromDir<OpenCodeSkill>(
+    join(projectPath, '.opencode', 'skills'),
+    (name, frontmatter, filePath) => ({
+      name: frontmatter['name'] || name,
+      description: frontmatter['description'] || 'Skill',
+      filePath,
+    })
+  )
+  return skills.sort((a, b) => a.name.localeCompare(b.name))
+}
+
 export async function listOpenCodeSkills(): Promise<OpenCodeSkill[]> {
   const skillsDir = join(homedir(), '.config', 'opencode', 'skills')
 

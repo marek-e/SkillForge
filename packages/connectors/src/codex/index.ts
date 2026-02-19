@@ -9,6 +9,18 @@ import type {
 import type { CodexSkill } from '@skillforge/core'
 import { exists, listSkillsFromDir } from '../utils'
 
+export async function listProjectCodexSkills(projectPath: string): Promise<CodexSkill[]> {
+  const skills = await listSkillsFromDir<CodexSkill>(
+    join(projectPath, '.agents', 'skills'),
+    (name, frontmatter, filePath) => ({
+      name: frontmatter['name'] || name,
+      description: frontmatter['description'] || 'Skill',
+      filePath,
+    })
+  )
+  return skills.sort((a, b) => a.name.localeCompare(b.name))
+}
+
 export async function listCodexSkills(): Promise<CodexSkill[]> {
   const skillsDir = join(homedir(), '.agents', 'skills')
 

@@ -63,6 +63,16 @@ export async function listGlobalSkills(): Promise<ClaudeCodeSkill[]> {
   return skills.sort((a, b) => a.name.localeCompare(b.name))
 }
 
+export async function listProjectClaudeCodeSkills(projectPath: string): Promise<ClaudeCodeSkill[]> {
+  const skillsDir = join(projectPath, '.claude', 'skills')
+  const skills = await listSkillsFromDir(skillsDir, (name, _frontmatter, filePath, body) => ({
+    name,
+    description: extractFirstLine(body) || 'Skill',
+    filePath,
+  }))
+  return skills.sort((a, b) => a.name.localeCompare(b.name))
+}
+
 export const claudeCodeConnector: Connector = {
   name: 'claude-code',
 

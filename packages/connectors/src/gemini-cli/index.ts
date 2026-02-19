@@ -9,6 +9,18 @@ import type {
 import type { GeminiCliSkill } from '@skillforge/core'
 import { exists, listSkillsFromDir } from '../utils'
 
+export async function listProjectGeminiCliSkills(projectPath: string): Promise<GeminiCliSkill[]> {
+  const skills = await listSkillsFromDir<GeminiCliSkill>(
+    join(projectPath, '.gemini', 'skills'),
+    (name, frontmatter, filePath) => ({
+      name: frontmatter['name'] || name,
+      description: frontmatter['description'] || 'Skill',
+      filePath,
+    })
+  )
+  return skills.sort((a, b) => a.name.localeCompare(b.name))
+}
+
 export async function listGeminiCliSkills(): Promise<GeminiCliSkill[]> {
   const skillsDir = join(homedir(), '.gemini', 'skills')
 

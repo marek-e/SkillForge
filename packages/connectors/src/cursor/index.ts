@@ -21,6 +21,10 @@ async function listSkillsFromCursorDir(
   }))
 }
 
+export async function listProjectCursorSkills(projectPath: string): Promise<CursorSkill[]> {
+  return listSkillsFromCursorDir(join(projectPath, '.cursor', 'skills'), false)
+}
+
 export async function listCursorSkills(): Promise<CursorSkill[]> {
   const cursorDir = homedir()
 
