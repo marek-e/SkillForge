@@ -1,9 +1,10 @@
-import type { CreateProject, Project, UpdateProject } from '@skillforge/core'
+import type { CreateProject, Project, SkillItem, UpdateProject } from '@skillforge/core'
 import { fetchApi, mutateApi } from './http'
 
 export const projectsApi = {
   list: () => fetchApi<Project[]>('/projects'),
   get: (id: string) => fetchApi<Project>(`/projects/${id}`),
+  getSkills: (id: string) => fetchApi<Record<string, SkillItem[]>>(`/projects/${id}/skills`),
   create: (data: CreateProject) => mutateApi<Project>('/projects', { method: 'POST', body: data }),
   update: (id: string, data: UpdateProject) =>
     mutateApi<Project>(`/projects/${id}`, { method: 'PATCH', body: data }),

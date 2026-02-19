@@ -1,15 +1,20 @@
 import { useState, useEffect } from 'react'
 import { createRoute, useNavigate } from '@tanstack/react-router'
+import { useQuery } from '@tanstack/react-query'
+import type { CreateSkill, Skill, SkillItem } from '@skillforge/core'
 import { PencilIcon, StarIcon, Trash2Icon } from 'lucide-react'
 import { rootRoute } from './__root'
 import {
   useProject,
+  useProjectSkills,
   useRenameProject,
   useUpdateProjectIcon,
   useRefreshProjectTools,
   useToggleFavoriteProject,
   useDeleteProject,
+  useSaveSkillToLibrary,
 } from '@/hooks/use-project-detail'
+import { api, queryKeys } from '@/api/client'
 import { ErrorContainer } from '@/components/ErrorContainer'
 import { H1 } from '@/components/typography'
 import { Button } from '@/components/ui/button'
@@ -18,9 +23,28 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { RenameProjectDialog } from '@/components/project-detail/RenameProjectDialog'
 import { ProjectIconForm } from '@/components/project-detail/ProjectIconForm'
 import { DetectedToolsList } from '@/components/project-detail/DetectedToolsList'
+import { ProjectSkillsSection } from '@/components/project-detail/ProjectSkillsSection'
 import { DeleteProjectDialog } from '@/components/projects/DeleteProjectDialog'
 import { cn } from '@/lib/utils'
 import { useBreadcrumb } from '@/lib/breadcrumbs'
+
+const toolMap: Record<string, Skill['originalTool']> = {
+  'claude-code': 'claude',
+  cursor: 'cursor',
+  codex: 'openai',
+  'gemini-cli': 'gemini',
+  opencode: 'generic',
+}
+
+function skillItemToCreateSkill(skill: SkillItem, toolName: string): CreateSkill {
+  return {
+    name: skill.name,
+    description: skill.description,
+    implementationRef: skill.filePath,
+    source: 'imported',
+    originalTool: toolMap[toolName],
+  }
+}
 
 export const projectDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -33,6 +57,12 @@ function ProjectDetailPage() {
   const navigate = useNavigate()
 
   const { data: project, isLoading, error } = useProject(projectId)
+  const { data: skillsByTool, isLoading: skillsLoading } = useProjectSkills(projectId)
+  const { data: librarySkills = [] } = useQuery({
+    queryKey: queryKeys.skills.lists(),
+    queryFn: () => api.skills.list(),
+  })
+  const saveSkill = useSaveSkillToLibrary()
   useBreadcrumb(`/projects/${projectId}`, project?.name)
   const renameMutation = useRenameProject(projectId)
   const updateIconMutation = useUpdateProjectIcon(projectId)
@@ -153,6 +183,22 @@ function ProjectDetailPage() {
         onRefresh={() => refreshToolsMutation.mutate()}
         isRefreshing={refreshToolsMutation.isPending}
       />
+
+      {skillsLoading ? (
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-4 w-64" />
+          <Skeleton className="h-4 w-48" />
+        </div>
+      ) : skillsByTool ? (
+        <ProjectSkillsSection
+          detectedTools={project.detectedTools}
+          skillsByTool={skillsByTool}
+          librarySkills={librarySkills}
+          onSave={(skill, toolName) => saveSkill.mutate(skillItemToCreateSkill(skill, toolName))}
+          isSaving={saveSkill.isPending}
+        />
+      ) : null}
 
       <DeleteProjectDialog
         project={deleteDialogOpen ? project : null}

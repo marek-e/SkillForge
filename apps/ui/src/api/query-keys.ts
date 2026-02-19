@@ -14,6 +14,7 @@ export const queryKeys = {
     all: () => ['projects'] as const,
     lists: () => ['projects', 'list'] as const,
     detail: (id: string) => ['projects', 'detail', id] as const,
+    skills: (id: string) => ['projects', 'skills', id] as const,
   },
   tools: {
     all: () => ['tools'] as const,

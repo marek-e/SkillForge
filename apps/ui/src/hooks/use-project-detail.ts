@@ -1,3 +1,4 @@
+import type { CreateSkill } from '@skillforge/core'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from '@/components/ui/toaster'
 import { api, queryKeys } from '@/api/client'
@@ -6,6 +7,13 @@ export function useProject(projectId: string) {
   return useQuery({
     queryKey: queryKeys.projects.detail(projectId),
     queryFn: () => api.projects.get(projectId),
+  })
+}
+
+export function useProjectSkills(projectId: string) {
+  return useQuery({
+    queryKey: queryKeys.projects.skills(projectId),
+    queryFn: () => api.projects.getSkills(projectId),
   })
 }
 
@@ -73,5 +81,17 @@ export function useDeleteProject(projectId: string) {
       toast.success({ title: 'Project deleted' })
     },
     onError: () => toast.error({ title: 'Failed to delete project' }),
+  })
+}
+
+export function useSaveSkillToLibrary() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: CreateSkill) => api.skills.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.skills.lists() })
+      toast.success({ title: 'Skill saved to library' })
+    },
+    onError: () => toast.error({ title: 'Failed to save skill' }),
   })
 }
