@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/components/ui/toaster'
 import { api } from '@/api/client'
+import { DeleteSkillDialog } from '@/components/skills/DeleteSkillDialog'
 import { getToolConfig } from '@/lib/tool-config'
 import { useBreadcrumb } from '@/lib/breadcrumbs'
 import {
@@ -75,6 +76,7 @@ function SkillDetailPage() {
   const [loadedFileContents, setLoadedFileContents] = useState<Record<string, string>>({})
   const [selectedFile, setSelectedFile] = useState<string | null>(null)
   const [isFileSaving, setIsFileSaving] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
   useEffect(() => {
     if (skill) {
@@ -275,11 +277,18 @@ function SkillDetailPage() {
         </div>
       )}
 
+      <DeleteSkillDialog
+        skill={deleteDialogOpen ? skill : null}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={() => deleteMutation.mutate()}
+        isPending={deleteMutation.isPending}
+      />
+
       <div className="flex items-center justify-between">
         <Button
           variant="destructive"
           size="sm"
-          onClick={() => deleteMutation.mutate()}
+          onClick={() => setDeleteDialogOpen(true)}
           disabled={deleteMutation.isPending}
         >
           <Trash2Icon className="size-4" />
