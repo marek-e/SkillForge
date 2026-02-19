@@ -53,7 +53,9 @@ function SkillLibraryPage() {
           </div>
           <div className="divide-y divide-border">
             {skills.map((skill) => {
-              const toolName = skill.originalTool ? originalToolToName[skill.originalTool] : undefined
+              const toolName = skill.originalTool
+                ? originalToolToName[skill.originalTool]
+                : undefined
               const config = toolName ? getToolConfig(toolName) : undefined
               return (
                 <div
