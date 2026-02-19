@@ -1,4 +1,4 @@
-import { app, dialog, ipcMain } from 'electron'
+import { app, dialog, ipcMain, shell } from 'electron'
 import path from 'node:path'
 import type { RuntimeEndpointInfo } from './runtime-bridge'
 import { startRuntime, stopRuntime } from './runtime-bridge'
@@ -106,6 +106,28 @@ ipcMain.handle('dialog:openFile', async (_, projectPath: string) => {
   const dataUrl = `data:${mime};base64,${buffer.toString('base64')}`
 
   return { dataUrl }
+})
+ipcMain.handle('shell:revealInFinder', (_event, folderPath: string) => {
+  shell.showItemInFolder(folderPath)
+})
+ipcMain.handle('shell:openInEditor', async (_event, folderPath: string) => {
+  const { spawn } = await import('node:child_process')
+
+  // Try common code editor CLIs in priority order; fall back to system default
+  const editors = ['cursor', 'code', 'zed', 'subl']
+  for (const editor of editors) {
+    const launched = await new Promise<boolean>((resolve) => {
+      const child = spawn(editor, [folderPath], { detached: true, stdio: 'ignore' })
+      child.on('error', () => resolve(false))
+      child.on('spawn', () => {
+        child.unref()
+        resolve(true)
+      })
+    })
+    if (launched) return ''
+  }
+
+  return shell.openPath(folderPath)
 })
 
 app
