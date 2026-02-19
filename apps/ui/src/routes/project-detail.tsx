@@ -40,6 +40,8 @@ function skillItemToCreateSkill(skill: SkillItem, toolName: string): CreateSkill
   return {
     name: skill.name,
     description: skill.description,
+    body: skill.body,
+    frontmatter: skill.frontmatter,
     implementationRef: skill.filePath,
     source: 'imported',
     originalTool: toolMap[toolName],
