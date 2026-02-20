@@ -6,6 +6,9 @@ export type SkillSource = z.infer<typeof SkillSourceSchema>
 export const SourceToolSchema = z.enum(['cursor', 'claude', 'openai', 'gemini', 'generic'])
 export type SourceTool = z.infer<typeof SourceToolSchema>
 
+export const SkillScopeSchema = z.enum(['general', 'project-specific'])
+export type SkillScope = z.infer<typeof SkillScopeSchema>
+
 export const SkillSchema = z.object({
   id: z.uuid(),
   name: z.string().min(1),
@@ -17,6 +20,8 @@ export const SkillSchema = z.object({
   implementationRef: z.string().optional(),
   source: SkillSourceSchema,
   originalTool: SourceToolSchema.optional(),
+  tags: z.array(z.string()).default([]),
+  scope: SkillScopeSchema.default('general'),
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),
 })
