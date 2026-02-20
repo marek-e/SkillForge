@@ -4,12 +4,19 @@
       "Bash(pnpm typecheck:*)",
       "Bash(pnpm lint:*)",
       "Bash(pnpm format:*)",
+      "Bash(pnpm knip:*)",
       "Bash(git -C /Users/mareke/Documents/Projects/SkillForge status)",
       "Bash(git -C /Users/mareke/Documents/Projects/SkillForge diff)",
-      "Bash(git -C /Users/mareke/Documents/Projects/SkillForge log --oneline -10)",
       "Bash(git -C /Users/mareke/Documents/Projects/SkillForge diff *)",
+      "Bash(git -C /Users/mareke/Documents/Projects/SkillForge log *)",
       "Bash(git -C /Users/mareke/Documents/Projects/SkillForge show *)",
-      "Bash(pnpm knip:*)",
+      "Bash(git -C /Users/mareke/Documents/Projects/SkillForge branch *)",
+      "Bash(git -C /Users/mareke/Documents/Projects/SkillForge checkout *)",
+      "Bash(git -C /Users/mareke/Documents/Projects/SkillForge fetch *)",
+      "Bash(git -C /Users/mareke/Documents/Projects/SkillForge pull *)",
+      "Bash(git -C /Users/mareke/Documents/Projects/SkillForge add *)",
+      "Bash(git -C /Users/mareke/Documents/Projects/SkillForge commit *)",
+      "Bash(git -C /Users/mareke/Documents/Projects/SkillForge push *)",
       "Bash(cat:*)"
     ]
   }
