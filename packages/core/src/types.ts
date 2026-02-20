@@ -76,4 +76,27 @@ export interface OpenCodeSkill {
   frontmatter?: Record<string, string>
 }
 
-export type SkillItem = ClaudeCodeSkill | CursorSkill | CodexSkill | GeminiCliSkill | OpenCodeSkill
+export interface CopilotSkill {
+  name: string
+  description: string
+  filePath: string
+  body?: string
+  frontmatter?: Record<string, string>
+}
+
+export interface VibeSkill {
+  name: string
+  description: string
+  filePath: string
+  body?: string
+  frontmatter?: Record<string, string>
+}
+
+export type SkillItem =
+  | ClaudeCodeSkill
+  | CursorSkill
+  | CodexSkill
+  | GeminiCliSkill
+  | OpenCodeSkill
+  | CopilotSkill
+  | VibeSkill
