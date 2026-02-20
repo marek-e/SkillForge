@@ -60,6 +60,7 @@ projectRoutes.post('/', async (c) => {
     path: projectPath,
     iconPath: null,
     preferredEditor: null,
+    customEditorCmd: null,
     isFavorite: false,
     detectedTools: results,
     createdAt: now,
@@ -91,6 +92,7 @@ projectRoutes.patch('/:id', async (c) => {
     name?: string
     iconPath?: string | null
     preferredEditor?: string | null
+    customEditorCmd?: string | null
   }>()
   const project = store.projects.update(c.req.param('id'), body)
   if (!project) {

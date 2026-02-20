@@ -11,6 +11,7 @@ function projectFromRow(row: ProjectRow): Project {
   return ProjectSchema.parse({
     ...row,
     preferredEditor: row.preferredEditor ?? null,
+    customEditorCmd: row.customEditorCmd ?? null,
     detectedTools: deserializeJsonField(row.detectedTools, []),
   })
 }
@@ -37,6 +38,7 @@ export const projectsStore = {
         path: project.path,
         iconPath: project.iconPath,
         preferredEditor: project.preferredEditor,
+        customEditorCmd: project.customEditorCmd,
         isFavorite: project.isFavorite,
         detectedTools: serializeJsonField(project.detectedTools),
         createdAt: project.createdAt,
@@ -47,7 +49,7 @@ export const projectsStore = {
   },
   update: (
     id: string,
-    updates: Partial<Pick<Project, 'name' | 'iconPath' | 'preferredEditor'>>
+    updates: Partial<Pick<Project, 'name' | 'iconPath' | 'preferredEditor' | 'customEditorCmd'>>
   ): Project | null => {
     const row = getDb().select().from(projects).where(eq(projects.id, id)).get()
     if (!row) return null
@@ -59,6 +61,7 @@ export const projectsStore = {
         name: updated.name,
         iconPath: updated.iconPath,
         preferredEditor: updated.preferredEditor,
+        customEditorCmd: updated.customEditorCmd,
         updatedAt: updated.updatedAt,
       })
       .where(eq(projects.id, id))
