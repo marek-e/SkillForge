@@ -102,37 +102,42 @@ projectRoutes.delete('/:id', (c) => {
   return c.json({ data: { success: true } })
 })
 
-projectRoutes.post('/:id/refresh-tools', async (c) => {
-  const project = store.projects.getById(c.req.param('id'))
-  if (!project) {
-    return c.json({ error: { message: 'Project not found', code: 'NOT_FOUND' } }, 404)
-  }
-
-  const results = await Promise.all(
-    allConnectors.map(async (connector) => {
-      const { detected } = await connector.detectProject(project.path)
-      return { name: connector.name, detected } satisfies DetectedTool
-    })
-  )
-
-  const updated = store.projects.updateDetectedTools(project.id, results)
-  return c.json({ data: updated })
-})
-
 projectRoutes.get('/:id/skills', async (c) => {
   const project = store.projects.getById(c.req.param('id'))
   if (!project) {
     return c.json({ error: { message: 'Project not found', code: 'NOT_FOUND' } }, 404)
   }
 
-  const [claudeCodeSkills, cursorSkills, codexSkills, geminiCliSkills, opencodeSkills] =
-    await Promise.all([
-      listProjectClaudeCodeSkills(project.path),
-      listProjectCursorSkills(project.path),
-      listProjectCodexSkills(project.path),
-      listProjectGeminiCliSkills(project.path),
-      listProjectOpenCodeSkills(project.path),
-    ])
+  const [
+    claudeCodeSkills,
+    cursorSkills,
+    codexSkills,
+    geminiCliSkills,
+    opencodeSkills,
+    detectionResults,
+  ] = await Promise.all([
+    listProjectClaudeCodeSkills(project.path),
+    listProjectCursorSkills(project.path),
+    listProjectCodexSkills(project.path),
+    listProjectGeminiCliSkills(project.path),
+    listProjectOpenCodeSkills(project.path),
+    Promise.all(
+      allConnectors.map(async (connector) => {
+        const { detected } = await connector.detectProject(project.path)
+        return { name: connector.name, detected } satisfies DetectedTool
+      })
+    ),
+  ])
+
+  const hasChanged =
+    detectionResults.length !== project.detectedTools.length ||
+    detectionResults.some(
+      (r) => project.detectedTools.find((t) => t.name === r.name)?.detected !== r.detected
+    )
+
+  if (hasChanged) {
+    store.projects.updateDetectedTools(project.id, detectionResults)
+  }
 
   return c.json({
     data: {
