@@ -7,6 +7,8 @@ import {
   listCodexSkills,
   listGeminiCliSkills,
   listOpenCodeSkills,
+  listCopilotSkills,
+  listVibeSkills,
 } from '@skillforge/connectors'
 import type { ToolStatus } from '@skillforge/core'
 
@@ -19,6 +21,8 @@ toolRoutes.get('/', async (c) => {
     codex: listCodexSkills,
     'gemini-cli': listGeminiCliSkills,
     opencode: listOpenCodeSkills,
+    copilot: listCopilotSkills,
+    vibe: listVibeSkills,
   }
 
   const [detections, commands, ...skillResults] = await Promise.all([
@@ -65,5 +69,15 @@ toolRoutes.get('/gemini-cli/skills', async (c) => {
 
 toolRoutes.get('/opencode/skills', async (c) => {
   const skills = await listOpenCodeSkills()
+  return c.json({ data: skills })
+})
+
+toolRoutes.get('/copilot/skills', async (c) => {
+  const skills = await listCopilotSkills()
+  return c.json({ data: skills })
+})
+
+toolRoutes.get('/vibe/skills', async (c) => {
+  const skills = await listVibeSkills()
   return c.json({ data: skills })
 })
