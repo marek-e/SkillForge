@@ -11,6 +11,8 @@ export const skills = sqliteTable('skills', {
   implementationRef: text('implementation_ref'),
   source: text('source').notNull(),
   originalTool: text('original_tool'),
+  tags: text('tags').notNull().default('[]'),
+  scope: text('scope').notNull().default('general'),
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
 })

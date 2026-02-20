@@ -57,7 +57,13 @@ skillRoutes.patch('/:id', async (c) => {
     return c.json({ error: { message: 'Skill not found', code: 'NOT_FOUND' } }, 404)
   }
   const body = await c.req.json<unknown>()
-  const result = SkillSchema.pick({ name: true, description: true, body: true })
+  const result = SkillSchema.pick({
+    name: true,
+    description: true,
+    body: true,
+    tags: true,
+    scope: true,
+  })
     .partial()
     .safeParse(body)
   if (!result.success) {
