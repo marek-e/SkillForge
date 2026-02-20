@@ -33,7 +33,7 @@ export function useUpdateSkill(skillId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (data: Partial<Pick<Skill, 'name' | 'description' | 'body'>>) =>
+    mutationFn: (data: Partial<Pick<Skill, 'name' | 'description' | 'body' | 'tags' | 'scope'>>) =>
       api.skills.update(skillId, data),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.skills.detail(skillId) }),
   })

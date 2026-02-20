@@ -1,14 +1,20 @@
 import { useState, useEffect } from 'react'
 import { createRoute, useNavigate } from '@tanstack/react-router'
-import type { Skill } from '@skillforge/core'
-import { ArrowLeftIcon, FileIcon, FileTextIcon, Trash2Icon } from 'lucide-react'
+import type { Skill, SkillScope } from '@skillforge/core'
+import { ArrowLeftIcon, FileIcon, FileTextIcon, Trash2Icon, XIcon } from 'lucide-react'
 import { rootRoute } from './__root'
-import { H1 } from '@/components/typography'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/components/ui/toaster'
 import { api } from '@/api/client'
@@ -70,8 +76,12 @@ function SkillDetailPage() {
 
   useBreadcrumb(`/skill-library/${skillId}`, skill?.name)
 
+  const [nameDraft, setNameDraft] = useState('')
   const [descriptionDraft, setDescriptionDraft] = useState('')
   const [bodyDraft, setBodyDraft] = useState('')
+  const [scopeDraft, setScopeDraft] = useState<SkillScope>('general')
+  const [tagsDraft, setTagsDraft] = useState<string[]>([])
+  const [tagInput, setTagInput] = useState('')
   const [fileDrafts, setFileDrafts] = useState<Record<string, string>>({})
   const [loadedFileContents, setLoadedFileContents] = useState<Record<string, string>>({})
   const [selectedFile, setSelectedFile] = useState<string | null>(null)
@@ -80,8 +90,11 @@ function SkillDetailPage() {
 
   useEffect(() => {
     if (skill) {
+      setNameDraft(skill.name)
       setDescriptionDraft(skill.description)
       setBodyDraft(skill.body ?? '')
+      setScopeDraft(skill.scope)
+      setTagsDraft(skill.tags)
     }
   }, [skill])
 
@@ -107,12 +120,17 @@ function SkillDetailPage() {
     if (!skill) return
     const tasks: Promise<unknown>[] = []
 
-    const metaUpdates: Partial<Pick<Skill, 'description' | 'body'>> = {}
+    const metaUpdates: Partial<Pick<Skill, 'name' | 'description' | 'body' | 'tags' | 'scope'>> = {}
+    if (nameDraft !== skill.name) metaUpdates.name = nameDraft
     if (descriptionDraft !== skill.description) metaUpdates.description = descriptionDraft
     const originalBody = skill.body ?? ''
     if (bodyDraft !== originalBody) {
       metaUpdates.body = bodyDraft
     }
+    if (scopeDraft !== skill.scope) metaUpdates.scope = scopeDraft
+    const tagsChanged =
+      tagsDraft.length !== skill.tags.length || tagsDraft.some((t, i) => t !== skill.tags[i])
+    if (tagsChanged) metaUpdates.tags = tagsDraft
     if (Object.keys(metaUpdates).length > 0) {
       tasks.push(updateMeta.mutateAsync(metaUpdates))
     }
@@ -149,8 +167,12 @@ function SkillDetailPage() {
   const originalBody = skill?.body ?? ''
   const hasChanges =
     !!skill &&
-    (descriptionDraft !== skill.description ||
+    (nameDraft !== skill.name ||
+      descriptionDraft !== skill.description ||
       bodyDraft !== originalBody ||
+      scopeDraft !== skill.scope ||
+      tagsDraft.length !== skill.tags.length ||
+      tagsDraft.some((t, i) => t !== skill.tags[i]) ||
       Object.entries(fileDrafts).some(
         ([filePath, draft]) =>
           loadedFileContents[filePath] !== undefined && draft !== loadedFileContents[filePath]
@@ -185,7 +207,12 @@ function SkillDetailPage() {
         >
           <ArrowLeftIcon className="size-4" />
         </Button>
-        <H1>{skill.name}</H1>
+        <Input
+          value={nameDraft}
+          onChange={(e) => setNameDraft(e.target.value)}
+          className="text-2xl font-bold border-none shadow-none px-0 h-auto focus-visible:ring-0"
+          placeholder="Skill name"
+        />
       </div>
 
       <div className="flex items-center gap-2 flex-wrap">
@@ -212,6 +239,58 @@ function SkillDetailPage() {
           onChange={(e) => setDescriptionDraft(e.target.value)}
           placeholder="Skill description"
         />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label>Scope</Label>
+          <Select value={scopeDraft} onValueChange={(v) => setScopeDraft(v as SkillScope)}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="general">General</SelectItem>
+              <SelectItem value="project-specific">Project-specific</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Tags</Label>
+          <div className="flex flex-wrap items-center gap-1.5 rounded-lg border px-2 py-1.5 min-h-8">
+            {tagsDraft.map((tag) => (
+              <Badge key={tag} variant="secondary" className="gap-1 text-xs font-mono">
+                {tag.startsWith('#') ? tag : `#${tag}`}
+                <button
+                  type="button"
+                  onClick={() => setTagsDraft((prev) => prev.filter((t) => t !== tag))}
+                  className="hover:text-foreground"
+                >
+                  <XIcon className="size-3" />
+                </button>
+              </Badge>
+            ))}
+            <input
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ',') {
+                  e.preventDefault()
+                  const value = tagInput.trim().replace(/^#/, '')
+                  if (value && !tagsDraft.includes(value)) {
+                    setTagsDraft((prev) => [...prev, value])
+                  }
+                  setTagInput('')
+                }
+                if (e.key === 'Backspace' && !tagInput && tagsDraft.length > 0) {
+                  setTagsDraft((prev) => prev.slice(0, -1))
+                }
+              }}
+              placeholder={tagsDraft.length === 0 ? 'Add tags…' : ''}
+              className="flex-1 min-w-16 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+            />
+          </div>
+        </div>
       </div>
 
       {skillDir && (
