@@ -1,0 +1,25 @@
+apps/electron/src/preload.ts
+  5728e5c097ad7a04 12-13
+apps/electron/src/main.ts
+  5728e5c097ad7a04 113,116-117,119,127-128
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "09804e0b5a4c8343e9fad0ef67d2c80c53efcd8e",
+  "prompts": {
+    "5728e5c097ad7a04": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9331a608-af85-49a0-8219-8bf33d734aa7",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 8,
+      "overriden_lines": 0
+    }
+  }
+}
