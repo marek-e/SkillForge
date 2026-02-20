@@ -12,6 +12,7 @@ export const ProjectSchema = z.object({
   path: z.string().min(1),
   iconPath: z.string().nullable(),
   preferredEditor: z.string().nullable(),
+  customEditorCmd: z.string().nullable(),
   isFavorite: z.boolean(),
   detectedTools: z.array(DetectedToolSchema),
   createdAt: z.iso.datetime(),
@@ -28,5 +29,6 @@ export const UpdateProjectSchema = ProjectSchema.pick({
   name: true,
   iconPath: true,
   preferredEditor: true,
+  customEditorCmd: true,
 }).partial()
 export type UpdateProject = z.infer<typeof UpdateProjectSchema>
