@@ -1,0 +1,27 @@
+apps/runtime/src/routes/skills.ts
+  04d342ecfce907f1 63-64
+apps/runtime/src/store/schema.ts
+  04d342ecfce907f1 14-15
+apps/runtime/src/store/skills-store.ts
+  04d342ecfce907f1 19-20,47-48,72-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "d5ceae080ff43a53ea4d9dfdd65d229a9e13e128",
+  "prompts": {
+    "04d342ecfce907f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ea3c8d94-3ddd-44d1-9a3b-fe22dc0f93e7",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 60,
+      "overriden_lines": 0
+    }
+  }
+}
