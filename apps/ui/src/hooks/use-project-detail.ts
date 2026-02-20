@@ -24,7 +24,9 @@ export function useRenameProject(projectId: string) {
     mutationFn: (data: { name: string }) => api.projects.update(projectId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all() })
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.detail(projectId) })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.projects.detail(projectId),
+      })
     },
     onError: () => toast.error({ title: 'Failed to rename project' }),
   })
@@ -37,23 +39,12 @@ export function useUpdateProjectIcon(projectId: string) {
     mutationFn: (data: { iconPath: string | null }) => api.projects.update(projectId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all() })
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.detail(projectId) })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.projects.detail(projectId),
+      })
       toast.success({ title: 'Icon path saved' })
     },
     onError: () => toast.error({ title: 'Failed to save icon path' }),
-  })
-}
-
-export function useRefreshProjectTools(projectId: string) {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: () => api.projects.refreshTools(projectId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.detail(projectId) })
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all() })
-    },
-    onError: () => toast.error({ title: 'Failed to refresh tools' }),
   })
 }
 
@@ -64,7 +55,9 @@ export function useToggleFavoriteProject(projectId: string) {
     mutationFn: () => api.projects.toggleFavorite(projectId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all() })
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.detail(projectId) })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.projects.detail(projectId),
+      })
     },
     onError: () => toast.error({ title: 'Failed to update favorite' }),
   })
@@ -77,7 +70,9 @@ export function useDeleteProject(projectId: string) {
     mutationFn: () => api.projects.delete(projectId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all() })
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.detail(projectId) })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.projects.detail(projectId),
+      })
       toast.success({ title: 'Project deleted' })
     },
     onError: () => toast.error({ title: 'Failed to delete project' }),

@@ -1,23 +1,21 @@
 import { useState, useEffect } from 'react'
 import { createRoute, useNavigate } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
 import type { CreateSkill, Skill, SkillItem } from '@skillforge/core'
-import { PencilIcon, StarIcon, Trash2Icon } from 'lucide-react'
+import { PencilIcon, RefreshCwIcon, StarIcon, Trash2Icon } from 'lucide-react'
 import { rootRoute } from './__root'
 import {
   useProject,
   useProjectSkills,
   useRenameProject,
   useUpdateProjectIcon,
-  useRefreshProjectTools,
   useToggleFavoriteProject,
   useDeleteProject,
   useSaveSkillToLibrary,
 } from '@/hooks/use-project-detail'
-import { api, queryKeys } from '@/api/client'
 import { ErrorContainer } from '@/components/ErrorContainer'
 import { H1 } from '@/components/typography'
 import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { ProjectAvatar } from '@/components/project-avatar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { RenameProjectDialog } from '@/components/project-detail/RenameProjectDialog'
@@ -26,6 +24,7 @@ import { ProjectSkillsSection } from '@/components/project-detail/ProjectSkillsS
 import { DeleteProjectDialog } from '@/components/projects/DeleteProjectDialog'
 import { cn } from '@/lib/utils'
 import { useBreadcrumb } from '@/lib/breadcrumbs'
+import { useSkills } from '@/hooks/use-skill-library'
 
 const toolMap: Record<string, Skill['originalTool']> = {
   'claude-code': 'claude',
@@ -57,17 +56,18 @@ function ProjectDetailPage() {
   const { projectId } = projectDetailRoute.useParams()
   const navigate = useNavigate()
 
-  const { data: project, isLoading, error } = useProject(projectId)
-  const { data: skillsByTool, isLoading: skillsLoading } = useProjectSkills(projectId)
-  const { data: librarySkills = [] } = useQuery({
-    queryKey: queryKeys.skills.lists(),
-    queryFn: () => api.skills.list(),
-  })
+  const { data: project, isPending, error } = useProject(projectId)
+  const {
+    data: skillsByTool,
+    isFetching: skillsFetching,
+    isPending: skillsPending,
+    refetch: refetchSkills,
+  } = useProjectSkills(projectId)
+  const { data: librarySkills = [] } = useSkills()
   const saveSkill = useSaveSkillToLibrary()
   useBreadcrumb(`/projects/${projectId}`, project?.name)
   const renameMutation = useRenameProject(projectId)
   const updateIconMutation = useUpdateProjectIcon(projectId)
-  const refreshToolsMutation = useRefreshProjectTools(projectId)
   const favoriteMutation = useToggleFavoriteProject(projectId)
   const deleteMutation = useDeleteProject(projectId)
 
@@ -99,7 +99,7 @@ function ProjectDetailPage() {
     )
   }
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <div className="space-y-4">
         <Skeleton className="h-8 w-48" />
@@ -137,7 +137,7 @@ function ProjectDetailPage() {
               <Button
                 variant="ghost"
                 size="icon-xs"
-                className="text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-blue-500 hover:bg-blue-500/10 dark:hover:bg-blue-500/25"
                 onClick={() => {
                   setRenameDraft(project.name)
                   setRenameOpen(true)
@@ -156,6 +156,20 @@ function ProjectDetailPage() {
               >
                 <Trash2Icon className="size-4" />
               </Button>
+              <Tooltip delayDuration={400}>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
+                    className="text-muted-foreground hover:text-green-500 hover:bg-green-500/10 dark:hover:bg-green-500/20"
+                    onClick={() => refetchSkills()}
+                    disabled={skillsFetching}
+                  >
+                    <RefreshCwIcon className={cn('size-4', skillsFetching && 'animate-spin')} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">Refresh detected skills</TooltipContent>
+              </Tooltip>
             </div>
           </div>
         </div>
@@ -176,11 +190,9 @@ function ProjectDetailPage() {
         onIconPathChange={setIconPath}
         onApplyIcon={(v) => updateIconMutation.mutate({ iconPath: v })}
         isIconPending={updateIconMutation.isPending}
-        onRefreshTools={() => refreshToolsMutation.mutate()}
-        isRefreshing={refreshToolsMutation.isPending}
       />
 
-      {skillsLoading ? (
+      {skillsPending ? (
         <div className="space-y-2">
           <Skeleton className="h-4 w-24" />
           <Skeleton className="h-4 w-64" />

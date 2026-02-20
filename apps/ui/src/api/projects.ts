@@ -11,6 +11,4 @@ export const projectsApi = {
   delete: (id: string) => mutateApi<{ success: boolean }>(`/projects/${id}`, { method: 'DELETE' }),
   toggleFavorite: (id: string) =>
     mutateApi<Project>(`/projects/${id}/favorite`, { method: 'PATCH' }),
-  refreshTools: (id: string) =>
-    mutateApi<Project>(`/projects/${id}/refresh-tools`, { method: 'POST' }),
 }

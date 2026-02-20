@@ -6,7 +6,6 @@ import {
   FolderIcon,
   FolderOpenIcon,
   ImageIcon,
-  RefreshCwIcon,
 } from 'lucide-react'
 import type { Project } from '@skillforge/core'
 import { Button } from '@/components/ui/button'
@@ -23,8 +22,6 @@ interface ProjectOverviewCardProps {
   onIconPathChange: (value: string) => void
   onApplyIcon: (value: string | null) => void
   isIconPending: boolean
-  onRefreshTools: () => void
-  isRefreshing: boolean
 }
 
 export function ProjectOverviewCard({
@@ -33,8 +30,6 @@ export function ProjectOverviewCard({
   onIconPathChange,
   onApplyIcon,
   isIconPending,
-  onRefreshTools,
-  isRefreshing,
 }: ProjectOverviewCardProps) {
   const [pickerError, setPickerError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
@@ -196,15 +191,6 @@ export function ProjectOverviewCard({
             <span className="text-sm text-muted-foreground">No tools detected</span>
           )}
         </div>
-        <Button
-          variant="ghost"
-          size="icon-xs"
-          onClick={onRefreshTools}
-          disabled={isRefreshing}
-          className="text-muted-foreground hover:text-foreground shrink-0"
-        >
-          <RefreshCwIcon className={cn('size-3.5', isRefreshing && 'animate-spin')} />
-        </Button>
       </div>
     </div>
   )
