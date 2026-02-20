@@ -1,5 +1,5 @@
 ---
-description: Implement a single Linear issue end-to-end (fetch → plan → implement → validate → commit → push)
+description: Implement a single Linear issue end-to-end (fetch → plan → implement → validate → commit → push → PR)
 argument-hint: '[issue-id]'
 disable-model-invocation: false
 ---
@@ -22,7 +22,7 @@ Follow this workflow precisely, without asking for human approval at any step.
 
 <sentinel-rules>
 - Output `<sentinel>BLOCKED</sentinel>` if you cannot complete the issue for any reason
-- Output `<sentinel>PUSHED</sentinel>` ONLY after a successful push and Linear status update
+- Output `<sentinel>PUSHED</sentinel>` ONLY after a successful PR creation and Linear status update
 - These are the ONLY sentinel tags you output
 </sentinel-rules>
 
@@ -33,6 +33,11 @@ Follow this workflow precisely, without asking for human approval at any step.
 Use Linear MCP (`list_issues` or `get_issue`) to fetch the full issue: title, description, priority, parent (if any), comments.
 
 If the issue is NOT found, output `<sentinel>BLOCKED</sentinel>` and stop.
+
+Store for later use:
+
+- `ISSUE_URL`: the Linear issue URL (e.g. `https://linear.app/...`)
+- `ISSUE_TITLE`: the issue title
 
 ## Phase 2: Update Status → In Progress
 
@@ -78,6 +83,8 @@ Perform the planning phase autonomously (based on @.claude/skills/technical-stra
    - **Connectors** (`packages/connectors`): adapter changes if any
    - **UI Components** (`apps/ui`): React components, routes, hooks if any
 
+Note: `.claude/plans/` is git-ignored — do NOT commit this file.
+
 ## Phase 5: Implement
 
 Follow @.claude/skills/implement-plan/SKILL.md using the strategy doc at `.claude/plans/<issue-id>.md`.
@@ -107,7 +114,8 @@ If you cannot make all checks green after 3 full cycles, output `<sentinel>BLOCK
 Follow @.claude/skills/commit-auto/SKILL.md:
 
 - Analyze git diff and group by dependency layer
-- Create atomic commits in order: Docs → Core → Connectors → Store/API → UI → Electron → Config
+- Create atomic commits in order: Core → Connectors → Store/API → UI → Electron → Config
+- Do NOT commit anything under `.claude/plans/` (it is git-ignored)
 - No approval prompt — commit immediately
 - No Co-Authored-By footer
 
@@ -117,11 +125,33 @@ Follow @.claude/skills/commit-auto/SKILL.md:
 git push -u origin linear/<id>-<slug>
 ```
 
-## Phase 9: Update Linear Status → In Review
+## Phase 9: Create Pull Request
+
+Use `gh pr create` to open a PR. Read the plan file at `.claude/plans/<issue-id>.md` to use as the PR body.
+
+PR format:
+
+```
+gh pr create \
+  --title "<ISSUE_TITLE>" \
+  --base main \
+  --body "$(cat <<'EOF'
+## Linear issue
+
+<ISSUE_URL>
+
+## Technical Plan
+
+<contents of .claude/plans/<issue-id>.md, verbatim>
+EOF
+)"
+```
+
+## Phase 10: Update Linear Status → In Review
 
 Use Linear MCP (`update_issue`) to move the issue to "In Review" state.
 
-## Phase 10: Signal Completion
+## Phase 11: Signal Completion
 
 Output exactly: `<sentinel>PUSHED</sentinel>`
 
