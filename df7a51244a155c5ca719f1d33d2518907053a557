@@ -1,0 +1,27 @@
+apps/runtime/src/routes/projects.ts
+  5728e5c097ad7a04 62,93
+apps/runtime/src/store/projects-store.ts
+  5728e5c097ad7a04 13,39,61
+apps/runtime/src/store/schema.ts
+  5728e5c097ad7a04 32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "df7a51244a155c5ca719f1d33d2518907053a557",
+  "prompts": {
+    "5728e5c097ad7a04": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9331a608-af85-49a0-8219-8bf33d734aa7",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 118,
+      "overriden_lines": 0
+    }
+  }
+}
