@@ -1,0 +1,23 @@
+packages/core/src/models/project.ts
+  5728e5c097ad7a04 15,32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "9bef76df4573df5e0f25bce38ecc0ea21e379053",
+  "prompts": {
+    "5728e5c097ad7a04": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9331a608-af85-49a0-8219-8bf33d734aa7",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>",
+      "messages": [],
+      "total_additions": 344,
+      "total_deletions": 250,
+      "accepted_lines": 137,
+      "overriden_lines": 8
+    }
+  }
+}
