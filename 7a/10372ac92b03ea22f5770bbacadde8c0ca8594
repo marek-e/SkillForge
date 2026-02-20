@@ -1,0 +1,53 @@
+.claude/skills/ticket-solver/SKILL.md
+  04d342ecfce907f1 2,25,37-40,117,128-146,149
+  6046d380b9259c49 41,87,118,150,154
+.gitignore
+  04d342ecfce907f1 9
+packages/core/src/models/skill.ts
+  04d342ecfce907f1 9-11,23-24
+apps/runtime/src/store/schema.ts
+  04d342ecfce907f1 14-15
+apps/runtime/src/store/skills-store.ts
+  04d342ecfce907f1 19-20,47-48,72-73
+apps/runtime/src/routes/skills.ts
+  04d342ecfce907f1 63-64
+apps/ui/src/components/skill-library/SkillLibraryFilterBar.tsx
+  04d342ecfce907f1 18-20,31-33,50,95-109
+apps/ui/src/routes/project-detail.tsx
+  04d342ecfce907f1 47-48
+apps/ui/src/routes/skill-library.tsx
+  04d342ecfce907f1 32,39-43,55-57,59,67,72,100-102,123,149-158
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "7a10372ac92b03ea22f5770bbacadde8c0ca8594",
+  "prompts": {
+    "04d342ecfce907f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ea3c8d94-3ddd-44d1-9a3b-fe22dc0f93e7",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>",
+      "messages": [],
+      "total_additions": 35,
+      "total_deletions": 5,
+      "accepted_lines": 93,
+      "overriden_lines": 0
+    },
+    "6046d380b9259c49": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ae4cf325-0ce5-42cd-8d01-628b6cf7f459",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>",
+      "messages": [],
+      "total_additions": 307,
+      "total_deletions": 2,
+      "accepted_lines": 5,
+      "overriden_lines": 0
+    }
+  }
+}
