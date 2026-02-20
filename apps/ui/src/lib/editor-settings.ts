@@ -4,14 +4,24 @@ export const KNOWN_EDITORS = [
   { value: 'code', label: 'VS Code' },
   { value: 'zed', label: 'Zed' },
   { value: 'subl', label: 'Sublime Text' },
+  { value: 'custom', label: 'Custom…' },
 ]
 
-const STORAGE_KEY = 'skillforge:defaultEditor'
+const EDITOR_KEY = 'skillforge:defaultEditor'
+const CUSTOM_CMD_KEY = 'skillforge:customEditorCmd'
 
 export function getDefaultEditor(): string {
-  return localStorage.getItem(STORAGE_KEY) ?? 'auto'
+  return localStorage.getItem(EDITOR_KEY) ?? 'auto'
 }
 
 export function setDefaultEditor(value: string): void {
-  localStorage.setItem(STORAGE_KEY, value)
+  localStorage.setItem(EDITOR_KEY, value)
+}
+
+export function getCustomEditorCmd(): string {
+  return localStorage.getItem(CUSTOM_CMD_KEY) ?? ''
+}
+
+export function setCustomEditorCmd(value: string): void {
+  localStorage.setItem(CUSTOM_CMD_KEY, value)
 }

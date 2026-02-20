@@ -192,9 +192,10 @@ function ProjectDetailPage() {
         onIconPathChange={setIconPath}
         onApplyIcon={(v) => updateIconMutation.mutate({ iconPath: v })}
         isIconPending={updateIconMutation.isPending}
-        onEditorChange={(editor) =>
+        onEditorChange={(editor, customCmd) =>
           updateEditorMutation.mutate({
             preferredEditor: editor === 'auto' ? null : editor,
+            customEditorCmd: editor === 'custom' ? customCmd || null : null,
           })
         }
       />

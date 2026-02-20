@@ -12,16 +12,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { getToolConfig } from '@/lib/tool-config'
 import { isElectron, getElectronAPI } from '@/lib/electron'
-import { KNOWN_EDITORS, getDefaultEditor } from '@/lib/editor-settings'
+import { getDefaultEditor, getCustomEditorCmd } from '@/lib/editor-settings'
+import { EditorSelect } from '@/components/EditorSelect'
 import { cn } from '@/lib/utils'
 
 interface ProjectOverviewCardProps {
@@ -30,7 +24,7 @@ interface ProjectOverviewCardProps {
   onIconPathChange: (value: string) => void
   onApplyIcon: (value: string | null) => void
   isIconPending: boolean
-  onEditorChange: (editor: string) => void
+  onEditorChange: (editor: string, customCmd: string) => void
 }
 
 export function ProjectOverviewCard({
@@ -66,6 +60,15 @@ export function ProjectOverviewCard({
     setPickerError(null)
     onIconPathChange('')
     onApplyIcon(null)
+  }
+
+  function handleOpenInEditor() {
+    const effectiveEditor = project.preferredEditor ?? getDefaultEditor()
+    const cmd =
+      effectiveEditor === 'custom'
+        ? (project.customEditorCmd ?? getCustomEditorCmd())
+        : effectiveEditor
+    getElectronAPI()?.openInEditor(project.path, cmd === 'auto' ? undefined : cmd)
   }
 
   const detectedTools = project.detectedTools.filter((t) => t.detected)
@@ -108,17 +111,7 @@ export function ProjectOverviewCard({
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon-xs"
-                    onClick={() => {
-                      const effectiveEditor = project.preferredEditor ?? getDefaultEditor()
-                      getElectronAPI()?.openInEditor(
-                        project.path,
-                        effectiveEditor === 'auto' ? undefined : effectiveEditor
-                      )
-                    }}
-                  >
+                  <Button variant="ghost" size="icon-xs" onClick={handleOpenInEditor}>
                     <ExternalLinkIcon className="size-3.5" />
                   </Button>
                 </TooltipTrigger>
@@ -131,18 +124,13 @@ export function ProjectOverviewCard({
 
       <div className="flex items-center px-4 py-2.5 gap-3">
         <span className="w-20 text-sm text-muted-foreground shrink-0">Editor</span>
-        <Select value={project.preferredEditor ?? 'auto'} onValueChange={onEditorChange}>
-          <SelectTrigger className="h-7 w-[200px] text-sm">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {KNOWN_EDITORS.map((e) => (
-              <SelectItem key={e.value} value={e.value}>
-                {e.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <EditorSelect
+          value={project.preferredEditor}
+          customCmd={project.customEditorCmd ?? ''}
+          onChange={onEditorChange}
+          triggerClassName="w-[160px]"
+          inputClassName="h-7 w-[140px]"
+        />
       </div>
 
       <div className="flex items-center px-4 py-2.5 gap-3">

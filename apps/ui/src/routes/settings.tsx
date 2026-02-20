@@ -4,16 +4,15 @@ import { useTheme } from 'next-themes'
 import { rootRoute } from './__root'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { MonitorIcon, SunIcon, MoonIcon } from 'lucide-react'
 import { H1, Lead } from '@/components/typography'
-import { KNOWN_EDITORS, getDefaultEditor, setDefaultEditor } from '@/lib/editor-settings'
+import {
+  getDefaultEditor,
+  setDefaultEditor,
+  getCustomEditorCmd,
+  setCustomEditorCmd,
+} from '@/lib/editor-settings'
+import { EditorSelect } from '@/components/EditorSelect'
 
 export const settingsRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -24,6 +23,7 @@ export const settingsRoute = createRoute({
 function SettingsPage() {
   const { theme = 'system', setTheme } = useTheme()
   const [defaultEditor, setEditor] = useState(() => getDefaultEditor())
+  const [customCmd, setCustomCmd] = useState(() => getCustomEditorCmd())
 
   return (
     <div className="space-y-6">
@@ -39,24 +39,18 @@ function SettingsPage() {
             The editor used when opening projects. Can be overridden per project.
           </p>
         </div>
-        <Select
+        <EditorSelect
           value={defaultEditor}
-          onValueChange={(v) => {
-            setDefaultEditor(v)
-            setEditor(v)
+          customCmd={customCmd}
+          onChange={(editor, cmd) => {
+            setDefaultEditor(editor)
+            setCustomEditorCmd(cmd)
+            setEditor(editor)
+            setCustomCmd(cmd)
           }}
-        >
-          <SelectTrigger className="w-[240px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {KNOWN_EDITORS.map((e) => (
-              <SelectItem key={e.value} value={e.value}>
-                {e.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          triggerClassName="w-[240px]"
+          inputClassName="w-[240px]"
+        />
       </div>
 
       <div className="space-y-4">

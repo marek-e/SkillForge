@@ -52,7 +52,8 @@ export function useUpdateProjectEditor(projectId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (data: { preferredEditor: string | null }) => api.projects.update(projectId, data),
+    mutationFn: (data: { preferredEditor: string | null; customEditorCmd: string | null }) =>
+      api.projects.update(projectId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all() })
       queryClient.invalidateQueries({
