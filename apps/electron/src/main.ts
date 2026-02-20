@@ -110,14 +110,13 @@ ipcMain.handle('dialog:openFile', async (_, projectPath: string) => {
 ipcMain.handle('shell:revealInFinder', (_event, folderPath: string) => {
   shell.showItemInFolder(folderPath)
 })
-ipcMain.handle('shell:openInEditor', async (_event, folderPath: string) => {
+ipcMain.handle('shell:openInEditor', async (_event, folderPath: string, editor?: string) => {
   const { spawn } = await import('node:child_process')
 
-  // Try common code editor CLIs in priority order; fall back to system default
-  const editors = ['cursor', 'code', 'zed', 'subl']
-  for (const editor of editors) {
+  const editorList = editor && editor !== 'auto' ? [editor] : ['cursor', 'code', 'zed', 'subl']
+  for (const ed of editorList) {
     const launched = await new Promise<boolean>((resolve) => {
-      const child = spawn(editor, [folderPath], { detached: true, stdio: 'ignore' })
+      const child = spawn(ed, [folderPath], { detached: true, stdio: 'ignore' })
       child.on('error', () => resolve(false))
       child.on('spawn', () => {
         child.unref()
@@ -125,6 +124,8 @@ ipcMain.handle('shell:openInEditor', async (_event, folderPath: string) => {
       })
     })
     if (launched) return ''
+    // If a specific editor was requested and failed, fall through to system default
+    if (editor && editor !== 'auto') break
   }
 
   return shell.openPath(folderPath)

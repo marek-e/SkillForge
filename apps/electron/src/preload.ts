@@ -9,5 +9,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   openFolderDialog: () => ipcRenderer.invoke('dialog:openFolder'),
   openFileDialog: (projectPath: string) => ipcRenderer.invoke('dialog:openFile', projectPath),
   revealInFinder: (folderPath: string) => ipcRenderer.invoke('shell:revealInFinder', folderPath),
-  openInEditor: (folderPath: string) => ipcRenderer.invoke('shell:openInEditor', folderPath),
+  openInEditor: (folderPath: string, editor?: string) =>
+    ipcRenderer.invoke('shell:openInEditor', folderPath, editor),
 })
