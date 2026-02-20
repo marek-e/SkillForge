@@ -41,6 +41,7 @@ Use Linear MCP (`update_issue`) to move the issue to "In Progress" state.
 ## Phase 3: Create or Checkout Branch
 
 Branch naming convention: `linear/<issue-id-lowercase>-<title-slug>`
+
 - Lowercase the issue ID (e.g., `eng-42`)
 - Slug: title lowercased, spaces → hyphens, strip special chars, max 35 chars
 - Full branch name max 50 chars
@@ -53,6 +54,7 @@ git pull origin main
 ```
 
 Check if branch already exists:
+
 ```bash
 git branch --list linear/<id>-<slug>
 ```
@@ -83,6 +85,7 @@ Follow @.claude/skills/implement-plan/SKILL.md using the strategy doc at `.claud
 Dependency order: Core → Store → API → Connectors → UI → Electron
 
 Incremental verification:
+
 - After Drizzle schema changes → `pnpm --filter @skillforge/runtime db:generate`
 - After code changes → `pnpm typecheck`
 
@@ -102,6 +105,7 @@ If you cannot make all checks green after 3 full cycles, output `<sentinel>BLOCK
 ## Phase 7: Commit
 
 Follow @.claude/skills/commit-auto/SKILL.md:
+
 - Analyze git diff and group by dependency layer
 - Create atomic commits in order: Docs → Core → Connectors → Store/API → UI → Electron → Config
 - No approval prompt — commit immediately

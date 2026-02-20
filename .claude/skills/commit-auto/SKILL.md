@@ -26,6 +26,7 @@ Follow the commit message conventions documented in @docs/code-quality.md
 ## Phase 2: Execute
 
 For each logical commit group, in dependency order:
+
 1. Stage specific files or hunks (`git add -p` for partial staging when a file contains changes for multiple logical commits)
 2. Create commit with conventional message — NO Claude Code footer, NO Co-Authored-By
 3. Verify the commit succeeded
@@ -39,6 +40,7 @@ Show `git log --oneline -10` with the new commits.
 <quality-standards>
 
 **Commit ordering** (most important for review):
+
 1. Documentation (strategies, architecture docs)
 2. Core layer (`packages/core` — domain models, shared types)
 3. Connectors (`packages/connectors` — tool adapters)
@@ -50,6 +52,7 @@ Show `git log --oneline -10` with the new commits.
 **Atomic commits**: one logical change per commit, independently revertable.
 
 **Commit descriptions (body)**:
+
 - Only add a body if there are subtleties not obvious from the title
 - Skip body if title is self-explanatory
 
