@@ -1,0 +1,27 @@
+apps/ui/src/components/skill-library/SkillLibraryFilterBar.tsx
+  04d342ecfce907f1 18-20,31-33,50,95-109
+apps/ui/src/routes/skill-library.tsx
+  04d342ecfce907f1 32,39-43,55-57,59,67,72,100-102,123,149-158
+apps/ui/src/routes/project-detail.tsx
+  04d342ecfce907f1 47-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "264f6d446972ac98a537a2360007f5f865c9e655",
+  "prompts": {
+    "04d342ecfce907f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ea3c8d94-3ddd-44d1-9a3b-fe22dc0f93e7",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 50,
+      "overriden_lines": 0
+    }
+  }
+}
