@@ -1,0 +1,23 @@
+apps/runtime/src/routes/projects.ts
+  3afdbc4d6c76b1d2 116,124-129,131-140
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "d731b280ec65912955642214fac08ad3fae3bc1d",
+  "prompts": {
+    "3afdbc4d6c76b1d2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb191ba4-a03f-481b-bcfc-a573fb338cb0",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>",
+      "messages": [],
+      "total_additions": 37,
+      "total_deletions": 69,
+      "accepted_lines": 19,
+      "overriden_lines": 1
+    }
+  }
+}
