@@ -1,7 +1,9 @@
 import { createRoute, useNavigate } from '@tanstack/react-router'
 import type { Skill } from '@skillforge/core'
 import { WrenchIcon } from 'lucide-react'
+import { useMemo, useState } from 'react'
 import { rootRoute } from './__root'
+import { SkillLibraryFilterBar } from '@/components/skill-library/SkillLibraryFilterBar'
 import { H1, Lead } from '@/components/typography'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -25,6 +27,35 @@ export const skillLibraryRoute = createRoute({
 function SkillLibraryPage() {
   const navigate = useNavigate()
   const { data: skills, isLoading } = useSkills()
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedTools, setSelectedTools] = useState<string[]>([])
+
+  const availableTools = useMemo(() => {
+    const tools = new Set(skills?.map((s) => s.originalTool).filter(Boolean))
+    return [...tools] as string[]
+  }, [skills])
+
+  const filteredSkills = useMemo(() => {
+    let result = skills ?? []
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase()
+      result = result.filter(
+        (s) => s.name.toLowerCase().includes(q) || s.description.toLowerCase().includes(q)
+      )
+    }
+    if (selectedTools.length > 0) {
+      result = result.filter((s) => s.originalTool && selectedTools.includes(s.originalTool))
+    }
+    return result
+  }, [skills, searchQuery, selectedTools])
+
+  function handleToolToggle(tool: string) {
+    setSelectedTools((prev) =>
+      prev.includes(tool) ? prev.filter((t) => t !== tool) : [...prev, tool]
+    )
+  }
+
+  const isFiltered = searchQuery.trim().length > 0 || selectedTools.length > 0
 
   return (
     <div className="space-y-6">
@@ -45,49 +76,66 @@ function SkillLibraryPage() {
           No skills saved yet. Save skills from a project to see them here.
         </p>
       ) : (
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="text-xs">
-              {skills.length} {skills.length === 1 ? 'skill' : 'skills'}
-            </Badge>
-          </div>
-          <div className="divide-y divide-border">
-            {skills.map((skill) => {
-              const toolName = skill.originalTool
-                ? originalToolToName[skill.originalTool]
-                : undefined
-              const config = toolName ? getToolConfig(toolName) : undefined
-              return (
-                <div
-                  key={skill.id}
-                  className="flex items-start gap-3 py-2.5 cursor-pointer hover:bg-muted/50 -mx-2 px-2 rounded"
-                  onClick={() =>
-                    navigate({ to: '/skill-library/$skillId', params: { skillId: skill.id } })
-                  }
-                >
-                  <WrenchIcon className="size-4 text-muted-foreground mt-0.5 shrink-0" />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-medium text-sm">{skill.name}</span>
-                      {config && (
-                        <Badge variant="outline" className="text-xs gap-1 px-1.5 py-0">
-                          <img
-                            src={config.logo}
-                            alt={config.displayName}
-                            className={`size-3 ${config.invert ? 'dark:invert' : ''}`}
-                          />
-                          {config.displayName}
-                        </Badge>
-                      )}
-                      <Badge variant="secondary" className="text-xs">
-                        {skill.source}
-                      </Badge>
+        <div className="space-y-4">
+          <SkillLibraryFilterBar
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            availableTools={availableTools}
+            selectedTools={selectedTools}
+            onToolToggle={handleToolToggle}
+          />
+
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="text-xs">
+                {isFiltered
+                  ? `${filteredSkills.length} of ${skills.length} ${skills.length === 1 ? 'skill' : 'skills'}`
+                  : `${skills.length} ${skills.length === 1 ? 'skill' : 'skills'}`}
+              </Badge>
+            </div>
+
+            {filteredSkills.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No skills match your search.</p>
+            ) : (
+              <div className="divide-y divide-border">
+                {filteredSkills.map((skill) => {
+                  const toolName = skill.originalTool
+                    ? originalToolToName[skill.originalTool]
+                    : undefined
+                  const config = toolName ? getToolConfig(toolName) : undefined
+                  return (
+                    <div
+                      key={skill.id}
+                      className="flex items-start gap-3 py-2.5 cursor-pointer hover:bg-muted/50 -mx-2 px-2 rounded"
+                      onClick={() =>
+                        navigate({ to: '/skill-library/$skillId', params: { skillId: skill.id } })
+                      }
+                    >
+                      <WrenchIcon className="size-4 text-muted-foreground mt-0.5 shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-medium text-sm">{skill.name}</span>
+                          {config && (
+                            <Badge variant="outline" className="text-xs gap-1 px-1.5 py-0">
+                              <img
+                                src={config.logo}
+                                alt={config.displayName}
+                                className={`size-3 ${config.invert ? 'dark:invert' : ''}`}
+                              />
+                              {config.displayName}
+                            </Badge>
+                          )}
+                          <Badge variant="secondary" className="text-xs">
+                            {skill.source}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{skill.description}</p>
+                      </div>
                     </div>
-                    <p className="text-sm text-muted-foreground">{skill.description}</p>
-                  </div>
-                </div>
-              )
-            })}
+                  )
+                })}
+              </div>
+            )}
           </div>
         </div>
       )}
