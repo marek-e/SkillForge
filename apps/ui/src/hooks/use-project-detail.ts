@@ -48,6 +48,21 @@ export function useUpdateProjectIcon(projectId: string) {
   })
 }
 
+export function useUpdateProjectEditor(projectId: string) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: { preferredEditor: string | null }) => api.projects.update(projectId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all() })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.projects.detail(projectId),
+      })
+    },
+    onError: () => toast.error({ title: 'Failed to save editor preference' }),
+  })
+}
+
 export function useToggleFavoriteProject(projectId: string) {
   const queryClient = useQueryClient()
 

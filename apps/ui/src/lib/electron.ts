@@ -7,7 +7,7 @@ export interface ElectronAPI {
   openFolderDialog: () => Promise<string | null>
   openFileDialog: (projectPath: string) => Promise<null | { error: string } | { dataUrl: string }>
   revealInFinder: (folderPath: string) => Promise<void>
-  openInEditor: (folderPath: string) => Promise<string>
+  openInEditor: (folderPath: string, editor?: string) => Promise<string>
 }
 
 export type ElectronWindow = Window & { electronAPI?: ElectronAPI }

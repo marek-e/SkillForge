@@ -1,10 +1,19 @@
 import { createRoute } from '@tanstack/react-router'
+import { useState } from 'react'
 import { useTheme } from 'next-themes'
 import { rootRoute } from './__root'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { MonitorIcon, SunIcon, MoonIcon } from 'lucide-react'
 import { H1, Lead } from '@/components/typography'
+import { KNOWN_EDITORS, getDefaultEditor, setDefaultEditor } from '@/lib/editor-settings'
 
 export const settingsRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -14,12 +23,40 @@ export const settingsRoute = createRoute({
 
 function SettingsPage() {
   const { theme = 'system', setTheme } = useTheme()
+  const [defaultEditor, setEditor] = useState(() => getDefaultEditor())
 
   return (
     <div className="space-y-6">
       <div>
         <H1>Settings</H1>
         <Lead>Manage your application preferences.</Lead>
+      </div>
+
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label className="text-base font-semibold">Default Editor</Label>
+          <p className="text-sm text-muted-foreground">
+            The editor used when opening projects. Can be overridden per project.
+          </p>
+        </div>
+        <Select
+          value={defaultEditor}
+          onValueChange={(v) => {
+            setDefaultEditor(v)
+            setEditor(v)
+          }}
+        >
+          <SelectTrigger className="w-[240px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {KNOWN_EDITORS.map((e) => (
+              <SelectItem key={e.value} value={e.value}>
+                {e.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="space-y-4">

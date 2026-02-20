@@ -8,6 +8,7 @@ import {
   useProjectSkills,
   useRenameProject,
   useUpdateProjectIcon,
+  useUpdateProjectEditor,
   useToggleFavoriteProject,
   useDeleteProject,
   useSaveSkillToLibrary,
@@ -68,6 +69,7 @@ function ProjectDetailPage() {
   useBreadcrumb(`/projects/${projectId}`, project?.name)
   const renameMutation = useRenameProject(projectId)
   const updateIconMutation = useUpdateProjectIcon(projectId)
+  const updateEditorMutation = useUpdateProjectEditor(projectId)
   const favoriteMutation = useToggleFavoriteProject(projectId)
   const deleteMutation = useDeleteProject(projectId)
 
@@ -190,6 +192,11 @@ function ProjectDetailPage() {
         onIconPathChange={setIconPath}
         onApplyIcon={(v) => updateIconMutation.mutate({ iconPath: v })}
         isIconPending={updateIconMutation.isPending}
+        onEditorChange={(editor) =>
+          updateEditorMutation.mutate({
+            preferredEditor: editor === 'auto' ? null : editor,
+          })
+        }
       />
 
       {skillsPending ? (

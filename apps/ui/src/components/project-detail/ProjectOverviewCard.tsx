@@ -12,8 +12,16 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { getToolConfig } from '@/lib/tool-config'
 import { isElectron, getElectronAPI } from '@/lib/electron'
+import { KNOWN_EDITORS, getDefaultEditor } from '@/lib/editor-settings'
 import { cn } from '@/lib/utils'
 
 interface ProjectOverviewCardProps {
@@ -22,6 +30,7 @@ interface ProjectOverviewCardProps {
   onIconPathChange: (value: string) => void
   onApplyIcon: (value: string | null) => void
   isIconPending: boolean
+  onEditorChange: (editor: string) => void
 }
 
 export function ProjectOverviewCard({
@@ -30,6 +39,7 @@ export function ProjectOverviewCard({
   onIconPathChange,
   onApplyIcon,
   isIconPending,
+  onEditorChange,
 }: ProjectOverviewCardProps) {
   const [pickerError, setPickerError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
@@ -101,7 +111,13 @@ export function ProjectOverviewCard({
                   <Button
                     variant="ghost"
                     size="icon-xs"
-                    onClick={() => getElectronAPI()?.openInEditor(project.path)}
+                    onClick={() => {
+                      const effectiveEditor = project.preferredEditor ?? getDefaultEditor()
+                      getElectronAPI()?.openInEditor(
+                        project.path,
+                        effectiveEditor === 'auto' ? undefined : effectiveEditor
+                      )
+                    }}
                   >
                     <ExternalLinkIcon className="size-3.5" />
                   </Button>
@@ -111,6 +127,22 @@ export function ProjectOverviewCard({
             </>
           )}
         </div>
+      </div>
+
+      <div className="flex items-center px-4 py-2.5 gap-3">
+        <span className="w-20 text-sm text-muted-foreground shrink-0">Editor</span>
+        <Select value={project.preferredEditor ?? 'auto'} onValueChange={onEditorChange}>
+          <SelectTrigger className="h-7 w-[200px] text-sm">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {KNOWN_EDITORS.map((e) => (
+              <SelectItem key={e.value} value={e.value}>
+                {e.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="flex items-center px-4 py-2.5 gap-3">
