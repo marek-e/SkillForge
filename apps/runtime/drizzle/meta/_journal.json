@@ -15,6 +15,13 @@
       "when": 1771509210745,
       "tag": "0001_absent_skaar",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1771582370487,
+      "tag": "0002_easy_rhino",
+      "breakpoints": true
     }
   ]
 }

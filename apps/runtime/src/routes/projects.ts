@@ -59,6 +59,7 @@ projectRoutes.post('/', async (c) => {
     name: path.basename(projectPath),
     path: projectPath,
     iconPath: null,
+    preferredEditor: null,
     isFavorite: false,
     detectedTools: results,
     createdAt: now,
@@ -86,7 +87,11 @@ projectRoutes.post('/', async (c) => {
 })
 
 projectRoutes.patch('/:id', async (c) => {
-  const body = await c.req.json<{ name?: string; iconPath?: string | null }>()
+  const body = await c.req.json<{
+    name?: string
+    iconPath?: string | null
+    preferredEditor?: string | null
+  }>()
   const project = store.projects.update(c.req.param('id'), body)
   if (!project) {
     return c.json({ error: { message: 'Project not found', code: 'NOT_FOUND' } }, 404)

@@ -29,6 +29,7 @@ export const projects = sqliteTable('projects', {
   name: text('name').notNull(),
   path: text('path').notNull().unique(),
   iconPath: text('icon_path'),
+  preferredEditor: text('preferred_editor'),
   isFavorite: integer('is_favorite', { mode: 'boolean' }).notNull().default(false),
   detectedTools: text('detected_tools').notNull().default('[]'),
   createdAt: text('created_at').notNull(),

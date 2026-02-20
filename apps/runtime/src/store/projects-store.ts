@@ -10,6 +10,7 @@ type ProjectRow = typeof projects.$inferSelect
 function projectFromRow(row: ProjectRow): Project {
   return ProjectSchema.parse({
     ...row,
+    preferredEditor: row.preferredEditor ?? null,
     detectedTools: deserializeJsonField(row.detectedTools, []),
   })
 }
@@ -35,6 +36,7 @@ export const projectsStore = {
         name: project.name,
         path: project.path,
         iconPath: project.iconPath,
+        preferredEditor: project.preferredEditor,
         isFavorite: project.isFavorite,
         detectedTools: serializeJsonField(project.detectedTools),
         createdAt: project.createdAt,
@@ -43,7 +45,10 @@ export const projectsStore = {
       .run()
     return project
   },
-  update: (id: string, updates: Partial<Pick<Project, 'name' | 'iconPath'>>): Project | null => {
+  update: (
+    id: string,
+    updates: Partial<Pick<Project, 'name' | 'iconPath' | 'preferredEditor'>>
+  ): Project | null => {
     const row = getDb().select().from(projects).where(eq(projects.id, id)).get()
     if (!row) return null
     const existing = projectFromRow(row)
@@ -53,6 +58,7 @@ export const projectsStore = {
       .set({
         name: updated.name,
         iconPath: updated.iconPath,
+        preferredEditor: updated.preferredEditor,
         updatedAt: updated.updatedAt,
       })
       .where(eq(projects.id, id))
