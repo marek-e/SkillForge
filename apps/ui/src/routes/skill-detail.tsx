@@ -30,6 +30,8 @@ const originalToolToName: Record<NonNullable<Skill['originalTool']>, string> = {
   openai: 'codex',
   gemini: 'gemini-cli',
   generic: 'opencode',
+  copilot: 'copilot',
+  vibe: 'vibe',
 }
 
 function dirnamePath(filePath: string): string {

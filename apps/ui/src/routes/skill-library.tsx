@@ -16,6 +16,8 @@ const originalToolToName: Record<NonNullable<Skill['originalTool']>, string> = {
   openai: 'codex',
   gemini: 'gemini-cli',
   generic: 'opencode',
+  copilot: 'copilot',
+  vibe: 'vibe',
 }
 
 export const skillLibraryRoute = createRoute({

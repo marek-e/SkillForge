@@ -42,6 +42,20 @@ const toolConfig: Record<string, ToolConfig> = {
     invert: true,
     url: 'https://opencode.ai/',
   },
+  copilot: {
+    displayName: 'Copilot',
+    logo: '/tools/github-copilot.svg',
+    accent: 'bg-sky-500/15',
+    invert: true,
+    url: 'https://github.com/features/copilot',
+  },
+  vibe: {
+    displayName: 'Vibe',
+    logo: '/tools/mistral-color.svg',
+    accent: 'bg-amber-500/15',
+    invert: false,
+    url: 'https://docs.mistral.ai/mistral-vibe/introduction',
+  },
 }
 
 export const ALL_TOOL_NAMES = Object.keys(toolConfig)

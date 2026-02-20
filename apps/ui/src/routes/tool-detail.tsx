@@ -17,6 +17,8 @@ const skillsQueryMap: Record<string, () => Promise<SkillItem[]>> = {
   codex: api.tools.codexSkills,
   'gemini-cli': api.tools.geminiCliSkills,
   opencode: api.tools.openCodeSkills,
+  copilot: api.tools.copilotSkills,
+  vibe: api.tools.vibeSkills,
 }
 
 function ToolDetailPage() {
