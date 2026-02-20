@@ -1,0 +1,27 @@
+apps/ui/src/components/skills/CreateSkillDialog.tsx
+  b765aa2dd3a28c56 1-34,36-98
+apps/ui/src/routes/skill-library.tsx
+  b765aa2dd3a28c56 3,7,10,35,79-87,90
+apps/ui/src/hooks/use-skill-library.ts
+  b765aa2dd3a28c56 1-3,12-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "0313c206bc1e3528aef750756495f7c212d45b02",
+  "prompts": {
+    "b765aa2dd3a28c56": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cb59bca6-85f2-42e2-b41a-252bbe5eb5bf",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Marek Elmayan <melmayan.dev@gmail.com>",
+      "messages": [],
+      "total_additions": 123,
+      "total_deletions": 5,
+      "accepted_lines": 128,
+      "overriden_lines": 1
+    }
+  }
+}
