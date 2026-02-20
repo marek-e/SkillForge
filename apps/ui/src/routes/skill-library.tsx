@@ -29,10 +29,16 @@ function SkillLibraryPage() {
   const { data: skills, isLoading } = useSkills()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedTools, setSelectedTools] = useState<string[]>([])
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
 
   const availableTools = useMemo(() => {
     const tools = new Set(skills?.map((s) => s.originalTool).filter(Boolean))
     return [...tools] as string[]
+  }, [skills])
+
+  const availableTags = useMemo(() => {
+    const tags = new Set(skills?.flatMap((s) => s.tags))
+    return [...tags].sort()
   }, [skills])
 
   const filteredSkills = useMemo(() => {
@@ -46,8 +52,11 @@ function SkillLibraryPage() {
     if (selectedTools.length > 0) {
       result = result.filter((s) => s.originalTool && selectedTools.includes(s.originalTool))
     }
+    if (selectedTags.length > 0) {
+      result = result.filter((s) => selectedTags.every((t) => s.tags.includes(t)))
+    }
     return result
-  }, [skills, searchQuery, selectedTools])
+  }, [skills, searchQuery, selectedTools, selectedTags])
 
   function handleToolToggle(tool: string) {
     setSelectedTools((prev) =>
@@ -55,7 +64,12 @@ function SkillLibraryPage() {
     )
   }
 
-  const isFiltered = searchQuery.trim().length > 0 || selectedTools.length > 0
+  function handleTagToggle(tag: string) {
+    setSelectedTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]))
+  }
+
+  const isFiltered =
+    searchQuery.trim().length > 0 || selectedTools.length > 0 || selectedTags.length > 0
 
   return (
     <div className="space-y-6">
@@ -83,6 +97,9 @@ function SkillLibraryPage() {
             availableTools={availableTools}
             selectedTools={selectedTools}
             onToolToggle={handleToolToggle}
+            availableTags={availableTags}
+            selectedTags={selectedTags}
+            onTagToggle={handleTagToggle}
           />
 
           <div className="space-y-2">
@@ -103,6 +120,7 @@ function SkillLibraryPage() {
                     ? originalToolToName[skill.originalTool]
                     : undefined
                   const config = toolName ? getToolConfig(toolName) : undefined
+                  const visibleTags = skill.tags.slice(0, 3)
                   return (
                     <div
                       key={skill.id}
@@ -128,6 +146,16 @@ function SkillLibraryPage() {
                           <Badge variant="secondary" className="text-xs">
                             {skill.source}
                           </Badge>
+                          {skill.scope === 'project-specific' && (
+                            <Badge variant="outline" className="text-xs">
+                              project-specific
+                            </Badge>
+                          )}
+                          {visibleTags.map((tag) => (
+                            <Badge key={tag} variant="secondary" className="text-xs font-mono">
+                              {tag.startsWith('#') ? tag : `#${tag}`}
+                            </Badge>
+                          ))}
                         </div>
                         <p className="text-sm text-muted-foreground">{skill.description}</p>
                       </div>

@@ -16,6 +16,8 @@ function skillFromRow(row: SkillRow): Skill {
     outputSchema: row.outputSchema ? deserializeJsonField(row.outputSchema) : undefined,
     implementationRef: row.implementationRef ?? undefined,
     originalTool: row.originalTool ?? undefined,
+    tags: deserializeJsonField<string[]>(row.tags, []),
+    scope: row.scope,
   })
 }
 
@@ -42,6 +44,8 @@ export const skillsStore = {
         implementationRef: skill.implementationRef ?? null,
         source: skill.source,
         originalTool: skill.originalTool ?? null,
+        tags: JSON.stringify(skill.tags),
+        scope: skill.scope,
         createdAt: skill.createdAt,
         updatedAt: skill.updatedAt,
       })
@@ -65,6 +69,8 @@ export const skillsStore = {
         implementationRef: updated.implementationRef ?? null,
         source: updated.source,
         originalTool: updated.originalTool ?? null,
+        tags: JSON.stringify(updated.tags),
+        scope: updated.scope,
         updatedAt: updated.updatedAt,
       })
       .where(eq(skills.id, id))

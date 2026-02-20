@@ -44,6 +44,8 @@ function skillItemToCreateSkill(skill: SkillItem, toolName: string): CreateSkill
     implementationRef: skill.filePath,
     source: 'imported',
     originalTool: toolMap[toolName],
+    tags: [],
+    scope: 'general',
   }
 }
 

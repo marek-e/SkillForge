@@ -6,3 +6,4 @@ dist/
 .DS_Store
 release/
 .claude/settings.local.json
+.claude/plans/

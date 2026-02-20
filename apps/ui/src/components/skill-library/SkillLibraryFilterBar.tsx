@@ -15,6 +15,9 @@ interface Props {
   availableTools: string[]
   selectedTools: string[]
   onToolToggle: (tool: string) => void
+  availableTags: string[]
+  selectedTags: string[]
+  onTagToggle: (tag: string) => void
 }
 
 const isMac = typeof navigator !== 'undefined' && /mac/i.test(navigator.platform)
@@ -25,6 +28,9 @@ export function SkillLibraryFilterBar({
   availableTools,
   selectedTools,
   onToolToggle,
+  availableTags,
+  selectedTags,
+  onTagToggle,
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -41,7 +47,7 @@ export function SkillLibraryFilterBar({
   }, [])
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex flex-wrap items-center gap-3">
       <InputGroup className="w-64">
         <InputGroupAddon align="inline-start">
           <SearchIcon />
@@ -81,6 +87,26 @@ export function SkillLibraryFilterBar({
                 onClick={() => onToolToggle(tool)}
               >
                 {config.displayName}
+              </Button>
+            )
+          })}
+        </div>
+      )}
+
+      {availableTags.length > 0 && (
+        <div className="flex items-center gap-1.5">
+          {availableTags.map((tag) => {
+            const isActive = selectedTags.includes(tag)
+            const label = tag.startsWith('#') ? tag : `#${tag}`
+            return (
+              <Button
+                key={tag}
+                variant={isActive ? 'secondary' : 'outline'}
+                size="sm"
+                className="h-8 text-xs font-mono"
+                onClick={() => onTagToggle(tag)}
+              >
+                {label}
               </Button>
             )
           })}
