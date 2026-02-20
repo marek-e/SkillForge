@@ -1,0 +1,33 @@
+apps/ui/src/routes/settings.tsx
+  5728e5c097ad7a04 2,7-13,16,26,35-59
+apps/ui/src/hooks/use-project-detail.ts
+  5728e5c097ad7a04 51-65
+apps/ui/src/components/project-detail/ProjectOverviewCard.tsx
+  5728e5c097ad7a04 15-21,24,33,42,114-115,117,120,133-147
+apps/ui/src/routes/project-detail.tsx
+  5728e5c097ad7a04 11,72,195-199
+apps/ui/src/lib/editor-settings.ts
+  5728e5c097ad7a04 1-17
+apps/ui/src/lib/electron.ts
+  5728e5c097ad7a04 10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "95ca6233185205dcc5e54c7aac04ac4d8e66637a",
+  "prompts": {
+    "5728e5c097ad7a04": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9331a608-af85-49a0-8219-8bf33d734aa7",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 112,
+      "overriden_lines": 0
+    }
+  }
+}
