@@ -1,0 +1,25 @@
+apps/ui/src/components/skills/CreateSkillDialog.tsx
+  3156469be0e5caa8 3,8,16-24,35-36,38,53,60-64,70,79-81,104-124
+apps/ui/src/components/skills/TagsInput.tsx
+  3156469be0e5caa8 1-157
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "364834b99d2c52963b38748001688a2a9760ddac",
+  "prompts": {
+    "3156469be0e5caa8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "20747aa3-eab3-4095-bc9c-0fa9439fa804",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 202,
+      "overriden_lines": 0
+    }
+  }
+}
