@@ -23,7 +23,17 @@ Follow the commit message conventions documented in @docs/code-quality.md
 3. Group changes by dependency layer:
    Documentation → Core (`packages/core`) → Connectors (`packages/connectors`) → Store/API (`apps/runtime`) → UI (`apps/ui`) → Electron (`apps/electron`) → Config
 
-## Phase 2: Execute
+## Phase 2: Pre-commit Validation Gate
+
+Before staging anything, run:
+
+```bash
+pnpm format && pnpm lint && pnpm typecheck
+```
+
+All three **must** exit 0 before proceeding. If any fail, fix the issues and re-run until all pass. Do NOT commit with failing checks.
+
+## Phase 3: Execute
 
 For each logical commit group, in dependency order:
 

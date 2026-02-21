@@ -100,14 +100,17 @@ If you hit an unresolvable blocker (type errors that can't be fixed after 3 atte
 
 ## Phase 6: Validate
 
-Run 3 QA checks in parallel (based on @.claude/skills/validate/SKILL.md):
-
-1. `pnpm format`
-2. `pnpm lint`
-3. `pnpm typecheck`
-
-Fix all issues found. Repeat until all green.
+Run QA checks and fix all issues. Repeat until all green.
 If you cannot make all checks green after 3 full cycles, output `<sentinel>BLOCKED</sentinel>` and stop.
+
+**Run in this order (NOT in parallel — format must apply its fixes before lint/typecheck run):**
+
+1. `pnpm format` — auto-fixes formatting in place; re-run until it exits 0 with no changes
+2. `pnpm lint` — fix all lint errors
+3. `pnpm typecheck` — fix all type errors
+4. After fixing anything in steps 2–3, re-run `pnpm format` again to ensure fixes are formatted
+
+**Confirm all three pass cleanly before proceeding.**
 
 ## Phase 7: Commit
 
