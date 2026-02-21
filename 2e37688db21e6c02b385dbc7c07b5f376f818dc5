@@ -1,0 +1,23 @@
+apps/ui/src/hooks/use-skill-library.ts
+  3156469be0e5caa8 1,14-21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "2e37688db21e6c02b385dbc7c07b5f376f818dc5",
+  "prompts": {
+    "3156469be0e5caa8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "20747aa3-eab3-4095-bc9c-0fa9439fa804",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>",
+      "messages": [],
+      "total_additions": 400,
+      "total_deletions": 194,
+      "accepted_lines": 215,
+      "overriden_lines": 0
+    }
+  }
+}
