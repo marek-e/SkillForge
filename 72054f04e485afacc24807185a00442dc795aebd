@@ -1,0 +1,27 @@
+docs/code-quality.md
+  625f834d12b5968e 8-35
+apps/ui/src/routes/home.tsx
+  625f834d12b5968e 8-9,16-17,21-23,31
+apps/ui/src/hooks/use-home.ts
+  625f834d12b5968e 1-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "72054f04e485afacc24807185a00442dc795aebd",
+  "prompts": {
+    "625f834d12b5968e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e50b596f-6197-4fe9-87c6-789bc0c4f1db",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 86,
+      "overriden_lines": 0
+    }
+  }
+}
