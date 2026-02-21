@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { createRoute, useNavigate } from '@tanstack/react-router'
 import type { Skill, SkillScope } from '@skillforge/core'
-import { ArrowLeftIcon, FileIcon, FileTextIcon, Trash2Icon, XIcon } from 'lucide-react'
+import { ArrowLeftIcon, FileIcon, FileTextIcon, Trash2Icon } from 'lucide-react'
 import { rootRoute } from './__root'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -19,6 +19,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/components/ui/toaster'
 import { api } from '@/api/client'
 import { DeleteSkillDialog } from '@/components/skills/DeleteSkillDialog'
+import { TagsInput } from '@/components/skills/TagsInput'
 import { getToolConfig, originalToolToName } from '@/lib/tool-config'
 import { useBreadcrumb } from '@/lib/breadcrumbs'
 import {
@@ -29,6 +30,7 @@ import {
   useUpdateSkillContent,
   useDeleteSkill,
 } from '@/hooks/use-skill-detail'
+import { useAvailableTags } from '@/hooks/use-skill-library'
 
 function dirnamePath(filePath: string): string {
   const idx = filePath.lastIndexOf('/')
@@ -73,7 +75,6 @@ function SkillDetailPage() {
   const [bodyDraft, setBodyDraft] = useState('')
   const [scopeDraft, setScopeDraft] = useState<SkillScope>('general')
   const [tagsDraft, setTagsDraft] = useState<string[]>([])
-  const [tagInput, setTagInput] = useState('')
   const [fileDrafts, setFileDrafts] = useState<Record<string, string>>({})
   const [loadedFileContents, setLoadedFileContents] = useState<Record<string, string>>({})
   const [selectedFile, setSelectedFile] = useState<string | null>(null)
@@ -103,6 +104,8 @@ function SkillDetailPage() {
       })
     }
   }, [selectedFile, selectedFileData])
+
+  const availableTags = useAvailableTags()
 
   const updateMeta = useUpdateSkill(skillId)
   const updateContent = useUpdateSkillContent(skillId)
@@ -249,39 +252,7 @@ function SkillDetailPage() {
 
         <div className="space-y-2">
           <Label>Tags</Label>
-          <div className="flex flex-wrap items-center gap-1.5 rounded-lg border px-2 py-1.5 min-h-8">
-            {tagsDraft.map((tag) => (
-              <Badge key={tag} variant="secondary" className="gap-1 text-xs font-mono">
-                {tag.startsWith('#') ? tag : `#${tag}`}
-                <button
-                  type="button"
-                  onClick={() => setTagsDraft((prev) => prev.filter((t) => t !== tag))}
-                  className="hover:text-foreground"
-                >
-                  <XIcon className="size-3" />
-                </button>
-              </Badge>
-            ))}
-            <input
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ',') {
-                  e.preventDefault()
-                  const value = tagInput.trim().replace(/^#/, '')
-                  if (value && !tagsDraft.includes(value)) {
-                    setTagsDraft((prev) => [...prev, value])
-                  }
-                  setTagInput('')
-                }
-                if (e.key === 'Backspace' && !tagInput && tagsDraft.length > 0) {
-                  setTagsDraft((prev) => prev.slice(0, -1))
-                }
-              }}
-              placeholder={tagsDraft.length === 0 ? 'Add tags…' : ''}
-              className="flex-1 min-w-16 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-            />
-          </div>
+          <TagsInput value={tagsDraft} onChange={setTagsDraft} suggestions={availableTags} />
         </div>
       </div>
 
