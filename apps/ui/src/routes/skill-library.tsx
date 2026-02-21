@@ -1,5 +1,4 @@
 import { createRoute, useNavigate } from '@tanstack/react-router'
-import type { Skill } from '@skillforge/core'
 import { PlusIcon, WrenchIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { rootRoute } from './__root'
@@ -9,18 +8,8 @@ import { H1, Lead } from '@/components/typography'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { getToolConfig } from '@/lib/tool-config'
+import { getToolConfig, originalToolToName } from '@/lib/tool-config'
 import { useSkills } from '@/hooks/use-skill-library'
-
-const originalToolToName: Record<NonNullable<Skill['originalTool']>, string> = {
-  claude: 'claude-code',
-  cursor: 'cursor',
-  openai: 'codex',
-  gemini: 'gemini-cli',
-  generic: 'opencode',
-  copilot: 'copilot',
-  vibe: 'vibe',
-}
 
 export const skillLibraryRoute = createRoute({
   getParentRoute: () => rootRoute,

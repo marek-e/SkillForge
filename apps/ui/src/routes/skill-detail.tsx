@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/components/ui/toaster'
 import { api } from '@/api/client'
 import { DeleteSkillDialog } from '@/components/skills/DeleteSkillDialog'
-import { getToolConfig } from '@/lib/tool-config'
+import { getToolConfig, originalToolToName } from '@/lib/tool-config'
 import { useBreadcrumb } from '@/lib/breadcrumbs'
 import {
   useSkill,
@@ -23,16 +23,6 @@ import {
   useUpdateSkillContent,
   useDeleteSkill,
 } from '@/hooks/use-skill-detail'
-
-const originalToolToName: Record<NonNullable<Skill['originalTool']>, string> = {
-  claude: 'claude-code',
-  cursor: 'cursor',
-  openai: 'codex',
-  gemini: 'gemini-cli',
-  generic: 'opencode',
-  copilot: 'copilot',
-  vibe: 'vibe',
-}
 
 function dirnamePath(filePath: string): string {
   const idx = filePath.lastIndexOf('/')

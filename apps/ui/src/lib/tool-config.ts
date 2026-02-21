@@ -1,3 +1,15 @@
+import type { Skill } from '@skillforge/core'
+
+export const originalToolToName: Record<NonNullable<Skill['originalTool']>, string> = {
+  claude: 'claude-code',
+  cursor: 'cursor',
+  openai: 'codex',
+  gemini: 'gemini-cli',
+  generic: 'opencode',
+  copilot: 'copilot',
+  vibe: 'vibe',
+}
+
 export interface ToolConfig {
   displayName: string
   logo: string
@@ -50,7 +62,7 @@ const toolConfig: Record<string, ToolConfig> = {
     url: 'https://github.com/features/copilot',
   },
   vibe: {
-    displayName: 'Vibe',
+    displayName: 'Mistral Vibe',
     logo: '/tools/mistral-color.svg',
     accent: 'bg-amber-500/15',
     invert: false,
