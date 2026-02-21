@@ -3,7 +3,15 @@ import { z } from 'zod'
 export const SkillSourceSchema = z.enum(['manual', 'imported'])
 export type SkillSource = z.infer<typeof SkillSourceSchema>
 
-export const SourceToolSchema = z.enum(['cursor', 'claude', 'openai', 'gemini', 'generic'])
+export const SourceToolSchema = z.enum([
+  'cursor',
+  'claude',
+  'openai',
+  'gemini',
+  'generic',
+  'copilot',
+  'vibe',
+])
 export type SourceTool = z.infer<typeof SourceToolSchema>
 
 export const SkillScopeSchema = z.enum(['general', 'project-specific'])

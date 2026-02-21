@@ -17,14 +17,14 @@ const toolConfig: Record<string, ToolConfig> = {
   cursor: {
     displayName: 'Cursor',
     logo: '/tools/cursor.svg',
-    accent: 'bg-blue-500/15',
+    accent: 'bg-pink-500/15',
     invert: true,
     url: 'https://cursor.com/download',
   },
   codex: {
     displayName: 'Codex',
     logo: '/tools/openai.svg',
-    accent: 'bg-purple-500/15',
+    accent: 'bg-stone-500/15',
     invert: true,
     url: 'https://developers.openai.com/codex/cli',
   },
@@ -38,9 +38,23 @@ const toolConfig: Record<string, ToolConfig> = {
   opencode: {
     displayName: 'OpenCode',
     logo: '/tools/opencode-logo-light.svg',
-    accent: 'bg-green-500/15',
+    accent: 'bg-purple-500/15',
     invert: true,
     url: 'https://opencode.ai/',
+  },
+  copilot: {
+    displayName: 'Copilot',
+    logo: '/tools/github-copilot.svg',
+    accent: 'bg-green-500/15',
+    invert: true,
+    url: 'https://github.com/features/copilot',
+  },
+  vibe: {
+    displayName: 'Vibe',
+    logo: '/tools/mistral-color.svg',
+    accent: 'bg-amber-500/15',
+    invert: false,
+    url: 'https://docs.mistral.ai/mistral-vibe/introduction',
   },
 }
 

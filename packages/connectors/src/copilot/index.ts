@@ -14,9 +14,9 @@ function extraFrontmatter(frontmatter: Record<string, string>): Record<string, s
   return Object.keys(rest).length > 0 ? rest : undefined
 }
 
-export async function listProjectOpenCodeSkills(projectPath: string): Promise<DefaultSkill[]> {
+export async function listProjectCopilotSkills(projectPath: string): Promise<DefaultSkill[]> {
   const skills = await listSkillsFromDir<DefaultSkill>(
-    join(projectPath, '.opencode', 'skills'),
+    join(projectPath, '.github', 'agents'),
     (name, frontmatter, filePath, body) => ({
       name: frontmatter['name'] || name,
       description: frontmatter['description'] || 'Skill',
@@ -28,8 +28,8 @@ export async function listProjectOpenCodeSkills(projectPath: string): Promise<De
   return skills.sort((a, b) => a.name.localeCompare(b.name))
 }
 
-export async function listOpenCodeSkills(): Promise<DefaultSkill[]> {
-  const skillsDir = join(homedir(), '.config', 'opencode', 'skills')
+export async function listCopilotSkills(): Promise<DefaultSkill[]> {
+  const skillsDir = join(homedir(), '.copilot', 'skills')
 
   const skills = await listSkillsFromDir<DefaultSkill>(
     skillsDir,
@@ -45,11 +45,11 @@ export async function listOpenCodeSkills(): Promise<DefaultSkill[]> {
   return skills.sort((a, b) => a.name.localeCompare(b.name))
 }
 
-export const openCodeConnector: Connector = {
-  name: 'opencode',
+export const copilotConnector: Connector = {
+  name: 'copilot',
 
   async detectGlobal(): Promise<GlobalDetectionResult> {
-    const globalDir = join(homedir(), '.config', 'opencode')
+    const globalDir = join(homedir(), '.copilot')
     if (await exists(globalDir)) {
       return { detected: true, globalDir }
     }
@@ -60,7 +60,7 @@ export const openCodeConnector: Connector = {
     const paths: ProjectDetectionResult['paths'] = {}
     let detected = false
 
-    const projectDir = join(projectPath, '.opencode')
+    const projectDir = join(projectPath, '.github')
     if (await exists(projectDir)) {
       paths.projectDir = projectDir
       detected = true

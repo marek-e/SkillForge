@@ -9,6 +9,8 @@ import {
   listProjectCodexSkills,
   listProjectGeminiCliSkills,
   listProjectOpenCodeSkills,
+  listProjectCopilotSkills,
+  listProjectVibeSkills,
 } from '@skillforge/connectors'
 import type { DetectedTool, Project } from '@skillforge/core'
 import { store } from '../store'
@@ -121,6 +123,8 @@ projectRoutes.get('/:id/skills', async (c) => {
     codexSkills,
     geminiCliSkills,
     opencodeSkills,
+    copilotSkills,
+    vibeSkills,
     detectionResults,
   ] = await Promise.all([
     listProjectClaudeCodeSkills(project.path),
@@ -128,6 +132,8 @@ projectRoutes.get('/:id/skills', async (c) => {
     listProjectCodexSkills(project.path),
     listProjectGeminiCliSkills(project.path),
     listProjectOpenCodeSkills(project.path),
+    listProjectCopilotSkills(project.path),
+    listProjectVibeSkills(project.path),
     Promise.all(
       allConnectors.map(async (connector) => {
         const { detected } = await connector.detectProject(project.path)
@@ -153,6 +159,8 @@ projectRoutes.get('/:id/skills', async (c) => {
       codex: codexSkills,
       'gemini-cli': geminiCliSkills,
       opencode: opencodeSkills,
+      copilot: copilotSkills,
+      vibe: vibeSkills,
     },
   })
 })

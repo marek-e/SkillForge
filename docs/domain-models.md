@@ -4,12 +4,12 @@
 
 Represents a tool-specific agent configuration.
 
-| Field           | Type       | Description                                               |
-| --------------- | ---------- | --------------------------------------------------------- |
-| `id`            | string     | Unique identifier                                         |
-| `name`          | string     | Display name                                              |
-| `sourceTool`    | enum       | `cursor` \| `claude` \| `openai` \| `gemini` \| `generic` |
-| `enabledSkills` | SkillRef[] | References to enabled skills                              |
+| Field           | Type       | Description                                                                      |
+| --------------- | ---------- | -------------------------------------------------------------------------------- |
+| `id`            | string     | Unique identifier                                                                |
+| `name`          | string     | Display name                                                                     |
+| `sourceTool`    | enum       | `cursor` \| `claude` \| `openai` \| `gemini` \| `generic` \| `copilot` \| `vibe` |
+| `enabledSkills` | SkillRef[] | References to enabled skills                                                     |
 
 ## Skill
 

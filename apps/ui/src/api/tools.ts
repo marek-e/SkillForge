@@ -2,9 +2,8 @@ import type {
   ClaudeCodeCommand,
   ClaudeCodeSkill,
   CodexSkill,
+  DefaultSkill,
   CursorSkill,
-  GeminiCliSkill,
-  OpenCodeSkill,
   ToolStatus,
 } from '@skillforge/core'
 import { fetchApi } from './http'
@@ -15,6 +14,8 @@ export const toolsApi = {
   claudeCodeSkills: () => fetchApi<ClaudeCodeSkill[]>('/tools/claude-code/skills'),
   cursorSkills: () => fetchApi<CursorSkill[]>('/tools/cursor/skills'),
   codexSkills: () => fetchApi<CodexSkill[]>('/tools/codex/skills'),
-  geminiCliSkills: () => fetchApi<GeminiCliSkill[]>('/tools/gemini-cli/skills'),
-  openCodeSkills: () => fetchApi<OpenCodeSkill[]>('/tools/opencode/skills'),
+  geminiCliSkills: () => fetchApi<DefaultSkill[]>('/tools/gemini-cli/skills'),
+  openCodeSkills: () => fetchApi<DefaultSkill[]>('/tools/opencode/skills'),
+  copilotSkills: () => fetchApi<DefaultSkill[]>('/tools/copilot/skills'),
+  vibeSkills: () => fetchApi<DefaultSkill[]>('/tools/vibe/skills'),
 }
