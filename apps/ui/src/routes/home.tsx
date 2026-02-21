@@ -1,66 +1,41 @@
 import { createRoute, useNavigate } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
 import {
   WrenchIcon,
   FolderOpenIcon,
   ArrowRightIcon,
   StarIcon,
+  Toolbox,
+  BookCopy,
+  TrafficCone,
 } from 'lucide-react'
-import type { Skill } from '@skillforge/core'
 import { rootRoute } from './__root'
-import { api, queryKeys } from '../api/client'
 import { ToolCardCompact } from '../components/ToolCardCompact'
 import { H1, H2, Lead } from '../components/typography'
 import { Badge } from '../components/ui/badge'
 import { Skeleton } from '../components/ui/skeleton'
-import { getToolConfig } from '@/lib/tool-config'
-
-const originalToolToName: Record<NonNullable<Skill['originalTool']>, string> = {
-  claude: 'claude-code',
-  cursor: 'cursor',
-  openai: 'codex',
-  gemini: 'gemini-cli',
-  generic: 'opencode',
-}
+import { getToolConfig, originalToolToName } from '@/lib/tool-config'
+import { useHomeData } from '@/hooks/use-home'
 
 function HomePage() {
   const navigate = useNavigate()
-
-  const { data: tools, isLoading: toolsLoading } = useQuery({
-    queryKey: queryKeys.tools.lists(),
-    queryFn: api.tools.list,
-  })
-
-  const { data: skills, isLoading: skillsLoading } = useQuery({
-    queryKey: queryKeys.skills.lists(),
-    queryFn: api.skills.list,
-  })
-
-  const { data: projects, isLoading: projectsLoading } = useQuery({
-    queryKey: queryKeys.projects.lists(),
-    queryFn: api.projects.list,
-  })
-
-  const connectedTools = tools?.filter((t) => t.detected) ?? []
-  const totalSkills = skills?.length ?? 0
-  const totalProjects = projects?.length ?? 0
-  const recentSkills = skills?.slice(0, 5) ?? []
-  const recentProjects =
-    projects
-      ?.slice()
-      .sort((a, b) => {
-        if (a.isFavorite !== b.isFavorite) return a.isFavorite ? -1 : 1
-        return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      })
-      .slice(0, 5) ?? []
+  const {
+    connectedTools,
+    totalSkills,
+    totalProjects,
+    recentSkills,
+    recentProjects,
+    isLoading,
+    toolsLoading,
+    skillsLoading,
+    projectsLoading,
+  } = useHomeData()
 
   return (
     <div className="space-y-10">
-      {/* Header */}
       <div className="space-y-2">
         <H1>Welcome to SkillForge</H1>
-        <Lead>Visualize, manage, and normalize agent skills across tools.</Lead>
-        {!toolsLoading && !skillsLoading && !projectsLoading && (
+        <Lead>Visualize and manage agent skills across tools and projects.</Lead>
+        {!isLoading && (
           <p className="text-sm text-muted-foreground">
             {connectedTools.length} tool{connectedTools.length !== 1 ? 's' : ''} connected
             {' \u00B7 '}
@@ -74,7 +49,9 @@ function HomePage() {
       {/* Connected Tools */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <H2>Connected Tools</H2>
+          <H2 className="flex items-center gap-2">
+            <Toolbox /> Connected Tools
+          </H2>
           <button
             type="button"
             className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -107,7 +84,7 @@ function HomePage() {
             to see available integrations.
           </p>
         ) : (
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap justify-center gap-4">
             {connectedTools.slice(0, 5).map((tool) => (
               <div
                 key={tool.name}
@@ -120,10 +97,12 @@ function HomePage() {
         )}
       </section>
 
-      {/* Skill Library */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <H2>Skill Library</H2>
+          <H2 className="flex items-center gap-2">
+            <BookCopy />
+            Skill Library
+          </H2>
           <button
             type="button"
             className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -185,10 +164,11 @@ function HomePage() {
         )}
       </section>
 
-      {/* Recent Projects */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <H2>Recent Projects</H2>
+          <H2 className="flex items-center gap-2">
+            <TrafficCone /> Recent Projects
+          </H2>
           <button
             type="button"
             className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
