@@ -1,11 +1,13 @@
 import { createRoute, useNavigate } from '@tanstack/react-router'
 import type { Skill } from '@skillforge/core'
-import { WrenchIcon } from 'lucide-react'
+import { PlusIcon, WrenchIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { rootRoute } from './__root'
 import { SkillLibraryFilterBar } from '@/components/skill-library/SkillLibraryFilterBar'
+import { CreateSkillDialog } from '@/components/skills/CreateSkillDialog'
 import { H1, Lead } from '@/components/typography'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { getToolConfig } from '@/lib/tool-config'
 import { useSkills } from '@/hooks/use-skill-library'
@@ -30,6 +32,7 @@ function SkillLibraryPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedTools, setSelectedTools] = useState<string[]>([])
   const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [createOpen, setCreateOpen] = useState(false)
 
   const availableTools = useMemo(() => {
     const tools = new Set(skills?.map((s) => s.originalTool).filter(Boolean))
@@ -73,10 +76,18 @@ function SkillLibraryPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <H1>Skill Library</H1>
-        <Lead>Browse and manage reusable skills.</Lead>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <H1>Skill Library</H1>
+          <Lead>Browse and manage reusable skills.</Lead>
+        </div>
+        <Button size="sm" onClick={() => setCreateOpen(true)}>
+          <PlusIcon />
+          New skill
+        </Button>
       </div>
+
+      <CreateSkillDialog open={createOpen} onOpenChange={setCreateOpen} />
 
       {isLoading ? (
         <div className="space-y-3">
