@@ -6,7 +6,7 @@ import type {
   ProjectDetectionResult,
   ImportResult,
 } from '../types'
-import type { VibeSkill } from '@skillforge/core'
+import type { DefaultSkill } from '@skillforge/core'
 import { exists, listSkillsFromDir } from '../utils'
 
 function extraFrontmatter(frontmatter: Record<string, string>): Record<string, string> | undefined {
@@ -14,8 +14,8 @@ function extraFrontmatter(frontmatter: Record<string, string>): Record<string, s
   return Object.keys(rest).length > 0 ? rest : undefined
 }
 
-export async function listProjectVibeSkills(projectPath: string): Promise<VibeSkill[]> {
-  const skills = await listSkillsFromDir<VibeSkill>(
+export async function listProjectVibeSkills(projectPath: string): Promise<DefaultSkill[]> {
+  const skills = await listSkillsFromDir<DefaultSkill>(
     join(projectPath, '.vibe', 'skills'),
     (name, frontmatter, filePath, body) => ({
       name: frontmatter['name'] || name,
@@ -28,10 +28,10 @@ export async function listProjectVibeSkills(projectPath: string): Promise<VibeSk
   return skills.sort((a, b) => a.name.localeCompare(b.name))
 }
 
-export async function listVibeSkills(): Promise<VibeSkill[]> {
+export async function listVibeSkills(): Promise<DefaultSkill[]> {
   const skillsDir = join(homedir(), '.vibe', 'skills')
 
-  const skills = await listSkillsFromDir<VibeSkill>(
+  const skills = await listSkillsFromDir<DefaultSkill>(
     skillsDir,
     (name, frontmatter, filePath, body) => ({
       name: frontmatter['name'] || name,

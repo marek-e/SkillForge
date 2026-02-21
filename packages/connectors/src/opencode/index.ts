@@ -6,7 +6,7 @@ import type {
   ProjectDetectionResult,
   ImportResult,
 } from '../types'
-import type { OpenCodeSkill } from '@skillforge/core'
+import type { DefaultSkill } from '@skillforge/core'
 import { exists, listSkillsFromDir } from '../utils'
 
 function extraFrontmatter(frontmatter: Record<string, string>): Record<string, string> | undefined {
@@ -14,8 +14,8 @@ function extraFrontmatter(frontmatter: Record<string, string>): Record<string, s
   return Object.keys(rest).length > 0 ? rest : undefined
 }
 
-export async function listProjectOpenCodeSkills(projectPath: string): Promise<OpenCodeSkill[]> {
-  const skills = await listSkillsFromDir<OpenCodeSkill>(
+export async function listProjectOpenCodeSkills(projectPath: string): Promise<DefaultSkill[]> {
+  const skills = await listSkillsFromDir<DefaultSkill>(
     join(projectPath, '.opencode', 'skills'),
     (name, frontmatter, filePath, body) => ({
       name: frontmatter['name'] || name,
@@ -28,10 +28,10 @@ export async function listProjectOpenCodeSkills(projectPath: string): Promise<Op
   return skills.sort((a, b) => a.name.localeCompare(b.name))
 }
 
-export async function listOpenCodeSkills(): Promise<OpenCodeSkill[]> {
+export async function listOpenCodeSkills(): Promise<DefaultSkill[]> {
   const skillsDir = join(homedir(), '.config', 'opencode', 'skills')
 
-  const skills = await listSkillsFromDir<OpenCodeSkill>(
+  const skills = await listSkillsFromDir<DefaultSkill>(
     skillsDir,
     (name, frontmatter, filePath, body) => ({
       name: frontmatter['name'] || name,

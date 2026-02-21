@@ -6,7 +6,7 @@ import type {
   ProjectDetectionResult,
   ImportResult,
 } from '../types'
-import type { GeminiCliSkill } from '@skillforge/core'
+import type { DefaultSkill } from '@skillforge/core'
 import { exists, listSkillsFromDir } from '../utils'
 
 function extraFrontmatter(frontmatter: Record<string, string>): Record<string, string> | undefined {
@@ -14,8 +14,8 @@ function extraFrontmatter(frontmatter: Record<string, string>): Record<string, s
   return Object.keys(rest).length > 0 ? rest : undefined
 }
 
-export async function listProjectGeminiCliSkills(projectPath: string): Promise<GeminiCliSkill[]> {
-  const skills = await listSkillsFromDir<GeminiCliSkill>(
+export async function listProjectGeminiCliSkills(projectPath: string): Promise<DefaultSkill[]> {
+  const skills = await listSkillsFromDir<DefaultSkill>(
     join(projectPath, '.gemini', 'skills'),
     (name, frontmatter, filePath, body) => ({
       name: frontmatter['name'] || name,
@@ -28,10 +28,10 @@ export async function listProjectGeminiCliSkills(projectPath: string): Promise<G
   return skills.sort((a, b) => a.name.localeCompare(b.name))
 }
 
-export async function listGeminiCliSkills(): Promise<GeminiCliSkill[]> {
+export async function listGeminiCliSkills(): Promise<DefaultSkill[]> {
   const skillsDir = join(homedir(), '.gemini', 'skills')
 
-  const skills = await listSkillsFromDir<GeminiCliSkill>(
+  const skills = await listSkillsFromDir<DefaultSkill>(
     skillsDir,
     (name, frontmatter, filePath, body) => ({
       name: frontmatter['name'] || name,

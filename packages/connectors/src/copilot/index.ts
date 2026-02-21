@@ -6,7 +6,7 @@ import type {
   ProjectDetectionResult,
   ImportResult,
 } from '../types'
-import type { CopilotSkill } from '@skillforge/core'
+import type { DefaultSkill } from '@skillforge/core'
 import { exists, listSkillsFromDir } from '../utils'
 
 function extraFrontmatter(frontmatter: Record<string, string>): Record<string, string> | undefined {
@@ -14,8 +14,8 @@ function extraFrontmatter(frontmatter: Record<string, string>): Record<string, s
   return Object.keys(rest).length > 0 ? rest : undefined
 }
 
-export async function listProjectCopilotSkills(projectPath: string): Promise<CopilotSkill[]> {
-  const skills = await listSkillsFromDir<CopilotSkill>(
+export async function listProjectCopilotSkills(projectPath: string): Promise<DefaultSkill[]> {
+  const skills = await listSkillsFromDir<DefaultSkill>(
     join(projectPath, '.github', 'agents'),
     (name, frontmatter, filePath, body) => ({
       name: frontmatter['name'] || name,
@@ -28,10 +28,10 @@ export async function listProjectCopilotSkills(projectPath: string): Promise<Cop
   return skills.sort((a, b) => a.name.localeCompare(b.name))
 }
 
-export async function listCopilotSkills(): Promise<CopilotSkill[]> {
+export async function listCopilotSkills(): Promise<DefaultSkill[]> {
   const skillsDir = join(homedir(), '.copilot', 'skills')
 
-  const skills = await listSkillsFromDir<CopilotSkill>(
+  const skills = await listSkillsFromDir<DefaultSkill>(
     skillsDir,
     (name, frontmatter, filePath, body) => ({
       name: frontmatter['name'] || name,
