@@ -1,0 +1,23 @@
+apps/ui/src/components/skills/SkillDetailResourceFiles.tsx
+  b7081967538c99e0 1-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "70ccb9efa93b094bb8c3b8570633890f08025083",
+  "prompts": {
+    "b7081967538c99e0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e47171df-4bdb-4876-be69-ec7c4e27f9b5",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 112,
+      "overriden_lines": 0
+    }
+  }
+}
