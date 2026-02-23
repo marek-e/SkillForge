@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react'
-import { LayoutGridIcon, LayoutListIcon, SearchIcon, XIcon } from 'lucide-react'
+import { SearchIcon, XIcon } from 'lucide-react'
 import type { SkillViewMode } from '@/lib/skill-view'
 import { getToolConfig } from '@/lib/tool-config'
 import { Button } from '@/components/ui/button'
-import { ButtonGroup } from '@/components/ui/button-group'
+import { DisplayViewSwitch } from '@/components/ui/display-view-switch'
 import {
   InputGroup,
   InputGroupAddon,
@@ -120,24 +120,7 @@ export function SkillLibraryFilterBar({
       )}
 
       <div className="ml-auto">
-        <ButtonGroup>
-          <Button
-            variant={viewMode === 'list' ? 'secondary' : 'outline'}
-            size="icon-xs"
-            onClick={() => onViewModeChange('list')}
-            aria-label="List view"
-          >
-            <LayoutListIcon className="size-3.5" />
-          </Button>
-          <Button
-            variant={viewMode === 'grid' ? 'secondary' : 'outline'}
-            size="icon-xs"
-            onClick={() => onViewModeChange('grid')}
-            aria-label="Grid view"
-          >
-            <LayoutGridIcon className="size-3.5" />
-          </Button>
-        </ButtonGroup>
+        <DisplayViewSwitch value={viewMode} onChange={onViewModeChange} />
       </div>
     </div>
   )

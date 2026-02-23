@@ -1,13 +1,13 @@
 import { createRoute, useNavigate } from '@tanstack/react-router'
-import { PlusIcon, WrenchIcon } from 'lucide-react'
+import { PlusIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { rootRoute } from './__root'
 import { SkillLibraryFilterBar } from '@/components/skill-library/SkillLibraryFilterBar'
 import { CreateSkillDialog } from '@/components/skills/CreateSkillDialog'
+import { SkillCard } from '@/components/skills/SkillCard'
 import { H1, Lead } from '@/components/typography'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { getToolConfig, originalToolToName } from '@/lib/tool-config'
 import { getDefaultSkillView, setDefaultSkillView, type SkillViewMode } from '@/lib/skill-view'
@@ -134,25 +134,16 @@ function SkillLibraryPage() {
                   const config = toolName ? getToolConfig(toolName) : undefined
                   const visibleTags = skill.tags.slice(0, 3)
                   return (
-                    <Card
+                    <SkillCard
                       key={skill.id}
-                      size="sm"
-                      className="cursor-pointer hover:ring-foreground/20 transition-shadow"
+                      viewMode="grid"
+                      name={skill.name}
+                      description={skill.description}
                       onClick={() =>
                         navigate({ to: '/skill-library/$skillId', params: { skillId: skill.id } })
                       }
-                    >
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <WrenchIcon className="size-3.5 text-muted-foreground shrink-0" />
-                          <span className="truncate">{skill.name}</span>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-2">
-                        <p className="text-sm text-muted-foreground line-clamp-2">
-                          {skill.description}
-                        </p>
-                        <div className="flex flex-wrap gap-1">
+                      badges={
+                        <>
                           {config && (
                             <Badge variant="outline" className="text-xs gap-1 px-1.5 py-0">
                               <img
@@ -176,9 +167,9 @@ function SkillLibraryPage() {
                               {tag.startsWith('#') ? tag : `#${tag}`}
                             </Badge>
                           ))}
-                        </div>
-                      </CardContent>
-                    </Card>
+                        </>
+                      }
+                    />
                   )
                 })}
               </div>
@@ -191,17 +182,16 @@ function SkillLibraryPage() {
                   const config = toolName ? getToolConfig(toolName) : undefined
                   const visibleTags = skill.tags.slice(0, 3)
                   return (
-                    <div
+                    <SkillCard
                       key={skill.id}
-                      className="flex items-start gap-3 py-2.5 cursor-pointer hover:bg-muted/50 -mx-2 px-2 rounded"
+                      viewMode="list"
+                      name={skill.name}
+                      description={skill.description}
                       onClick={() =>
                         navigate({ to: '/skill-library/$skillId', params: { skillId: skill.id } })
                       }
-                    >
-                      <WrenchIcon className="size-4 text-muted-foreground mt-0.5 shrink-0" />
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-medium text-sm">{skill.name}</span>
+                      badges={
+                        <>
                           {config && (
                             <Badge variant="outline" className="text-xs gap-1 px-1.5 py-0">
                               <img
@@ -225,10 +215,9 @@ function SkillLibraryPage() {
                               {tag.startsWith('#') ? tag : `#${tag}`}
                             </Badge>
                           ))}
-                        </div>
-                        <p className="text-sm text-muted-foreground">{skill.description}</p>
-                      </div>
-                    </div>
+                        </>
+                      }
+                    />
                   )
                 })}
               </div>

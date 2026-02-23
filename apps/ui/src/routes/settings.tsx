@@ -12,11 +12,7 @@ import {
   getCustomEditorCmd,
   setCustomEditorCmd,
 } from '@/lib/editor-settings'
-import {
-  getDefaultSkillView,
-  setDefaultSkillView,
-  type SkillViewMode,
-} from '@/lib/skill-view'
+import { getDefaultSkillView, setDefaultSkillView, type SkillViewMode } from '@/lib/skill-view'
 import { EditorSelect } from '@/components/EditorSelect'
 
 export const settingsRoute = createRoute({
