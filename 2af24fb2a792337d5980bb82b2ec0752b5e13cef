@@ -1,0 +1,25 @@
+apps/ui/src/routes/project-detail.tsx
+  00befc38a0760644 216-217
+apps/ui/src/components/project-detail/ProjectSkillsSection.tsx
+  00befc38a0760644 1-2,8-10,13-14,18,29-30,35-43,48-49,53-54,62-63,65-83,118-122,140-142,144-154,156-157,159-174,176-178,180-184,187-198,200
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "2af24fb2a792337d5980bb82b2ec0752b5e13cef",
+  "prompts": {
+    "00befc38a0760644": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7fba397e-3155-4834-a3c7-7612a8297371",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>",
+      "messages": [],
+      "total_additions": 148,
+      "total_deletions": 39,
+      "accepted_lines": 106,
+      "overriden_lines": 5
+    }
+  }
+}
