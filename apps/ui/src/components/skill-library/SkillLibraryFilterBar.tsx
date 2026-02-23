@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react'
 import { SearchIcon, XIcon } from 'lucide-react'
+import type { SkillViewMode } from '@/lib/skill-view'
 import { getToolConfig } from '@/lib/tool-config'
 import { Button } from '@/components/ui/button'
+import { DisplayViewSwitch } from '@/components/ui/display-view-switch'
 import {
   InputGroup,
   InputGroupAddon,
@@ -18,6 +20,8 @@ interface Props {
   availableTags: string[]
   selectedTags: string[]
   onTagToggle: (tag: string) => void
+  viewMode: SkillViewMode
+  onViewModeChange: (mode: SkillViewMode) => void
 }
 
 const isMac = typeof navigator !== 'undefined' && /mac/i.test(navigator.platform)
@@ -31,6 +35,8 @@ export function SkillLibraryFilterBar({
   availableTags,
   selectedTags,
   onTagToggle,
+  viewMode,
+  onViewModeChange,
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -112,6 +118,10 @@ export function SkillLibraryFilterBar({
           })}
         </div>
       )}
+
+      <div className="ml-auto">
+        <DisplayViewSwitch value={viewMode} onChange={onViewModeChange} />
+      </div>
     </div>
   )
 }

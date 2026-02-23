@@ -4,7 +4,7 @@ import { useTheme } from 'next-themes'
 import { rootRoute } from './__root'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
-import { MonitorIcon, SunIcon, MoonIcon } from 'lucide-react'
+import { LayoutGridIcon, LayoutListIcon, MonitorIcon, MoonIcon, SunIcon } from 'lucide-react'
 import { H1, Lead } from '@/components/typography'
 import {
   getDefaultEditor,
@@ -12,6 +12,7 @@ import {
   getCustomEditorCmd,
   setCustomEditorCmd,
 } from '@/lib/editor-settings'
+import { getDefaultSkillView, setDefaultSkillView, type SkillViewMode } from '@/lib/skill-view'
 import { EditorSelect } from '@/components/EditorSelect'
 
 export const settingsRoute = createRoute({
@@ -24,6 +25,13 @@ function SettingsPage() {
   const { theme = 'system', setTheme } = useTheme()
   const [defaultEditor, setEditor] = useState(() => getDefaultEditor())
   const [customCmd, setCustomCmd] = useState(() => getCustomEditorCmd())
+  const [skillView, setSkillView] = useState<SkillViewMode>(() => getDefaultSkillView())
+
+  function handleSkillViewChange(value: string) {
+    const mode = value as SkillViewMode
+    setSkillView(mode)
+    setDefaultSkillView(mode)
+  }
 
   return (
     <div className="space-y-6">
@@ -51,6 +59,45 @@ function SettingsPage() {
           triggerClassName="w-[240px]"
           inputClassName="w-[240px]"
         />
+      </div>
+
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label className="text-base font-semibold">Default Skills View</Label>
+          <p className="text-sm text-muted-foreground">
+            The default display mode for skills in the Skill Library and project details.
+          </p>
+        </div>
+
+        <RadioGroup value={skillView} onValueChange={handleSkillViewChange} className="grid-cols-2">
+          <div className="flex items-center space-x-3 rounded-lg border p-4 hover:bg-muted/50 transition-colors">
+            <RadioGroupItem value="list" id="skill-view-list" />
+            <Label
+              htmlFor="skill-view-list"
+              className="flex-1 cursor-pointer flex items-center gap-2"
+            >
+              <LayoutListIcon className="size-4" />
+              <div>
+                <div className="font-medium">List</div>
+                <div className="text-sm text-muted-foreground">Compact rows with details</div>
+              </div>
+            </Label>
+          </div>
+
+          <div className="flex items-center space-x-3 rounded-lg border p-4 hover:bg-muted/50 transition-colors">
+            <RadioGroupItem value="grid" id="skill-view-grid" />
+            <Label
+              htmlFor="skill-view-grid"
+              className="flex-1 cursor-pointer flex items-center gap-2"
+            >
+              <LayoutGridIcon className="size-4" />
+              <div>
+                <div className="font-medium">Grid</div>
+                <div className="text-sm text-muted-foreground">Cards in a grid layout</div>
+              </div>
+            </Label>
+          </div>
+        </RadioGroup>
       </div>
 
       <div className="space-y-4">
