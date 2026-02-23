@@ -1,0 +1,23 @@
+docs/code-quality.md
+  b7081967538c99e0 23,31-32,35-102
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "e4116d35b1e74510a61fea6849f0031dfac1d8c1",
+  "prompts": {
+    "b7081967538c99e0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e47171df-4bdb-4876-be69-ec7c4e27f9b5",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>",
+      "messages": [],
+      "total_additions": 345,
+      "total_deletions": 215,
+      "accepted_lines": 303,
+      "overriden_lines": 0
+    }
+  }
+}
