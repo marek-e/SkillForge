@@ -10,6 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  SidebarSeparator,
 } from '@/components/ui/sidebar'
 import { WrenchIcon, SettingsIcon, FolderOpenIcon, LibraryBigIcon } from 'lucide-react'
 import { ComponentProps } from 'react'
@@ -36,22 +37,26 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
   const location = useLocation()
 
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon" {...props} variant="floating">
       <SidebarHeader>
         <Link to="/" className="flex items-center">
-          <div className="flex items-center justify-center p-1 size-8 group-data-[collapsible=icon]:hover:bg-primary/10 rounded-md">
+          <div className="flex items-center justify-center p-1 size-8 group-data-[collapsible=icon]:hover:bg-primary/20 rounded-md">
             <img src="/anvil_outlined.svg" alt="SkillForge" className="size-6 dark:invert" />
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="font-semibold font-serif text-lg truncate">SkillForge</span>
+            <span className="font-semibold font-serif text-lg truncate text-sidebar-foreground group-data-[collapsible=icon]:opacity-0 transition-opacity duration-200 ease-linear">
+              SkillForge
+            </span>
           </div>
         </Link>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navItems} />
+        <SidebarSeparator />
         <NavProjects />
       </SidebarContent>
       <SidebarFooter>
+        <SidebarSeparator />
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
@@ -67,7 +72,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
-      <SidebarRail />
+      {/* <SidebarRail /> */}
     </Sidebar>
   )
 }

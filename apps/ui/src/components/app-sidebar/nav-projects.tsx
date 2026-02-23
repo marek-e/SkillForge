@@ -17,7 +17,7 @@ export function NavProjects() {
   if (favorites.length === 0) return null
 
   return (
-    <SidebarGroup>
+    <SidebarGroup className="mt-1">
       <SidebarGroupLabel>Favorites</SidebarGroupLabel>
       <SidebarMenu className="gap-1">
         {favorites.map((project) => {
