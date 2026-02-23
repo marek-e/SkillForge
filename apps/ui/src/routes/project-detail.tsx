@@ -213,6 +213,8 @@ function ProjectDetailPage() {
           detectedTools={project.detectedTools}
           skillsByTool={skillsByTool}
           librarySkills={librarySkills}
+          preferredEditor={project.preferredEditor}
+          customEditorCmd={project.customEditorCmd}
           onSave={(skill, toolName) => saveSkill.mutate(skillItemToCreateSkill(skill, toolName))}
           isSaving={saveSkill.isPending}
         />

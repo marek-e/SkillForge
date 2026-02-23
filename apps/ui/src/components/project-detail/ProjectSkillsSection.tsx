@@ -1,9 +1,21 @@
+import { useState } from 'react'
+import { Link } from '@tanstack/react-router'
 import type { DetectedTool, Skill, SkillItem } from '@skillforge/core'
-import { BookmarkPlusIcon, CheckIcon, WrenchIcon } from 'lucide-react'
+import {
+  BookmarkCheck,
+  BookmarkPlusIcon,
+  CheckIcon,
+  ClipboardCopyIcon,
+  ExternalLinkIcon,
+  WrenchIcon,
+} from 'lucide-react'
 import { getToolConfig } from '@/lib/tool-config'
+import { getElectronAPI, isElectron } from '@/lib/electron'
+import { getCustomEditorCmd, getDefaultEditor } from '@/lib/editor-settings'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface SkillRow {
   skill: SkillItem
@@ -14,17 +26,32 @@ interface ProjectSkillsSectionProps {
   detectedTools: DetectedTool[]
   skillsByTool: Record<string, SkillItem[]>
   librarySkills: Skill[]
+  preferredEditor?: string | null
+  customEditorCmd?: string | null
   onSave: (skill: SkillItem, toolName: string) => void
   isSaving: boolean
+}
+
+function isSingleFile(skill: SkillItem): boolean {
+  return typeof skill.body === 'string' && skill.body.trim().length > 0
+}
+
+function getSkillDir(filePath: string): string {
+  const idx = filePath.lastIndexOf('/')
+  return idx === -1 ? filePath : filePath.substring(0, idx)
 }
 
 export function ProjectSkillsSection({
   detectedTools,
   skillsByTool,
   librarySkills,
+  preferredEditor,
+  customEditorCmd,
   onSave,
   isSaving,
 }: ProjectSkillsSectionProps) {
+  const [copiedPath, setCopiedPath] = useState<string | null>(null)
+
   const detected = detectedTools.filter((t) => t.detected)
   if (detected.length === 0) return null
 
@@ -32,8 +59,28 @@ export function ProjectSkillsSection({
     (skillsByTool[tool.name] ?? []).map((skill) => ({ skill, toolName: tool.name }))
   )
 
-  const savedPaths = new Set(librarySkills.map((s) => s.implementationRef))
-  const unsavedRows = rows.filter(({ skill }) => !savedPaths.has(skill.filePath))
+  const savedSkillIdsByRef = new Map(
+    librarySkills.filter((s) => s.implementationRef).map((s) => [s.implementationRef, s.id])
+  )
+  const unsavedRows = rows.filter(({ skill }) => !savedSkillIdsByRef.has(skill.filePath))
+
+  function handleCopy(skill: SkillItem) {
+    if (!skill.body) return
+    void navigator.clipboard.writeText(skill.body)
+    setCopiedPath(skill.filePath)
+    setTimeout(() => setCopiedPath(null), 1500)
+  }
+
+  function handleOpenInEditor(skill: SkillItem) {
+    const api = getElectronAPI()
+    if (!api) return
+    const single = isSingleFile(skill)
+    const path = single ? skill.filePath : getSkillDir(skill.filePath)
+    const effectiveEditor = preferredEditor ?? getDefaultEditor()
+    const cmd =
+      effectiveEditor === 'custom' ? (customEditorCmd ?? getCustomEditorCmd()) : effectiveEditor
+    void api.openInEditor(path, cmd === 'auto' ? undefined : cmd)
+  }
 
   return (
     <div className="space-y-2">
@@ -68,7 +115,11 @@ export function ProjectSkillsSection({
         <div className="divide-y divide-border">
           {rows.map(({ skill, toolName }) => {
             const config = getToolConfig(toolName)
-            const isSaved = savedPaths.has(skill.filePath)
+            const savedId = savedSkillIdsByRef.get(skill.filePath)
+            const isSaved = savedId !== undefined
+            const single = isSingleFile(skill)
+            const isCopied = copiedPath === skill.filePath
+
             return (
               <div key={`${toolName}:${skill.name}`} className="flex items-start gap-3 py-2.5">
                 <WrenchIcon className="size-4 text-muted-foreground mt-0.5 shrink-0" />
@@ -86,19 +137,67 @@ export function ProjectSkillsSection({
                   </div>
                   <p className="text-sm text-muted-foreground">{skill.description}</p>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon-xs"
-                  disabled={isSaved || isSaving}
-                  onClick={() => onSave(skill, toolName)}
-                  title={isSaved ? 'Already in library' : 'Save to library'}
-                >
-                  {isSaved ? (
-                    <CheckIcon className="size-4 text-green-500" />
-                  ) : (
-                    <BookmarkPlusIcon className="size-4 text-muted-foreground" />
+
+                <div className="flex items-center gap-0.5 shrink-0">
+                  {single && (
+                    <Tooltip delayDuration={700}>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon-xs" onClick={() => handleCopy(skill)}>
+                          {isCopied ? (
+                            <CheckIcon className="size-3.5 text-green-500" />
+                          ) : (
+                            <ClipboardCopyIcon className="size-3.5 text-muted-foreground" />
+                          )}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>{isCopied ? 'Copied!' : 'Copy content'}</TooltipContent>
+                    </Tooltip>
                   )}
-                </Button>
+
+                  {isElectron && (
+                    <Tooltip delayDuration={700}>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon-xs"
+                          onClick={() => handleOpenInEditor(skill)}
+                        >
+                          <ExternalLinkIcon className="size-3.5 text-muted-foreground" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {single ? 'Open file in editor' : 'Open folder in editor'}
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+
+                  {isSaved ? (
+                    <Tooltip delayDuration={700}>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon-xs" asChild>
+                          <Link to="/skill-library/$skillId" params={{ skillId: savedId }}>
+                            <BookmarkCheck className="size-3.5 text-green-500" />
+                          </Link>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>View in library</TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip delayDuration={700}>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon-xs"
+                          disabled={isSaving}
+                          onClick={() => onSave(skill, toolName)}
+                        >
+                          <BookmarkPlusIcon className="size-3.5 text-muted-foreground" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Save to library</TooltipContent>
+                    </Tooltip>
+                  )}
+                </div>
               </div>
             )
           })}
