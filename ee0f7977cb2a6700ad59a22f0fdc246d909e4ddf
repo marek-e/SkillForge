@@ -1,0 +1,25 @@
+apps/ui/src/components/app-sidebar/nav-projects.tsx
+  8bbca4dc5b757fe6 20
+apps/ui/src/components/app-sidebar/app-sidebar.tsx
+  8bbca4dc5b757fe6 13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "ee0f7977cb2a6700ad59a22f0fdc246d909e4ddf",
+  "prompts": {
+    "8bbca4dc5b757fe6": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "a4e30342-560b-44d5-bbfc-44c7182209a3",
+        "model": "default"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>",
+      "messages": [],
+      "total_additions": 26,
+      "total_deletions": 18,
+      "accepted_lines": 3,
+      "overriden_lines": 1
+    }
+  }
+}
