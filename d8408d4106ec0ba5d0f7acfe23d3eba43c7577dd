@@ -1,0 +1,23 @@
+apps/ui/src/hooks/use-skill-detail-form.ts
+  b7081967538c99e0 1-114
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "d8408d4106ec0ba5d0f7acfe23d3eba43c7577dd",
+  "prompts": {
+    "b7081967538c99e0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e47171df-4bdb-4876-be69-ec7c4e27f9b5",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 226,
+      "overriden_lines": 0
+    }
+  }
+}
