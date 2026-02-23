@@ -1,0 +1,25 @@
+apps/ui/src/components/skills/SkillCard.tsx
+  db2ab09e64d7df64 1-20,22-48,50-64
+apps/ui/src/components/ui/display-view-switch.tsx
+  db2ab09e64d7df64 1-30,32-43,45-50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "da2a3d85e7158d7eee76c8dd1861d76626bbc08e",
+  "prompts": {
+    "db2ab09e64d7df64": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "93728798-ed56-4d2d-8622-f91c9dc58aff",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>",
+      "messages": [],
+      "total_additions": 197,
+      "total_deletions": 166,
+      "accepted_lines": 145,
+      "overriden_lines": 2
+    }
+  }
+}
