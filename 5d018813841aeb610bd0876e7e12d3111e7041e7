@@ -1,0 +1,23 @@
+apps/ui/src/routes/skill-detail.tsx
+  b7081967538c99e0 3,19,23,25-26,57-58,60-61,64,66,68-85,90,186-194
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "5d018813841aeb610bd0876e7e12d3111e7041e7",
+  "prompts": {
+    "b7081967538c99e0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e47171df-4bdb-4876-be69-ec7c4e27f9b5",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 39,
+      "overriden_lines": 0
+    }
+  }
+}
