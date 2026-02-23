@@ -1,50 +1,33 @@
-import { useState, useEffect } from 'react'
 import { createRoute, useNavigate } from '@tanstack/react-router'
-import type { Skill } from '@skillforge/core'
-import { ArrowLeftIcon, FileIcon, FileTextIcon, Trash2Icon } from 'lucide-react'
+import type { Skill, SkillScope } from '@skillforge/core'
+import { ArrowLeftIcon, Trash2Icon } from 'lucide-react'
 import { rootRoute } from './__root'
-import { H1 } from '@/components/typography'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { toast } from '@/components/ui/toaster'
-import { api } from '@/api/client'
 import { DeleteSkillDialog } from '@/components/skills/DeleteSkillDialog'
+import { SkillDetailResourceFiles } from '@/components/skills/SkillDetailResourceFiles'
+import { TagsInput } from '@/components/skills/TagsInput'
 import { getToolConfig, originalToolToName } from '@/lib/tool-config'
 import { useBreadcrumb } from '@/lib/breadcrumbs'
-import {
-  useSkill,
-  useSkillDirectory,
-  useSkillFile,
-  useUpdateSkill,
-  useUpdateSkillContent,
-  useDeleteSkill,
-} from '@/hooks/use-skill-detail'
+import { useSkill, useSkillDirectory, useDeleteSkill } from '@/hooks/use-skill-detail'
+import { useAvailableTags } from '@/hooks/use-skill-library'
+import { useSkillDetailForm } from '@/hooks/use-skill-detail-form'
+import { useState } from 'react'
 
 function dirnamePath(filePath: string): string {
   const idx = filePath.lastIndexOf('/')
   return idx >= 0 ? filePath.slice(0, idx) : filePath
-}
-
-function buildSkillMdContent(skill: Skill, body: string): string {
-  const lines = ['---', `name: ${skill.name}`, `description: ${skill.description}`]
-  if (skill.frontmatter) {
-    for (const [key, value] of Object.entries(skill.frontmatter)) {
-      lines.push(`${key}: ${value}`)
-    }
-  }
-  lines.push('---')
-  if (body) lines.push(body)
-  return lines.join('\n')
-}
-
-function getFileIcon(filename: string) {
-  const ext = filename.split('.').pop()?.toLowerCase()
-  if (ext === 'md') return FileTextIcon
-  return FileIcon
 }
 
 export const skillDetailRoute = createRoute({
@@ -55,100 +38,9 @@ export const skillDetailRoute = createRoute({
 
 function SkillDetailPage() {
   const { skillId } = skillDetailRoute.useParams()
-  const navigate = useNavigate()
-
   const { data: skill, isLoading: skillLoading } = useSkill(skillId)
-  const { data: directoryData } = useSkillDirectory(skillId, skill?.implementationRef)
 
   useBreadcrumb(`/skill-library/${skillId}`, skill?.name)
-
-  const [descriptionDraft, setDescriptionDraft] = useState('')
-  const [bodyDraft, setBodyDraft] = useState('')
-  const [fileDrafts, setFileDrafts] = useState<Record<string, string>>({})
-  const [loadedFileContents, setLoadedFileContents] = useState<Record<string, string>>({})
-  const [selectedFile, setSelectedFile] = useState<string | null>(null)
-  const [isFileSaving, setIsFileSaving] = useState(false)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-
-  useEffect(() => {
-    if (skill) {
-      setDescriptionDraft(skill.description)
-      setBodyDraft(skill.body ?? '')
-    }
-  }, [skill])
-
-  const { data: selectedFileData } = useSkillFile(skillId, selectedFile)
-
-  useEffect(() => {
-    if (selectedFile && selectedFileData) {
-      setLoadedFileContents((prev) => ({ ...prev, [selectedFile]: selectedFileData.content }))
-      setFileDrafts((prev) => {
-        if (prev[selectedFile] === undefined) {
-          return { ...prev, [selectedFile]: selectedFileData.content }
-        }
-        return prev
-      })
-    }
-  }, [selectedFile, selectedFileData])
-
-  const updateMeta = useUpdateSkill(skillId)
-  const updateContent = useUpdateSkillContent(skillId)
-  const deleteMutation = useDeleteSkill(skillId)
-
-  async function handleSave() {
-    if (!skill) return
-    const tasks: Promise<unknown>[] = []
-
-    const metaUpdates: Partial<Pick<Skill, 'description' | 'body'>> = {}
-    if (descriptionDraft !== skill.description) metaUpdates.description = descriptionDraft
-    const originalBody = skill.body ?? ''
-    if (bodyDraft !== originalBody) {
-      metaUpdates.body = bodyDraft
-    }
-    if (Object.keys(metaUpdates).length > 0) {
-      tasks.push(updateMeta.mutateAsync(metaUpdates))
-    }
-
-    if (bodyDraft !== (skill.body ?? '') && skill.implementationRef) {
-      tasks.push(updateContent.mutateAsync(buildSkillMdContent(skill, bodyDraft)))
-    }
-
-    const fileUpdates = Object.entries(fileDrafts).filter(
-      ([filePath, draft]) =>
-        loadedFileContents[filePath] !== undefined && draft !== loadedFileContents[filePath]
-    )
-    if (fileUpdates.length > 0) {
-      setIsFileSaving(true)
-      for (const [filePath, draft] of fileUpdates) {
-        tasks.push(api.skills.updateFile(skillId, filePath, draft))
-      }
-    }
-
-    if (tasks.length === 0) return
-
-    try {
-      await Promise.all(tasks)
-      toast.success({ title: 'Skill saved' })
-    } catch {
-      toast.error({ title: 'Failed to save skill' })
-    } finally {
-      setIsFileSaving(false)
-    }
-  }
-
-  const isSaving = updateMeta.isPending || updateContent.isPending || isFileSaving
-
-  const originalBody = skill?.body ?? ''
-  const hasChanges =
-    !!skill &&
-    (descriptionDraft !== skill.description ||
-      bodyDraft !== originalBody ||
-      Object.entries(fileDrafts).some(
-        ([filePath, draft]) =>
-          loadedFileContents[filePath] !== undefined && draft !== loadedFileContents[filePath]
-      ))
-
-  const resourceFiles = directoryData?.files.filter((f) => f !== 'SKILL.md') ?? []
 
   if (skillLoading) {
     return (
@@ -162,9 +54,40 @@ function SkillDetailPage() {
 
   if (!skill) return null
 
+  return <SkillDetailForm skill={skill} skillId={skillId} />
+}
+
+function SkillDetailForm({ skill, skillId }: { skill: Skill; skillId: string }) {
+  const navigate = useNavigate()
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+
+  const { data: directoryData } = useSkillDirectory(skillId, skill.implementationRef)
+  const deleteMutation = useDeleteSkill(skillId)
+  const availableTags = useAvailableTags()
+
+  const {
+    nameDraft,
+    setNameDraft,
+    descriptionDraft,
+    setDescriptionDraft,
+    bodyDraft,
+    setBodyDraft,
+    scopeDraft,
+    setScopeDraft,
+    tagsDraft,
+    setTagsDraft,
+    fileDrafts,
+    setFileDrafts,
+    loadedFileContentsRef,
+    hasChanges,
+    isSaving,
+    handleSave,
+  } = useSkillDetailForm(skill, skillId)
+
   const toolName = skill.originalTool ? originalToolToName[skill.originalTool] : undefined
   const config = toolName ? getToolConfig(toolName) : undefined
   const skillDir = skill.implementationRef ? dirnamePath(skill.implementationRef) : undefined
+  const resourceFiles = directoryData?.files.filter((f) => f !== 'SKILL.md') ?? []
 
   return (
     <div className="space-y-6">
@@ -177,7 +100,12 @@ function SkillDetailPage() {
         >
           <ArrowLeftIcon className="size-4" />
         </Button>
-        <H1>{skill.name}</H1>
+        <Input
+          value={nameDraft}
+          onChange={(e) => setNameDraft(e.target.value)}
+          className="text-2xl font-bold border-none shadow-none px-0 h-auto focus-visible:ring-0"
+          placeholder="Skill name"
+        />
       </div>
 
       <div className="flex items-center gap-2 flex-wrap">
@@ -204,6 +132,26 @@ function SkillDetailPage() {
           onChange={(e) => setDescriptionDraft(e.target.value)}
           placeholder="Skill description"
         />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label>Scope</Label>
+          <Select value={scopeDraft} onValueChange={(v) => setScopeDraft(v as SkillScope)}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="general">General</SelectItem>
+              <SelectItem value="project-specific">Project-specific</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Tags</Label>
+          <TagsInput value={tagsDraft} onChange={setTagsDraft} suggestions={availableTags} />
+        </div>
       </div>
 
       {skillDir && (
@@ -235,38 +183,15 @@ function SkillDetailPage() {
       )}
 
       {resourceFiles.length > 0 && (
-        <div className="space-y-2">
-          <Label>Resource files</Label>
-          <div className="border rounded-md divide-y">
-            {resourceFiles.map((file) => {
-              const Icon = getFileIcon(file)
-              const isSelected = selectedFile === file
-              return (
-                <div key={file}>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedFile(isSelected ? null : file)}
-                    className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-muted/50 transition-colors ${isSelected ? 'bg-muted/50' : ''}`}
-                  >
-                    <Icon className="size-4 text-muted-foreground shrink-0" />
-                    <span className="font-mono text-xs">{file}</span>
-                  </button>
-                  {isSelected && (
-                    <div className="px-3 pb-3">
-                      <Textarea
-                        value={fileDrafts[file] ?? loadedFileContents[file] ?? ''}
-                        onChange={(e) =>
-                          setFileDrafts((prev) => ({ ...prev, [file]: e.target.value }))
-                        }
-                        className="font-mono text-xs min-h-48"
-                      />
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        </div>
+        <SkillDetailResourceFiles
+          skillId={skillId}
+          files={resourceFiles}
+          fileDrafts={fileDrafts}
+          loadedFileContentsRef={loadedFileContentsRef}
+          onFileDraftChange={(file, content) =>
+            setFileDrafts((prev) => ({ ...prev, [file]: content }))
+          }
+        />
       )}
 
       <DeleteSkillDialog

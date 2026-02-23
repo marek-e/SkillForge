@@ -5,8 +5,10 @@ export const skillsApi = {
   list: () => fetchApi<Skill[]>('/skills'),
   get: (id: string) => fetchApi<Skill>(`/skills/${id}`),
   create: (data: CreateSkill) => mutateApi<Skill>('/skills', { method: 'POST', body: data }),
-  update: (id: string, data: Partial<Pick<Skill, 'name' | 'description' | 'body'>>) =>
-    mutateApi<Skill>(`/skills/${id}`, { method: 'PATCH', body: data }),
+  update: (
+    id: string,
+    data: Partial<Pick<Skill, 'name' | 'description' | 'body' | 'tags' | 'scope'>>
+  ) => mutateApi<Skill>(`/skills/${id}`, { method: 'PATCH', body: data }),
   delete: (id: string) => mutateApi<{ success: boolean }>(`/skills/${id}`, { method: 'DELETE' }),
   getContent: (id: string) => fetchApi<{ content: string }>(`/skills/${id}/content`),
   updateContent: (id: string, content: string) =>
