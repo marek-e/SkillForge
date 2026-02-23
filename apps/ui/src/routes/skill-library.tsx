@@ -7,8 +7,10 @@ import { CreateSkillDialog } from '@/components/skills/CreateSkillDialog'
 import { H1, Lead } from '@/components/typography'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { getToolConfig, originalToolToName } from '@/lib/tool-config'
+import { getDefaultSkillView, setDefaultSkillView, type SkillViewMode } from '@/lib/skill-view'
 import { useSkills } from '@/hooks/use-skill-library'
 
 export const skillLibraryRoute = createRoute({
@@ -24,6 +26,12 @@ function SkillLibraryPage() {
   const [selectedTools, setSelectedTools] = useState<string[]>([])
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [createOpen, setCreateOpen] = useState(false)
+  const [viewMode, setViewMode] = useState<SkillViewMode>(() => getDefaultSkillView())
+
+  function handleViewModeChange(mode: SkillViewMode) {
+    setViewMode(mode)
+    setDefaultSkillView(mode)
+  }
 
   const availableTools = useMemo(() => {
     const tools = new Set(skills?.map((s) => s.originalTool).filter(Boolean))
@@ -102,6 +110,8 @@ function SkillLibraryPage() {
             availableTags={availableTags}
             selectedTags={selectedTags}
             onTagToggle={handleTagToggle}
+            viewMode={viewMode}
+            onViewModeChange={handleViewModeChange}
           />
 
           <div className="space-y-2">
@@ -115,6 +125,63 @@ function SkillLibraryPage() {
 
             {filteredSkills.length === 0 ? (
               <p className="text-sm text-muted-foreground">No skills match your search.</p>
+            ) : viewMode === 'grid' ? (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredSkills.map((skill) => {
+                  const toolName = skill.originalTool
+                    ? originalToolToName[skill.originalTool]
+                    : undefined
+                  const config = toolName ? getToolConfig(toolName) : undefined
+                  const visibleTags = skill.tags.slice(0, 3)
+                  return (
+                    <Card
+                      key={skill.id}
+                      size="sm"
+                      className="cursor-pointer hover:ring-foreground/20 transition-shadow"
+                      onClick={() =>
+                        navigate({ to: '/skill-library/$skillId', params: { skillId: skill.id } })
+                      }
+                    >
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <WrenchIcon className="size-3.5 text-muted-foreground shrink-0" />
+                          <span className="truncate">{skill.name}</span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-2">
+                        <p className="text-sm text-muted-foreground line-clamp-2">
+                          {skill.description}
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                          {config && (
+                            <Badge variant="outline" className="text-xs gap-1 px-1.5 py-0">
+                              <img
+                                src={config.logo}
+                                alt={config.displayName}
+                                className={`size-3 ${config.invert ? 'dark:invert' : ''}`}
+                              />
+                              {config.displayName}
+                            </Badge>
+                          )}
+                          <Badge variant="secondary" className="text-xs">
+                            {skill.source}
+                          </Badge>
+                          {skill.scope === 'project-specific' && (
+                            <Badge variant="outline" className="text-xs">
+                              project-specific
+                            </Badge>
+                          )}
+                          {visibleTags.map((tag) => (
+                            <Badge key={tag} variant="secondary" className="text-xs font-mono">
+                              {tag.startsWith('#') ? tag : `#${tag}`}
+                            </Badge>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )
+                })}
+              </div>
             ) : (
               <div className="divide-y divide-border">
                 {filteredSkills.map((skill) => {
