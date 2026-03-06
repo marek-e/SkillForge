@@ -1,0 +1,36 @@
+.gitignore
+  ec48eb0413a3f63e 10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.5",
+  "base_commit_sha": "f665c67143e441d11e39636465f130a5a2c75a1f",
+  "prompts": {
+    "dbfbc5145fe2df17": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d459782d-cf45-41f7-9a8c-7664d9321707",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 161,
+      "overriden_lines": 0
+    },
+    "ec48eb0413a3f63e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "023e50ce-1752-4c2e-8656-7d07a7d0d555",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    }
+  }
+}
