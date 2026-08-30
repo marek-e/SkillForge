@@ -39,10 +39,7 @@ export function proxyToRuntime(
 
   if (endpoint.transport === 'ipc' && endpoint.ipcPath) {
     return new Promise((resolve, reject) => {
-      const headers: Record<string, string> = {}
-      req.headers.forEach((v, k) => {
-        headers[k] = v
-      })
+      const headers = Object.fromEntries(req.headers.entries())
       const opts: http.RequestOptions = {
         socketPath: endpoint.ipcPath,
         path: pathname + search,

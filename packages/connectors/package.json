@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@skillforge/core": "workspace:*",
-    "zod": "^4.5.4"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^25.9.5",
