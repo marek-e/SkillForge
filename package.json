@@ -16,15 +16,15 @@
     "knip": "knip"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1",
-    "knip": "^5.83.1",
+    "concurrently": "^9.2.4",
+    "knip": "^5.88.1",
     "oxfmt": "^0.28.0",
-    "oxlint": "^1.47.0",
+    "oxlint": "^1.79.0",
     "typescript": "^5.9.3"
   },
   "engines": {
     "node": "22.22.0",
-    "pnpm": "9.15.9"
+    "pnpm": "11.24.0"
   },
-  "packageManager": "pnpm@9.15.9"
+  "packageManager": "pnpm@11.24.0"
 }

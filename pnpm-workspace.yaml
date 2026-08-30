@@ -1,3 +1,19 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+
+overrides:
+  esbuild: ^0.28.2
+
+minimumReleaseAge: 10080
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  - sileo@0.1.4
+trustPolicyIgnoreAfter: 525600
+blockExoticSubdeps: true
+
+allowBuilds:
+  better-sqlite3: true
+  electron-winstaller: true
+  esbuild: true
+  msw: false
