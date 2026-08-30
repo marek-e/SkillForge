@@ -30,8 +30,8 @@ importers:
   apps/electron:
     dependencies:
       '@hono/node-server':
-        specifier: ^1.19.17
-        version: 1.19.17(hono@4.13.3)
+        specifier: ^2.1.1
+        version: 2.1.1(hono@4.13.3)
       '@skillforge/runtime':
         specifier: workspace:*
         version: link:../runtime
@@ -64,8 +64,8 @@ importers:
   apps/runtime:
     dependencies:
       '@hono/node-server':
-        specifier: ^1.19.17
-        version: 1.19.17(hono@4.13.3)
+        specifier: ^2.1.1
+        version: 2.1.1(hono@4.13.3)
       '@skillforge/connectors':
         specifier: workspace:*
         version: link:../../packages/connectors
@@ -858,6 +858,12 @@ packages:
   '@hono/node-server@1.19.17':
     resolution: {integrity: sha512-dSneS5qhiauZWGDCeK4o695Xd9nUNjviSZCMQrj10eetr8Uln1ucn6bbphOM6UynAMMtNIzZNSpL9vnASJwrPQ==}
     engines: {node: '>=18.14.1'}
+    peerDependencies:
+      hono: ^4
+
+  '@hono/node-server@2.1.1':
+    resolution: {integrity: sha512-ELuehkj5VCBdgEw9zs+ivkKwyzzUCSQuE96YmiPvn1ECBoZCczbFXJLeEGMTYjphP6gydh4pHMqEYPVMYUVgQg==}
+    engines: {node: '>=20'}
     peerDependencies:
       hono: ^4
 
@@ -5638,6 +5644,10 @@ snapshots:
     dependencies:
       hono: 4.13.3
 
+  '@hono/node-server@2.1.1(hono@4.13.3)':
+    dependencies:
+      hono: 4.13.3
+
   '@inquirer/ansi@2.0.7': {}
 
   '@inquirer/confirm@6.2.0(@types/node@25.9.5)':
@@ -7973,7 +7983,7 @@ snapshots:
       es6-error: 4.1.1
       matcher: 3.0.0
       roarr: 2.15.4
-      semver: 7.7.4
+      semver: 7.8.5
       serialize-error: 7.0.1
     optional: true
 

@@ -12,7 +12,7 @@
     "rebuild-sqlite": "electron-rebuild -f -w better-sqlite3"
   },
   "dependencies": {
-    "@hono/node-server": "^1.19.17",
+    "@hono/node-server": "^2.1.1",
     "@skillforge/runtime": "workspace:*",
     "better-sqlite3": "^12.11.1"
   },
