@@ -19,7 +19,7 @@
   "devDependencies": {
     "@electron/rebuild": "^4.2.0",
     "@types/node": "^25.9.5",
-    "electron": "^42.9.3",
+    "electron": "^43.4.1",
     "electron-builder": "^26.15.3",
     "electron-builder-squirrel-windows": "^26.15.3",
     "tsup": "^8.5.1",
