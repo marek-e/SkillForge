@@ -1,0 +1,46 @@
+apps/ui/src/index.css
+  s_98c1f7bc58c094::t_23fc980d7c608e 1-15
+docs/stylex-migration/pr-01.md
+  s_98c1f7bc58c094::t_ef59a43244d711 122-123,176-178
+  s_98c1f7bc58c094::t_4e2aafbdebd076 1-6,11,13-47,49-59,65-69,79-121,124-127,135-175,179-184
+  s_98c1f7bc58c094::t_d2f0b9251c255e 7-10,12,48,60-64,70-78,128-134
+docs/stylex-migration/conventions.md
+  s_98c1f7bc58c094::t_ef59a43244d711 37-38
+  s_98c1f7bc58c094::t_9d36ec5228286e 9-27,31-36,40-42,121-126
+  s_98c1f7bc58c094::t_7cbf1387d80586 39
+  s_98c1f7bc58c094::t_d2f0b9251c255e 65-86
+docs/stylex-migration-plan.md
+  s_98c1f7bc58c094::t_1f453371331735 23,35-69,73
+apps/ui/visual/gallery.spec.ts
+  s_98c1f7bc58c094::t_ee1af959960b01 19,118-124
+  s_98c1f7bc58c094::t_38ae7883920b8d 125-126
+apps/ui/package.json
+  s_98c1f7bc58c094::t_4e9272da450e36 24,46
+apps/ui/src/visual-gallery/sections/canary.tsx
+  s_98c1f7bc58c094::t_4c865a7625c99b 1-97,109,111-168
+  s_98c1f7bc58c094::t_bc49d1a2c6aff0 98-102,108,110
+  s_98c1f7bc58c094::t_6393668b3c70cd 103-107
+apps/ui/vite.config.ts
+  s_98c1f7bc58c094::t_602c3fe26637a6 2,20-37
+  s_98c1f7bc58c094::t_55d6986649659b 43-57
+apps/ui/src/visual-gallery/sections/index.ts
+  s_98c1f7bc58c094::t_ee1af959960b01 5,29
+pnpm-lock.yaml
+  s_98c1f7bc58c094::t_3b1f0b011000f1 118-120,179-181,304-307,339-344,634-636,2514-2527,3252-3254,4013-4015,4345-4348,4861-4863,5363-5365,5585-5588,5704-5706,5918-5919,5951-5955,6240-6241,7926-7959,8825-8826,9668-9671,9926-9929,10485-10486,11112-11113,11342-11348,11430-11431
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "5d2de54cbcdceed863192e1b79d434efa3cabb1f",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
