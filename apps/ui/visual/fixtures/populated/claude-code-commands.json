@@ -1,0 +1,21 @@
+[
+  {
+    "name": "commit",
+    "description": "Create atomic conventional commits ordered by dependency layers",
+    "allowedTools": "Bash, Read, Edit",
+    "argumentHint": "[scope]",
+    "filePath": "/Users/fixture/.claude/commands/commit.md"
+  },
+  {
+    "name": "verify",
+    "description": "Run the full verification pipeline",
+    "filePath": "/Users/fixture/.claude/commands/verify.md"
+  },
+  {
+    "name": "an-extremely-long-command-name-used-to-exercise-wrapping",
+    "description": "A deliberately long command description that exercises wrapping inside the accordion trigger of the tool detail card at both the desktop and the mobile viewport.",
+    "allowedTools": "Bash(git:*), Read, Grep, Glob, Edit, Write",
+    "argumentHint": "<issue-id> [--dry-run]",
+    "filePath": "/Users/fixture/.claude/commands/long.md"
+  }
+]

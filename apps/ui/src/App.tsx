@@ -14,6 +14,7 @@ import {
   settingsRoute,
   toolDetailRoute,
 } from './routes'
+import { galleryRoutes } from './visual-gallery/routes'
 
 const queryClient = new QueryClient()
 
@@ -26,6 +27,7 @@ const routeTree = rootRoute.addChildren([
   projectDetailRoute,
   settingsRoute,
   toolDetailRoute,
+  ...galleryRoutes,
 ])
 const router = createRouter({ routeTree })
 

@@ -7,3 +7,9 @@ dist/
 release/
 .claude/settings.local.json
 .claude/plans/
+
+# Visual regression run artifacts (originals are committed, results are not)
+apps/ui/visual/results/
+apps/ui/visual/report/
+apps/ui/test-results/
+apps/ui/playwright-report/

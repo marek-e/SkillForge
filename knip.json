@@ -5,15 +5,7 @@
     "apps/ui": {
       "project": ["src/**/*.{ts,tsx}"],
       "ignore": ["src/components/ui/**", "src/components/nav-user.tsx"],
-      "ignoreDependencies": [
-        "@base-ui/react",
-        "cmdk",
-        "date-fns",
-        "embla-carousel-react",
-        "react-day-picker",
-        "react-resizable-panels",
-        "vaul"
-      ]
+      "ignoreDependencies": ["date-fns"]
     },
     "apps/runtime": {
       "project": ["src/**/*.ts"],

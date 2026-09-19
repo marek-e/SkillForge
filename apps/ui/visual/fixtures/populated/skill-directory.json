@@ -1,0 +1,14 @@
+{
+  "skill-alpha": {
+    "directory": "/Users/fixture/.claude/skills/summarize-pull-request",
+    "files": ["SKILL.md", "reference.md", "checklist.md"]
+  },
+  "skill-beta": {
+    "directory": "/Users/fixture/.cursor/skills/write-migration",
+    "files": ["SKILL.md"]
+  },
+  "skill-delta": {
+    "directory": "/Users/fixture/.claude/skills/long-name",
+    "files": ["SKILL.md", "a-resource-file-with-a-long-name.md", "script.sh"]
+  }
+}

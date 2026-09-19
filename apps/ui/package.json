@@ -6,7 +6,13 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.visual.json",
+    "visual": "playwright test",
+    "visual:build": "VISUAL_BUILD=1 playwright test",
+    "visual:report": "playwright show-report visual/report",
+    "visual:check-originals": "node visual/check-originals.mjs",
+    "visual:check-gallery": "node visual/check-gallery-absent.mjs",
+    "visual:update": "playwright test --update-snapshots=missing"
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",
@@ -35,7 +41,9 @@
     "vaul": "^1.1.2"
   },
   "devDependencies": {
+    "@playwright/test": "1.63.0",
     "@tailwindcss/vite": "^4.1.18",
+    "@types/node": "^25.2.2",
     "@types/react": "^19.2.13",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.3",

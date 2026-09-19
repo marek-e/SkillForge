@@ -62,3 +62,34 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+
+  visual:
+    name: Visual regression
+    # The frozen originals were captured on macOS (Apple silicon). Font
+    # rasterisation differs per OS, so this job must stay on a macOS runner.
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.22.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # The Playwright version is pinned in apps/ui/package.json, so this
+      # installs exactly the Chromium build the originals were captured with.
+      - run: pnpm --filter @skillforge/ui exec playwright install --with-deps chromium
+      # Never pass --update-snapshots here. A missing original, an extra
+      # original, or a single differing pixel must fail the job.
+      - run: pnpm --filter @skillforge/ui exec playwright test --reporter=list
+      - run: pnpm --filter @skillforge/ui visual:check-originals
+        if: always()
+      - run: pnpm --filter @skillforge/ui visual:check-gallery
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: visual-failures
+          path: |
+            apps/ui/visual/results
+            apps/ui/visual/report
+          retention-days: 14

@@ -13,7 +13,9 @@
     "typecheck": "pnpm -r typecheck",
     "electron:dev": "pnpm --filter @skillforge/electron rebuild-sqlite && concurrently --names ui,electron \"pnpm --filter @skillforge/ui dev\" \"pnpm --filter @skillforge/electron dev\"",
     "electron:build": "pnpm --filter @skillforge/electron rebuild-sqlite && pnpm build && pnpm --filter @skillforge/electron build && pnpm --filter @skillforge/electron dist",
-    "knip": "knip"
+    "knip": "knip",
+    "visual": "pnpm --filter @skillforge/ui visual",
+    "visual:report": "pnpm --filter @skillforge/ui visual:report"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",

@@ -1,0 +1,54 @@
+[
+  {
+    "name": "claude-code",
+    "detected": true,
+    "paths": {
+      "globalDir": "/Users/fixture/.claude",
+      "projectDir": "/Users/fixture/projects/alpha/.claude"
+    },
+    "commandCount": 3,
+    "skillCount": 4
+  },
+  {
+    "name": "cursor",
+    "detected": true,
+    "paths": { "globalDir": "/Users/fixture/.cursor" },
+    "commandCount": 0,
+    "skillCount": 2
+  },
+  {
+    "name": "codex",
+    "detected": true,
+    "paths": { "globalDir": "/Users/fixture/.codex" },
+    "commandCount": 0,
+    "skillCount": 1
+  },
+  {
+    "name": "gemini-cli",
+    "detected": false,
+    "paths": {},
+    "commandCount": 0,
+    "skillCount": 0
+  },
+  {
+    "name": "opencode",
+    "detected": false,
+    "paths": {},
+    "commandCount": 0,
+    "skillCount": 0
+  },
+  {
+    "name": "copilot",
+    "detected": false,
+    "paths": {},
+    "commandCount": 0,
+    "skillCount": 0
+  },
+  {
+    "name": "vibe",
+    "detected": false,
+    "paths": {},
+    "commandCount": 0,
+    "skillCount": 0
+  }
+]

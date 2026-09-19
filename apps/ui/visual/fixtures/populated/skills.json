@@ -1,0 +1,62 @@
+[
+  {
+    "id": "skill-alpha",
+    "name": "summarize-pull-request",
+    "description": "Reads a pull request diff, groups the changes by intent and produces a reviewer-facing summary with risks, test coverage notes and a suggested review order.",
+    "body": "# Summarize pull request\n\nUse this skill when a reviewer needs a fast, structured read of a large diff.\n\n## Steps\n\n1. Collect the diff and the linked issue.\n2. Group hunks by intent: behaviour, refactor, tests, docs.\n3. Call out risky hunks and missing tests.\n4. Propose a review order, cheapest signal first.\n\n## Output\n\nA markdown summary with sections: Intent, Risk, Tests, Review order.\n",
+    "frontmatter": { "name": "summarize-pull-request", "description": "Summarize a pull request" },
+    "implementationRef": "/Users/fixture/.claude/skills/summarize-pull-request/SKILL.md",
+    "source": "imported",
+    "originalTool": "claude",
+    "tags": ["review", "git", "automation"],
+    "scope": "general",
+    "createdAt": "2025-01-15T10:00:00.000Z",
+    "updatedAt": "2025-01-15T10:00:00.000Z"
+  },
+  {
+    "id": "skill-beta",
+    "name": "write-migration",
+    "description": "Generates a reversible SQL migration from a schema diff.",
+    "body": "# Write migration\n\nGenerate a reversible migration.\n",
+    "implementationRef": "/Users/fixture/.cursor/skills/write-migration/SKILL.md",
+    "source": "imported",
+    "originalTool": "cursor",
+    "tags": ["database", "sql"],
+    "scope": "project-specific",
+    "createdAt": "2025-01-15T10:00:00.000Z",
+    "updatedAt": "2025-01-15T10:00:00.000Z"
+  },
+  {
+    "id": "skill-gamma",
+    "name": "triage-incident",
+    "description": "Collects logs, traces and recent deploys into a single incident timeline.",
+    "source": "manual",
+    "originalTool": "openai",
+    "tags": ["ops"],
+    "scope": "general",
+    "createdAt": "2025-01-15T10:00:00.000Z",
+    "updatedAt": "2025-01-15T10:00:00.000Z"
+  },
+  {
+    "id": "skill-delta",
+    "name": "an-extremely-long-skill-name-that-should-wrap-or-truncate-in-every-layout-mode",
+    "description": "A deliberately long description used to exercise wrapping, clamping and truncation in list rows, grid cards and detail headers. It keeps going past the point where any reasonable card would clip it, so that the two-line clamp in the grid card and the single-line truncation in the compact row are both visible in the frozen originals.",
+    "body": "# Long content skill\n\nThis body exists to exercise the instructions textarea at a size where it scrolls.\n",
+    "implementationRef": "/Users/fixture/.claude/skills/long-name/SKILL.md",
+    "source": "manual",
+    "tags": ["wrapping", "truncation", "layout", "overflow-extra-tag"],
+    "scope": "general",
+    "createdAt": "2025-01-15T10:00:00.000Z",
+    "updatedAt": "2025-01-15T10:00:00.000Z"
+  },
+  {
+    "id": "skill-epsilon",
+    "name": "explain-stack-trace",
+    "description": "",
+    "source": "manual",
+    "tags": [],
+    "scope": "general",
+    "createdAt": "2025-01-15T10:00:00.000Z",
+    "updatedAt": "2025-01-15T10:00:00.000Z"
+  }
+]

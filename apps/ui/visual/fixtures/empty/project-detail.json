@@ -1,0 +1,20 @@
+{
+  "id": "project-alpha",
+  "name": "Alpha Platform",
+  "path": "/Users/fixture/projects/alpha",
+  "iconPath": null,
+  "preferredEditor": null,
+  "customEditorCmd": null,
+  "isFavorite": false,
+  "detectedTools": [
+    { "name": "claude-code", "detected": false },
+    { "name": "cursor", "detected": false },
+    { "name": "codex", "detected": false },
+    { "name": "gemini-cli", "detected": false },
+    { "name": "opencode", "detected": false },
+    { "name": "copilot", "detected": false },
+    { "name": "vibe", "detected": false }
+  ],
+  "createdAt": "2025-01-15T10:00:00.000Z",
+  "updatedAt": "2025-01-15T10:00:00.000Z"
+}
