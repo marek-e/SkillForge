@@ -1,0 +1,260 @@
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-gallery-buttons-dark.json
+  s_98c1f7bc58c094::t_5483a098a703bb 1-360
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-settings-light.json
+  s_98c1f7bc58c094::t_5483a098a703bb 1-252
+apps/ui/visual/gallery.spec.ts
+  s_98c1f7bc58c094::t_c6b1a40c9a0dd8 1,3-21,25-108,113-116,119-125,127-129
+  s_98c1f7bc58c094::t_78a2b385d188cc 2
+  s_98c1f7bc58c094::t_4bd3bb788297d3 22-24
+  s_98c1f7bc58c094::t_9a04e5be29e97b 109-112,117-118,126
+apps/ui/visual/computed-styles.spec.ts
+  s_98c1f7bc58c094::t_56672da3420c16 1-2,111,122,130
+  s_98c1f7bc58c094::t_9da6742705af84 3-48,53-110,112-121,123-129,131-132
+  s_98c1f7bc58c094::t_4bd3bb788297d3 49-52
+apps/ui/visual/fixtures/populated/agents.json
+  s_98c1f7bc58c094::t_7d75427726d02f 1-21
+apps/ui/visual/fixtures/empty/skills.json
+  s_98c1f7bc58c094::t_4430cc791ab340 1
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-settings-dark.json
+  s_98c1f7bc58c094::t_5483a098a703bb 1-252
+apps/ui/visual/fixtures/populated/claude-code-commands.json
+  s_98c1f7bc58c094::t_0fa921178a0435 1-21
+apps/ui/src/visual-gallery/routes.tsx
+  s_98c1f7bc58c094::t_6224cb16aa729b 1,4-9,13-19,21-22
+  s_98c1f7bc58c094::t_d89ef487086492 2-3,10-12,20
+apps/ui/visual/overlays.spec.ts
+  s_98c1f7bc58c094::t_7204b67563a24a 1,3-212,214-220,222-232,234-240
+  s_98c1f7bc58c094::t_5e1d5f1449efba 221
+  s_98c1f7bc58c094::t_b445c5baa0a23c 213
+  s_98c1f7bc58c094::t_cdaf27e294b691 2
+  s_98c1f7bc58c094::t_9e24122ceaca9c 233
+apps/ui/visual/fixtures/populated/tools.json
+  s_98c1f7bc58c094::t_7d75427726d02f 1-4,9-54
+  s_98c1f7bc58c094::t_4bd3bb788297d3 5-8
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-project-detail-dark.json
+  s_98c1f7bc58c094::t_5483a098a703bb 1-360
+apps/ui/src/visual-gallery/sections/typography.tsx
+  s_98c1f7bc58c094::t_28fb2c75c85eda 1-48,50-112
+  s_98c1f7bc58c094::t_4bd3bb788297d3 49
+apps/ui/src/visual-gallery/sections/sidebar-parts.tsx
+  s_98c1f7bc58c094::t_80f0a376d29e86 1-163
+apps/ui/src/visual-gallery/GallerySectionPage.tsx
+  s_98c1f7bc58c094::t_b64788319b1ac4 1-7
+apps/ui/playwright.config.ts
+  s_98c1f7bc58c094::t_50ffc24cfac7f7 64-89
+  s_98c1f7bc58c094::t_64827bb26fb31d 1-63,90-120
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-project-detail-light.json
+  s_98c1f7bc58c094::t_5483a098a703bb 1-360
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-gallery-forms-light.json
+  s_98c1f7bc58c094::t_5483a098a703bb 1-360
+.github/workflows/ci.yml
+  s_98c1f7bc58c094::t_83c6669a6933c3 65-83,85-95
+  s_98c1f7bc58c094::t_0f0e96191fe889 84
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-tools-light.json
+  s_98c1f7bc58c094::t_5483a098a703bb 1-288
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-projects-dark.json
+  s_98c1f7bc58c094::t_5483a098a703bb 1-396
+apps/ui/visual/fixtures/empty/health.json
+  s_98c1f7bc58c094::t_4430cc791ab340 1
+apps/ui/visual/electron.spec.ts
+  s_98c1f7bc58c094::t_2110662ba44644 59-61
+  s_98c1f7bc58c094::t_4098a0a45161f2 1-58,63-69,74,76-79,83-88
+  s_98c1f7bc58c094::t_cce0abeb3cf630 62,70-73,75,80-82
+apps/ui/visual/check-originals.mjs
+  s_98c1f7bc58c094::t_7e844a88f17c88 1-91
+apps/ui/visual/fixtures/empty/claude-code-commands.json
+  s_98c1f7bc58c094::t_4430cc791ab340 1
+apps/ui/src/visual-gallery/sections/data-display.tsx
+  s_98c1f7bc58c094::t_f7105362db244c 1-422
+apps/ui/visual/routes.spec.ts
+  s_98c1f7bc58c094::t_e042799dcb8595 1-52,56,69,71-103
+  s_98c1f7bc58c094::t_4bd3bb788297d3 59-61
+  s_98c1f7bc58c094::t_907215bca95eb7 53-55,57-58,62-68,70
+package.json
+  s_98c1f7bc58c094::t_c6413c67fcdcd7 16-18
+apps/ui/visual/fixtures/populated/project-skills.json
+  s_98c1f7bc58c094::t_83b5444e6bcfee 1-44
+apps/ui/src/visual-gallery/GalleryPage.tsx
+  s_98c1f7bc58c094::t_ee21a49956eba4 1-41
+apps/ui/visual/fixtures/empty/tool-skills.json
+  s_98c1f7bc58c094::t_4bd3bb788297d3 1-9
+apps/ui/visual/fixtures/empty/skill-directory.json
+  s_98c1f7bc58c094::t_4430cc791ab340 1
+apps/ui/src/App.tsx
+  s_98c1f7bc58c094::t_a15c2d6cd6e9e5 17,30
+apps/ui/visual/check-gallery-absent.mjs
+  s_98c1f7bc58c094::t_4d47a79ddede07 1-44
+knip.json
+  s_98c1f7bc58c094::t_4bd3bb788297d3 8
+apps/ui/src/visual-gallery/data.ts
+  s_98c1f7bc58c094::t_4bd3bb788297d3 1
+  s_98c1f7bc58c094::t_e97a853d127aa2 2-136
+apps/ui/src/visual-gallery/Case.tsx
+  s_98c1f7bc58c094::t_a2bfb3df502da9 1-44
+apps/ui/visual/animations.spec.ts
+  s_98c1f7bc58c094::t_9e3f664c7608f0 1,9-97
+  s_98c1f7bc58c094::t_4bd3bb788297d3 2-8
+apps/ui/src/visual-gallery/sections/buttons.tsx
+  s_98c1f7bc58c094::t_ef89b5730d0785 1-208
+apps/ui/src/visual-gallery/sections/overlays.tsx
+  s_98c1f7bc58c094::t_4bd3bb788297d3 285
+  s_98c1f7bc58c094::t_1fac131405783c 17-28
+  s_98c1f7bc58c094::t_b962695786fa28 144
+  s_98c1f7bc58c094::t_42a0e2e947826d 538-611
+  s_98c1f7bc58c094::t_99db99f58ad820 1-16,29-143,145-284,286-537,612-626
+apps/ui/src/visual-gallery/sections/app.tsx
+  s_98c1f7bc58c094::t_4bd3bb788297d3 153-158,279-283
+  s_98c1f7bc58c094::t_78a2b385d188cc 286
+  s_98c1f7bc58c094::t_1f9d915a56e11f 1-48,50-152,159-278,284-285,287-329
+  s_98c1f7bc58c094::t_4b8b4e67dc1b5a 49
+apps/ui/tsconfig.visual.json
+  s_98c1f7bc58c094::t_80539fecfa50f7 1-11
+apps/ui/src/visual-gallery/sections/app-dialogs.tsx
+  s_98c1f7bc58c094::t_b3132e06e5f1ca 1-123
+apps/ui/visual/fixtures/empty/skill-files.json
+  s_98c1f7bc58c094::t_4430cc791ab340 1
+CLAUDE.md
+  s_98c1f7bc58c094::t_b402dffd305394 28
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-projects-light.json
+  s_98c1f7bc58c094::t_5483a098a703bb 1-396
+apps/ui/visual/api-mock.ts
+  s_98c1f7bc58c094::t_87a1998ed001a4 1-112,114-118,125-127,129-152,156-159,161-163
+  s_98c1f7bc58c094::t_e0a9476cf85f17 119-124,128
+  s_98c1f7bc58c094::t_a18132109f0fd1 113
+  s_98c1f7bc58c094::t_a60cc4806c009b 153-155,160
+apps/ui/src/visual-gallery/sections/index.ts
+  s_98c1f7bc58c094::t_d4d67db3d426b5 1-28
+apps/ui/visual/fixtures/populated/health.json
+  s_98c1f7bc58c094::t_7d75427726d02f 1
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-skill-library-dark.json
+  s_98c1f7bc58c094::t_5483a098a703bb 1-360
+apps/ui/visual/helpers.ts
+  s_98c1f7bc58c094::t_ec4c6ee3adfbc7 228-233
+  s_98c1f7bc58c094::t_1354ac9b2c0a22 246-272
+  s_98c1f7bc58c094::t_76530d339e2722 284-285,287,289-291,294-305,310-314
+  s_98c1f7bc58c094::t_342bf6e60f471b 44-49
+  s_98c1f7bc58c094::t_c7fa4c51d4882a 173,176,179-181
+  s_98c1f7bc58c094::t_f4ec7af9fc3ac2 60-76
+  s_98c1f7bc58c094::t_5fbb9b97908e1c 174-175,177-178,238-240
+  s_98c1f7bc58c094::t_7ba9cc8a513fac 112-119,121,123-125,127,149
+  s_98c1f7bc58c094::t_4bd3bb788297d3 165-169,274-278
+  s_98c1f7bc58c094::t_27256d929b0a2a 1-43,50-59,77-111,120,122,126,128-148,150-164,170-172,182-227,234-237,241-245,273,279-283,286,288,292-293,306-309,315-320
+apps/ui/src/vite-env.d.ts
+  s_98c1f7bc58c094::t_bdc33f231ce4f9 1-11
+apps/ui/visual/fixtures/empty/skill-detail.json
+  s_98c1f7bc58c094::t_c7c4ae6a08f4c1 1-10
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-tools-dark.json
+  s_98c1f7bc58c094::t_5483a098a703bb 1-288
+apps/ui/package.json
+  s_98c1f7bc58c094::t_79334c119e3680 46
+  s_98c1f7bc58c094::t_486c513409852b 44
+  s_98c1f7bc58c094::t_c6413c67fcdcd7 9-15
+.gitignore
+  s_98c1f7bc58c094::t_b89dac1043983b 10-15
+apps/ui/visual/ORIGINALS.md
+  s_98c1f7bc58c094::t_cc6fc89b90d1e9 1-8,11,15-17,31-36,38-41
+  s_98c1f7bc58c094::t_4bd3bb788297d3 9-10,12-14,18-30,37
+apps/ui/visual/fixtures/empty/projects.json
+  s_98c1f7bc58c094::t_4430cc791ab340 1
+apps/ui/src/visual-gallery/sections/disclosure.tsx
+  s_98c1f7bc58c094::t_4bd3bb788297d3 17
+  s_98c1f7bc58c094::t_a12174f8956542 165,176
+  s_98c1f7bc58c094::t_5c125047158016 1-16,18-164,166-175,177-226
+apps/ui/visual/fixtures/empty/agents.json
+  s_98c1f7bc58c094::t_4430cc791ab340 1
+apps/ui/src/visual-gallery/sections/forms.tsx
+  s_98c1f7bc58c094::t_4bd3bb788297d3 82-85
+  s_98c1f7bc58c094::t_e730c4ec4f7718 1-81,86-363
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-skill-library-light.json
+  s_98c1f7bc58c094::t_5483a098a703bb 1-360
+apps/ui/visual/fixtures/populated/skills.json
+  s_98c1f7bc58c094::t_8d90d24a186b30 1-62
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-gallery-forms-dark.json
+  s_98c1f7bc58c094::t_e62635de469222 1-432
+apps/ui/visual/fixtures/populated/tool-skills.json
+  s_98c1f7bc58c094::t_2f68b0ee40f316 1-54
+docs/visual-testing.md
+  s_98c1f7bc58c094::t_5691b07694d2b9 53
+  s_98c1f7bc58c094::t_21fd86b9f31ab1 1-28,37-48,50-52,54-64,66-106
+  s_98c1f7bc58c094::t_4bd3bb788297d3 29-36
+  s_98c1f7bc58c094::t_7903b409ac6272 49
+  s_98c1f7bc58c094::t_f049ca27af6964 65
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-gallery-forms-dark.json
+  s_98c1f7bc58c094::t_5483a098a703bb 1-360
+apps/ui/visual/fixtures/populated/projects.json
+  s_98c1f7bc58c094::t_096bfe0fdf5be3 1-62
+apps/ui/visual/fixtures/empty/project-skills.json
+  s_98c1f7bc58c094::t_4430cc791ab340 1
+apps/ui/visual/fixtures/empty/project-detail.json
+  s_98c1f7bc58c094::t_4bb3868df348db 1-20
+apps/ui/visual/fixtures/populated/skill-directory.json
+  s_98c1f7bc58c094::t_073db722ab5fbe 1-14
+docs/stylex-migration/pr-00.md
+  s_98c1f7bc58c094::t_dc85b725e82283 1-2,4-6,15-56,65-73,76,80-85,90-102,105,110,113-115,120-122,124,127-130,132
+  s_98c1f7bc58c094::t_422cd80eb0abdc 78
+  s_98c1f7bc58c094::t_5cf20bb5f9d26a 79
+  s_98c1f7bc58c094::t_32b6ef661e8d74 123
+  s_98c1f7bc58c094::t_4bd3bb788297d3 3,7-14,57-64,74,77,131
+  s_98c1f7bc58c094::t_676de8cf1ed70c 125
+  s_98c1f7bc58c094::t_1717cf0c9925b3 103-104,106-109,111-112
+  s_98c1f7bc58c094::t_0653e02074bc3a 126
+  s_98c1f7bc58c094::t_e1a1ca99a58814 75,86-89,116-119
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-gallery-buttons-light.json
+  s_98c1f7bc58c094::t_5483a098a703bb 1-360
+apps/ui/visual/fixtures/populated/skill-files.json
+  s_98c1f7bc58c094::t_0e65ba308db473 1-15
+apps/ui/visual/fixtures/empty/tools.json
+  s_98c1f7bc58c094::t_359d1e81447acc 1-9
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-gallery-buttons-dark.json
+  s_98c1f7bc58c094::t_047b1435b459c6 1-432
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-gallery-buttons-light.json
+  s_98c1f7bc58c094::t_09aca45aa67d2c 1-432
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-gallery-forms-light.json
+  s_98c1f7bc58c094::t_07c91cf307517a 1-432
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-home-dark.json
+  s_98c1f7bc58c094::t_66c6accb83bd58 1-396
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-home-light.json
+  s_98c1f7bc58c094::t_d770e0a40eecb2 1-396
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-project-detail-dark.json
+  s_98c1f7bc58c094::t_b3fa98b96a9ddc 1-468
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-project-detail-light.json
+  s_98c1f7bc58c094::t_35d89523d211e6 1-468
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-projects-dark.json
+  s_98c1f7bc58c094::t_7c223cef32ffd4 1-504
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-projects-light.json
+  s_98c1f7bc58c094::t_e3fcfd13d0f9b2 1-504
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-settings-dark.json
+  s_98c1f7bc58c094::t_02169d87439622 1-360
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-settings-light.json
+  s_98c1f7bc58c094::t_afb2132b084c08 1-360
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-skill-library-dark.json
+  s_98c1f7bc58c094::t_66276fc39dd64d 1-468
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-skill-library-light.json
+  s_98c1f7bc58c094::t_adcc1ccd3784aa 1-468
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-tools-dark.json
+  s_98c1f7bc58c094::t_27f8dfde42a3b1 1-396
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-tools-light.json
+  s_98c1f7bc58c094::t_5461279c96dc21 1-396
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-home-dark.json
+  s_98c1f7bc58c094::t_80d60cd1ba78aa 1-324
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-home-light.json
+  s_98c1f7bc58c094::t_2819c1d8dc3367 1-324
+pnpm-lock.yaml
+  s_98c1f7bc58c094::t_6b2bc0798a4599 173-175,179-181,695,699,1639-1643,2728,4782-4791,4829,7011-7014,8017,8023,8034,8042,8060,8074,8090,10351-10356
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "e5403d922cb6195b17c30c9c91f0e3d23029b043",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
