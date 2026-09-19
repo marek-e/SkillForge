@@ -1,0 +1,30 @@
+docs/stylex-migration-plan.md
+  s_5c3b0d1ebb3c32::t_e08165fc8b671c 1-43,70-85
+  s_5c3b0d1ebb3c32::t_a8c130421c0485 44-69
+docs/stylex-migration/conventions.md
+  s_98c1f7bc58c094::t_02e024662778fc 1-118
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "d54b6a1b53eece319681cc12cae1a94f6e0e1781",
+  "prompts": {},
+  "sessions": {
+    "s_5c3b0d1ebb3c32": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0abeb-481b-7152-89bf-ecb3c542c2e2",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    },
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
