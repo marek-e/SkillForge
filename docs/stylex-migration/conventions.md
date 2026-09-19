@@ -6,16 +6,40 @@ against `@stylexjs/babel-plugin` / `@stylexjs/unplugin` 0.19.1.
 
 ## Toolchain
 
-- `@stylexjs/stylex` + `@stylexjs/unplugin` (Vite adapter `stylex.vite({ useCSSLayers: true })`)
-  registered **before** `react()` in `apps/ui/vite.config.ts`.
-- In production the unplugin appends StyleX CSS to the existing CSS asset (after `index.css`).
-  In dev it serves `/virtual:stylex.css`; the app loads it through the runtime virtual module.
-- `useCSSLayers: true` makes StyleX emit `@layer priority1 … priorityN` (N = number of distinct
+_Wired up and verified in [PR 01](pr-01.md)._
+
+- `@stylexjs/stylex` + `@stylexjs/unplugin` registered **before** `react()` in
+  `apps/ui/vite.config.ts` as
+  `stylex.vite({ useCSSLayers: { before: ['theme', 'base'], after: ['components', 'utilities'] } })`.
+  The object form (rather than `useCSSLayers: true`) makes StyleX repeat the whole layer order in
+  its own output, so the cascade is the same whether the browser parses the StyleX CSS before or
+  after `index.css`. In dev it parses it **before**, because the adapter injects its `<link>` into
+  the HTML shell while `index.css` only arrives from JS.
+- In production the unplugin appends StyleX CSS to the existing CSS asset (after `index.css`), and
+  the build still emits exactly one CSS asset. In dev the adapter's own `transformIndexHtml` hook
+  injects `<link rel="stylesheet" href="/virtual:stylex.css">` and
+  `<script type="module" src="/@id/virtual:stylex:runtime">`; both are same-origin, so the app's CSP
+  covers them and neither `index.html` nor `main.tsx` needs a dev-only shim.
+- The dev runtime refetches `/virtual:stylex.css` on **every** watched file change (the plugin's
+  `handleHotUpdate` is unconditional). Anything that writes inside the Vite root while a page is
+  open therefore keeps the network busy forever — which is why `server.watch.ignored` excludes the
+  Playwright artifact directories. Add new tooling output to that list rather than to the root.
+- `useCSSLayers` makes StyleX emit `@layer priority1 … priorityN` (N = number of distinct
   property-priority buckets, ≤ 8). `apps/ui/src/index.css` declares the layer order **before**
   any `@import`:
   `@layer theme, base, priority1, priority2, priority3, priority4, priority5, priority6, priority7, priority8, components, utilities;`
-  Effect during coexistence: StyleX beats Tailwind preflight (`base`) but loses to Tailwind
-  utilities, which reproduces today's "caller `className` wins" (`twMerge`) behaviour.
+  Verified order in dev and in the production bundle:
+  `properties → theme → base → priority1…priority8 → components → utilities`.
+  Effect during coexistence: StyleX beats Tailwind preflight (`base`) and the `@layer base` rules in
+  `index.css`, but loses to Tailwind utilities, which reproduces today's "caller `className` wins"
+  (`twMerge`) behaviour. Unlayered global rules (`.drag`, the `.electron-app` offsets) still beat
+  everything; they are migrated in PR 02.
+- StyleX CSS is collected **at transform time**, not from the final module graph: rules from a
+  module the bundler later tree-shakes still ship in the CSS asset. `visual:check-gallery` only
+  proves that gallery _code_ is absent from the bundle, never that its CSS is.
+- `lightningcss` inside the unplugin takes its targets from browserslist, which currently falls back
+  to the defaults. Watch for `light-dark()` lowering (the unplugin README documents how it breaks
+  silently) and pin `lightningcssOptions.targets` if a migrated component needs it.
 - Never reference Tailwind-generated custom properties from StyleX (`--tw-*`, `--spacing`,
   `--text-*`, `--color-*`, `--radius-sm|md|lg|xl|2xl…`, `--font-*`, `--default-*`, `--ease-*`,
   `--animate-*`, `--shadow-*`, `--leading-*`, `--tracking-*`). They disappear in PR 32. Only the
@@ -38,28 +62,28 @@ against `@stylexjs/babel-plugin` / `@stylexjs/unplugin` 0.19.1.
 
 ## Selector mapping (all verified to compile)
 
-| Tailwind | StyleX key inside a property value object |
-| --- | --- |
-| `hover:x` | `'@media (hover: hover)': { ':hover': … }` (Tailwind v4 wraps hover in this media query) |
-| `focus-visible:` / `disabled:` / `active:` | `':focus-visible'`, `':disabled'`, `':active'` |
-| `dark:x` | `':is(.dark *)'` (same shape/specificity as `@custom-variant dark (&:is(.dark *))`) |
-| `data-[state=open]:x` | `'[data-state="open"]'` |
-| `aria-invalid:x` / `aria-expanded:x` | `':is([aria-invalid="true"])'` / `':is([aria-expanded="true"])'` |
-| `has-data-[icon=inline-end]:x` | `':has([data-icon="inline-end"])'` |
-| `has-[>svg]:x` | `':has(>svg)'` |
-| `in-data-[slot=button-group]:x` | `':is([data-slot="button-group"] *)'` |
-| `group-data-[x=y]/name:` | `':is(.group\\/name[data-x="y"] *)'` while the group class exists; switch to `[data-slot=…]` when the group owner migrates |
-| `peer-*:` | `':is(.peer:checked ~ *)'` etc. (`:is()` accepts complex selectors) |
-| `[&_svg]:x` (descendant) | `':is(*) svg'` → compiles to `.cls:is(*) svg { … }` |
-| `[&>svg]:x` (child) | `':is(*)>svg'` |
-| `[&_svg:not([class*='size-'])]:size-4` | `':is(*) svg:not([class*="size-"])'` |
-| `*:x` | `':is(*)>*'` |
-| `sm:` `md:` `lg:` | `'@media (width >= 40rem)'`, `'@media (width >= 48rem)'`, `'@media (width >= 64rem)'` |
-| `motion-reduce:` | `'@media (prefers-reduced-motion: reduce)'` |
-| `bg-primary/80` | `color-mix(in oklab, var(--primary) 80%, transparent)` |
-| `ring-3 ring-ring/50` | `boxShadow: '0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent)'` (append existing `shadow-*` value after it, in the same order Tailwind composes them) |
-| `animate-in fade-in-0 zoom-in-95` etc. | `stylex.keyframes` + exact durations/easings copied from `tw-animate-css` |
-| `size-4` | `width: '1rem', height: '1rem'` |
+| Tailwind                                   | StyleX key inside a property value object                                                                                                                        |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `hover:x`                                  | `'@media (hover: hover)': { ':hover': … }` (Tailwind v4 wraps hover in this media query)                                                                         |
+| `focus-visible:` / `disabled:` / `active:` | `':focus-visible'`, `':disabled'`, `':active'`                                                                                                                   |
+| `dark:x`                                   | `':is(.dark *)'` (same shape/specificity as `@custom-variant dark (&:is(.dark *))`)                                                                              |
+| `data-[state=open]:x`                      | `'[data-state="open"]'`                                                                                                                                          |
+| `aria-invalid:x` / `aria-expanded:x`       | `':is([aria-invalid="true"])'` / `':is([aria-expanded="true"])'`                                                                                                 |
+| `has-data-[icon=inline-end]:x`             | `':has([data-icon="inline-end"])'`                                                                                                                               |
+| `has-[>svg]:x`                             | `':has(>svg)'`                                                                                                                                                   |
+| `in-data-[slot=button-group]:x`            | `':is([data-slot="button-group"] *)'`                                                                                                                            |
+| `group-data-[x=y]/name:`                   | `':is(.group\\/name[data-x="y"] *)'` while the group class exists; switch to `[data-slot=…]` when the group owner migrates                                       |
+| `peer-*:`                                  | `':is(.peer:checked ~ *)'` etc. (`:is()` accepts complex selectors)                                                                                              |
+| `[&_svg]:x` (descendant)                   | `':is(*) svg'` → compiles to `.cls:is(*) svg { … }`                                                                                                              |
+| `[&>svg]:x` (child)                        | `':is(*)>svg'`                                                                                                                                                   |
+| `[&_svg:not([class*='size-'])]:size-4`     | `':is(*) svg:not([class*="size-"])'`                                                                                                                             |
+| `*:x`                                      | `':is(*)>*'`                                                                                                                                                     |
+| `sm:` `md:` `lg:`                          | `'@media (width >= 40rem)'`, `'@media (width >= 48rem)'`, `'@media (width >= 64rem)'`                                                                            |
+| `motion-reduce:`                           | `'@media (prefers-reduced-motion: reduce)'`                                                                                                                      |
+| `bg-primary/80`                            | `color-mix(in oklab, var(--primary) 80%, transparent)`                                                                                                           |
+| `ring-3 ring-ring/50`                      | `boxShadow: '0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent)'` (append existing `shadow-*` value after it, in the same order Tailwind composes them) |
+| `animate-in fade-in-0 zoom-in-95` etc.     | `stylex.keyframes` + exact durations/easings copied from `tw-animate-css`                                                                                        |
+| `size-4`                                   | `width: '1rem', height: '1rem'`                                                                                                                                  |
 
 Nested conditions are allowed (`':is(.dark *)': { default: …, '@media (hover: hover)': { ':hover': … } }`);
 `default` is mandatory at every level. Descendant keys are a compiler pass-through hack: keep
@@ -94,8 +118,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
 - Keep variant and size names, `data-*`/ARIA attributes, refs, `asChild`, prop order and
   defaults exactly as before. Do not add or remove DOM nodes.
-- Keep `className?: string` in the props during coexistence; add an optional `sx?: stylex.StyleXStyles`
-  prop only when a StyleX caller needs to override (pass it as the last argument to `stylex.props`).
+- Keep `className?: string` in the props during coexistence; add an optional `sx` prop only when a
+  StyleX caller needs to override (pass it as the last argument to `stylex.props`). Type it as
+  `stylex.StyleXArray<(null | undefined | stylex.CompiledStyles) | boolean | Readonly<[stylex.CompiledStyles, stylex.InlineStyles]>>`,
+  which is exactly what `stylex.props` accepts. `stylex.StyleXStyles` is too narrow: a style object
+  whose only declarations sit behind an attribute selector compiles to
+  `StyleXClassNameFor<'prop', unknown>` and fails to assign, and dynamic styles are tuples.
   Drop the `className` bridge only in the PR that migrates the last Tailwind caller of that component.
 - Keep exported `cva` helpers (e.g. `buttonVariants`) untouched until every call site has moved;
   list the remaining callers in the PR notes.

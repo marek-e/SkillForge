@@ -2,6 +2,7 @@ import type { ComponentType } from 'react'
 import { AppDialogsSection } from './app-dialogs'
 import { AppSection } from './app'
 import { ButtonsSection } from './buttons'
+import { CanarySection } from './canary'
 import { DataDisplaySection } from './data-display'
 import { DisclosureSection } from './disclosure'
 import { FormsSection } from './forms'
@@ -25,4 +26,5 @@ export const GALLERY_SECTIONS: GallerySection[] = [
   { id: 'sidebar-parts', title: 'Sidebar primitives', Component: SidebarPartsSection },
   { id: 'app', title: 'Application components', Component: AppSection },
   { id: 'app-dialogs', title: 'Application dialogs', Component: AppDialogsSection },
+  { id: 'canary', title: 'StyleX canary', Component: CanarySection },
 ]

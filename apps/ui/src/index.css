@@ -1,3 +1,18 @@
+/* Cascade layer order for the StyleX migration (PR 01).
+ *
+ * A `@layer` statement is allowed before `@import` and is what fixes the order,
+ * because layers are ordered by first declaration. Tailwind's own
+ * `@layer theme, base, components, utilities;` (inside `tailwindcss`) then only
+ * references layers that already exist, so it cannot reorder them.
+ *
+ * `priority1..priority8` are the layers `@stylexjs/unplugin` emits with
+ * `useCSSLayers`. Placing them between `base` and `components` means StyleX
+ * beats Tailwind preflight and the `@layer base` rules below, and loses to a
+ * Tailwind utility a caller passes through `className` - which is the
+ * precedence the `cn`/`twMerge` bridge has today. */
+@layer theme, base, priority1, priority2, priority3, priority4, priority5, priority6, priority7,
+  priority8, components, utilities;
+
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';

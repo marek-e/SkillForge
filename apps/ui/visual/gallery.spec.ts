@@ -16,6 +16,7 @@ const SECTIONS = [
   'sidebar-parts',
   'app',
   'app-dialogs',
+  'canary',
 ] as const
 
 async function caseNames(page: Page): Promise<string[]> {
@@ -112,6 +113,15 @@ test.describe('interaction states', () => {
       )
       await settle(page)
       await expectCaseShot(page, 'carousel-default', `state-carousel-second-${theme}.png`)
+    })
+
+    // The StyleX canary's hover rule is nested in `@media (hover: hover)`, the
+    // same shape Tailwind v4 uses, so it only applies to a real pointer hover.
+    test(`canary hover ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'canary', { theme })
+
+      await page.locator('[data-gallery-case="canary-hover"] [data-slot="canary"]').hover()
+      await expectCaseShot(page, 'canary-hover', `state-canary-hover-${theme}.png`)
     })
 
     // The suggestion list is absolutely positioned, so it falls outside the case
