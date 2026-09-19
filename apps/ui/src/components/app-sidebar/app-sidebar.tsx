@@ -9,7 +9,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
   SidebarSeparator,
 } from '@/components/ui/sidebar'
 import { WrenchIcon, SettingsIcon, FolderOpenIcon, LibraryBigIcon } from 'lucide-react'

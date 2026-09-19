@@ -4,7 +4,7 @@
     ".": {},
     "apps/ui": {
       "project": ["src/**/*.{ts,tsx}"],
-      "ignore": ["src/components/ui/**", "src/components/nav-user.tsx"],
+      "ignore": ["src/components/ui/**", "src/components/app-sidebar/nav-user.tsx"],
       "ignoreDependencies": ["date-fns"]
     },
     "apps/runtime": {
