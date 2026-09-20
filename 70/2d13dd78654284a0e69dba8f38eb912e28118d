@@ -1,0 +1,95 @@
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-data-display-extra-light.json
+  s_98c1f7bc58c094::t_0d4a247842ab60 2742-2744
+  s_98c1f7bc58c094::t_9a67d0052c8f71 1-2741,2745-4517,4520-4523,4525-4526,4528-4530,4532-4558,4560-4571,4575-4578,4581-4583,4585-4587,4589-4590,4592-4607,4609-7688
+  s_98c1f7bc58c094::t_f9bb5358755c61 4518-4519,4524,4527,4531,4559,4572-4574,4579-4580,4584,4588,4591,4608
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-data-display-extra-dark.json
+  s_98c1f7bc58c094::t_f9bb5358755c61 4518-4519,4524,4527,4531,4559,4572-4574,4579-4580,4584,4588,4591,4608
+  s_98c1f7bc58c094::t_9a67d0052c8f71 1-2741,2745-4517,4520-4523,4525-4526,4528-4530,4532-4558,4560-4571,4575-4578,4581-4583,4585-4587,4589-4590,4592-4607,4609-7688
+  s_98c1f7bc58c094::t_0d4a247842ab60 2742-2744
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-data-display-sections-dark.json
+  s_98c1f7bc58c094::t_f9bb5358755c61 1-302
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-data-display-sections-dark.json
+  s_98c1f7bc58c094::t_f9bb5358755c61 1-302
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-data-display-sections-light.json
+  s_98c1f7bc58c094::t_f9bb5358755c61 1-302
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-data-display-extra-light.json
+  s_98c1f7bc58c094::t_9a67d0052c8f71 1-2741,2745-4517,4520-4523,4525-4526,4528-4530,4532-4558,4560-4571,4575-4578,4581-4583,4585-4587,4589-4590,4592-4607,4609-7688
+  s_98c1f7bc58c094::t_f9bb5358755c61 4518-4519,4524,4527,4531,4559,4572-4574,4579-4580,4584,4588,4591,4608
+  s_98c1f7bc58c094::t_0d4a247842ab60 2742-2744
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-data-display-parts-dark.json
+  s_98c1f7bc58c094::t_9a67d0052c8f71 1-3052
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-data-display-extra-sections-dark.json
+  s_98c1f7bc58c094::t_f9bb5358755c61 1-602
+apps/ui/src/components/ui/table.tsx
+  s_98c1f7bc58c094::t_bc5930c86a78a6 2,4,7-94,101-108,111-140,145-146,153-163,166-168,172-173,179-181,185-186,192-193,198-199,205-207,211-212,218-220,224-225,231-232,237-238
+  s_98c1f7bc58c094::t_7cd0afaabd183c 194,233
+  s_98c1f7bc58c094::t_8ce6309186dbfa 95-98
+  s_98c1f7bc58c094::t_438cf4aac0634f 142
+  s_98c1f7bc58c094::t_fe4e18314a4208 99-100,109-110
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-data-display-extra-sections-light.json
+  s_98c1f7bc58c094::t_f9bb5358755c61 1-602
+apps/ui/src/components/ui/separator.tsx
+  s_98c1f7bc58c094::t_068e8c09018f90 2,5-6,9-28,31,34,36-49,55-56
+docs/stylex-migration/conventions.md
+  s_98c1f7bc58c094::t_a8a790b5b66357 101-103,105-109,149,239-245,247-256,427-430,441,443
+  s_98c1f7bc58c094::t_27f7afd07e1405 104,150,246,437-440
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-data-display-sections-light.json
+  s_98c1f7bc58c094::t_f9bb5358755c61 1-302
+apps/ui/visual/gallery.spec.ts
+  s_98c1f7bc58c094::t_ef5301cf5b1117 18
+  s_98c1f7bc58c094::t_b5ba6b214a6a0b 315-338
+apps/ui/src/visual-gallery/sections/data-display-extra.tsx
+  s_98c1f7bc58c094::t_6b3e0053163b47 46,50
+  s_98c1f7bc58c094::t_9215a36847958a 154-159
+  s_98c1f7bc58c094::t_1daa5c36eb0144 1-45,47-49,51-153,160-364
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-data-display-extra-dark.json
+  s_98c1f7bc58c094::t_9a67d0052c8f71 1-2741,2745-4517,4520-4523,4525-4526,4528-4530,4532-4558,4560-4571,4575-4578,4581-4583,4585-4587,4589-4590,4592-4607,4609-7688
+  s_98c1f7bc58c094::t_0d4a247842ab60 2742-2744
+  s_98c1f7bc58c094::t_f9bb5358755c61 4518-4519,4524,4527,4531,4559,4572-4574,4579-4580,4584,4588,4591,4608
+apps/ui/src/components/ui/field.tsx
+  s_98c1f7bc58c094::t_5314b70fb23fc3 274-284,531
+apps/ui/src/components/ui/aspect-ratio.tsx
+  s_98c1f7bc58c094::t_15c893f815ec1a 3-10
+docs/stylex-migration/pr-07.md
+  s_98c1f7bc58c094::t_658d6696bb12de 1-46,51-67,77-81,86-137,144-166,175-224
+  s_98c1f7bc58c094::t_27f7afd07e1405 47-50,68-76,82-85,138-143,167-174
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-data-display-parts-dark.json
+  s_98c1f7bc58c094::t_9a67d0052c8f71 1-3052
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-data-display-extra-sections-dark.json
+  s_98c1f7bc58c094::t_f9bb5358755c61 1-602
+apps/ui/src/visual-gallery/sections/index.ts
+  s_98c1f7bc58c094::t_ef5301cf5b1117 7,50-54
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-data-display-extra-sections-light.json
+  s_98c1f7bc58c094::t_f9bb5358755c61 1-602
+apps/ui/src/components/ui/card.tsx
+  s_98c1f7bc58c094::t_7cd0afaabd183c 182,208,247
+  s_98c1f7bc58c094::t_fe4e18314a4208 31-40,42-44,47,63-65,101
+  s_98c1f7bc58c094::t_766d748b2cb3ce 2,4,7-30,41,45-46,48-62,66-100,102-160,163,167-168,173-174,180-181,186-187,193-195,199-200,206-207,212-213,219-221,225-226,232-234,238-239,245-246,251-252
+apps/ui/visual/computed-styles.spec.ts
+  s_98c1f7bc58c094::t_cfd7264c7f35e5 823-901,922-924,929-939,944-953,958-960
+  s_98c1f7bc58c094::t_8ce6309186dbfa 909-916
+  s_98c1f7bc58c094::t_397f568c3048ea 902-908,917-921,925-928,940-943,954-957
+apps/ui/src/components/ui/button-group.tsx
+  s_98c1f7bc58c094::t_aa729164e52a91 69-75,123-144,194-197,208-209
+  s_98c1f7bc58c094::t_7cd0afaabd183c 145
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-data-display-parts-light.json
+  s_98c1f7bc58c094::t_9a67d0052c8f71 1-3052
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-data-display-parts-light.json
+  s_98c1f7bc58c094::t_9a67d0052c8f71 1-3052
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "702d13dd78654284a0e69dba8f38eb912e28118d",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
