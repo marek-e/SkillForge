@@ -95,3 +95,41 @@ test.describe('accordion frames', () => {
     })
   }
 })
+
+/**
+ * Infinite animations at fixed timestamps (PR 08).
+ *
+ * `animations: 'disabled'` parks an infinite animation on its first frame, so
+ * every other screenshot in the suite shows `Skeleton` at full opacity and
+ * `Spinner` unrotated. These three frames are the only proof that the pulse
+ * and the spin keep Tailwind's duration, timing function and keyframes once
+ * they are `stylex.keyframes`. 0 ms, 500 ms and 1000 ms land on three
+ * different points of both curves (the pulse runs 2 s, the spin 1 s, so
+ * 1000 ms is the pulse's trough and the spin's second start).
+ */
+const LOOP_FRAMES = [0, 500, 1000]
+
+const LOOP_CASES = [
+  { id: 'skeleton-pulse', selector: '[data-gallery-case="skeleton-pulse-target"]' },
+  { id: 'spinner-spin', selector: '[data-gallery-case="spinner-frame-target"]' },
+] as const
+
+for (const loop of LOOP_CASES) {
+  for (const theme of THEMES) {
+    test(`animation ${loop.id} ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'feedback', { theme })
+      await installAnimationFreeze(page)
+
+      for (const frame of LOOP_FRAMES) {
+        await freezeAnimationsAt(page, frame)
+        await expectShot(
+          page.locator(loop.selector),
+          `animation-${loop.id}-${theme}-${frame}ms.png`,
+          {
+            animations: 'allow',
+          }
+        )
+      }
+    })
+  }
+}

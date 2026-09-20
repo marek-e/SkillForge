@@ -1,5 +1,11 @@
 import { test, type Page } from '@playwright/test'
-import { expectTextSnapshot, gotoRoute, THEMES } from './helpers'
+import {
+  expectTextSnapshot,
+  freezeAnimationsAt,
+  gotoRoute,
+  installAnimationFreeze,
+  THEMES,
+} from './helpers'
 
 /**
  * A pixel comparison can miss a cascade change that happens to render the same
@@ -955,6 +961,128 @@ for (const theme of THEMES) {
     await expectTextSnapshot(
       await collectCases(page, DATA_DISPLAY_SECTION_SELECTOR, DATA_DISPLAY_SECTION_PROPERTIES),
       `computed-data-display-extra-sections-${theme}.json`
+    )
+  })
+}
+
+/**
+ * Progress, skeleton, spinner, empty, not-found and alert (PR 08).
+ *
+ * Three of these six are built almost entirely out of selectors — the alert's
+ * `:has(>svg)` grid tracks and its action padding, the empty media variants,
+ * the progress indicator's runtime transform — and two of them animate, which
+ * a still screenshot cannot separate from a static opacity. The animation
+ * longhands are dumped so the duration, timing function and iteration count
+ * are pinned even where the keyframes' generated name is not.
+ */
+const FEEDBACK_PROPERTIES = [
+  'display',
+  'position',
+  'box-sizing',
+  'width',
+  'height',
+  'max-width',
+  'min-width',
+  'flex',
+  'flex-direction',
+  'flex-shrink',
+  'align-items',
+  'justify-content',
+  'grid-template-columns',
+  'grid-column-start',
+  'grid-row-start',
+  'grid-row-end',
+  'gap',
+  'column-gap',
+  'margin',
+  'padding-top',
+  'padding-right',
+  'padding-bottom',
+  'padding-left',
+  'font-size',
+  'font-weight',
+  'line-height',
+  'letter-spacing',
+  'color',
+  'background-color',
+  'border-top-width',
+  'border-right-width',
+  'border-bottom-width',
+  'border-left-width',
+  'border-style',
+  'border-color',
+  'border-radius',
+  'opacity',
+  'overflow-x',
+  'overflow-y',
+  'text-align',
+  'text-wrap-mode',
+  'text-wrap-style',
+  'top',
+  'right',
+  'transform',
+  'animation-duration',
+  'animation-timing-function',
+  'animation-iteration-count',
+  'animation-direction',
+  'animation-fill-mode',
+  'transition-property',
+  'transition-duration',
+  'transition-timing-function',
+]
+
+const FEEDBACK_SELECTOR = [
+  '[data-slot="progress"]',
+  '[data-slot="progress-indicator"]',
+  '[data-slot="skeleton"]',
+  '[role="status"]',
+  '[data-slot="empty"]',
+  '[data-slot="empty-header"]',
+  '[data-slot="empty-icon"]',
+  '[data-slot="empty-title"]',
+  '[data-slot="empty-description"]',
+  '[data-slot="empty-content"]',
+  '[data-slot="alert"]',
+  '[data-slot="alert-title"]',
+  '[data-slot="alert-description"]',
+  '[data-slot="alert-action"]',
+]
+  .map((selector) => `[data-gallery-case] ${selector}`)
+  .join(', ')
+
+/**
+ * `Skeleton`'s pulse and `Spinner`'s spin are infinite, so `opacity` and
+ * `transform` are whatever the compositor clock happened to be at when the
+ * dump ran. Both are seeked to 0 ms first, which is also the frame every other
+ * screenshot in the suite parks them on.
+ */
+async function freezeLoops(page: Page): Promise<void> {
+  await installAnimationFreeze(page)
+  await freezeAnimationsAt(page, 0)
+}
+
+for (const theme of THEMES) {
+  test(`computed styles gallery feedback parts ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/data-display', {
+      theme,
+      waitFor: '[data-gallery-section="data-display"]',
+    })
+    await freezeLoops(page)
+    await expectTextSnapshot(
+      await collectCases(page, FEEDBACK_SELECTOR, FEEDBACK_PROPERTIES),
+      `computed-feedback-data-display-${theme}.json`
+    )
+  })
+
+  test(`computed styles gallery feedback ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/feedback', {
+      theme,
+      waitFor: '[data-gallery-section="feedback"]',
+    })
+    await freezeLoops(page)
+    await expectTextSnapshot(
+      await collectCases(page, FEEDBACK_SELECTOR, FEEDBACK_PROPERTIES),
+      `computed-feedback-${theme}.json`
     )
   })
 }

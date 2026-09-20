@@ -7,6 +7,7 @@ import { CanarySection } from './canary'
 import { DataDisplayExtraSection } from './data-display-extra'
 import { DataDisplaySection } from './data-display'
 import { DisclosureSection } from './disclosure'
+import { FeedbackSection } from './feedback'
 import { FormsExtraSection } from './forms-extra'
 import { FormsSection } from './forms'
 import { FormsTogglesSection } from './forms-toggles'
@@ -53,6 +54,11 @@ export const GALLERY_SECTIONS: GallerySection[] = [
     Component: DataDisplayExtraSection,
   },
   { id: 'disclosure', title: 'Disclosure and panels', Component: DisclosureSection },
+  {
+    id: 'feedback',
+    title: 'Progress, skeletons, spinners, empty states and alerts',
+    Component: FeedbackSection,
+  },
   { id: 'overlays', title: 'Overlays and portals', Component: OverlaysSection },
   { id: 'sidebar-parts', title: 'Sidebar primitives', Component: SidebarPartsSection },
   { id: 'app', title: 'Application components', Component: AppSection },

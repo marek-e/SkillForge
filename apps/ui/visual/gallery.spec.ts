@@ -17,6 +17,7 @@ const SECTIONS = [
   'data-display',
   'data-display-extra',
   'disclosure',
+  'feedback',
   'overlays',
   'sidebar-parts',
   'app',

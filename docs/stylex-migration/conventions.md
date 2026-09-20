@@ -398,6 +398,21 @@ comment which PR removes them. Real cases from PR 04:
 | `ButtonGroup`'s `[&>*…]:rounded-*`/`border-*`   | `Input`'s own `rounded-lg` and `border`, `SelectTrigger`'s `rounded-lg`              |
 | `ButtonGroupSeparator`'s `bg-input`             | `Separator`'s own `bg-border`, which `twMerge` used to delete                        |
 
+### A class name can itself be the contract
+
+_Found in [PR 08](pr-08.md)._
+
+`Button` and `EmptyMedia` size the icons inside them with
+`[&_svg:not([class*='size-'])]:size-4` (or `size-3.5`). That selector does not look at the child's
+computed size — it looks at the **literal text of the child's `class` attribute**. A component
+that renders an icon of its own and whose classes become StyleX hashes stops matching
+`[class*='size-']` and starts being resized by its container: `Spinner` went from 16px to 14px
+inside a `Button` the moment its `size-4` moved into `stylex.create`.
+
+So a size class on any component that can be rendered _inside_ one of those containers stays a
+Tailwind class until the `[class*='size-']` rules themselves go (PR 32) — even when no caller
+contests it. Grep for `class*=` before converting a width/height on such a component.
+
 ## A caller's utility also shadows the component's own declarations
 
 _Generalised in [PR 05](pr-05.md); the section above is the same cause seen from the other side._
@@ -443,6 +458,24 @@ leave alone. Each disappears when the listed PR migrates the caller; verify the 
 Only the `SidebarSeparator` one is open, and it changes no computed value today. PR 05 opened none of its own: every declaration a current caller would have shadowed
 stayed a Tailwind class instead (see the section above), which a 440-dump before/after probe of
 both themes and both viewports confirmed.
+
+## Animations: the name is the one value that changes
+
+_Established in [PR 08](pr-08.md)._
+
+`stylex.keyframes` hashes its name, so a migrated `animate-*` utility keeps its frames, duration,
+timing function and iteration count but **not** its `animation-name`. Leave `animation-name` out
+of a computed-style snapshot and pin the curve instead: dump the animation longhands, and capture
+the element at fixed timestamps with `installAnimationFreeze` + `freezeAnimationsAt`
+(`animations.spec.ts` does 0/500/1000 ms for the skeleton pulse and the spinner spin).
+
+`animation: …` is a shorthand and the StyleX version is a set of longhands, so anything the
+shorthand resets (delay, direction, fill-mode, play-state) is only equal because both sides leave
+it at its initial value. Snapshot those too.
+
+An infinite animation also makes any computed-style dump non-deterministic — a `Skeleton`'s
+`opacity` is wherever the compositor clock was. Freeze the page at 0 ms before collecting, in the
+test and in a live probe alike.
 
 ## Gallery cases are append-only per section
 
