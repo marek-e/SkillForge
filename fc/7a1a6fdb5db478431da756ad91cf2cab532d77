@@ -1,0 +1,86 @@
+apps/ui/src/visual-gallery/sections/index.ts
+  s_98c1f7bc58c094::t_de4662a5bda582 4,30-34
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-badges-toggles-light.json
+  s_98c1f7bc58c094::t_74cb9371016cc9 1-699
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-button-group-edges-dark.json
+  s_98c1f7bc58c094::t_74cb9371016cc9 1-1128
+apps/ui/src/components/ui/display-view-switch.tsx
+  s_98c1f7bc58c094::t_de4662a5bda582 1,3,5-93,102,104,110-112,116,123-125,129
+apps/ui/src/components/ui/toggle.tsx
+  s_98c1f7bc58c094::t_de4662a5bda582 2,6,9-13,36-37,39-40,42-102,107-212,215,220-225,229-232
+  s_98c1f7bc58c094::t_f799d46ad16572 35,38,41,103-106
+apps/ui/src/components/ui/badge.tsx
+  s_98c1f7bc58c094::t_f799d46ad16572 34,37,40,116-117,148-149,219-220,259-260,292-293
+  s_98c1f7bc58c094::t_de4662a5bda582 2,6,9-13,35-36,38-39,41-115,118-147,150-218,221-258,261-291,294-328,331,337,343-346
+apps/ui/visual/computed-styles.spec.ts
+  s_98c1f7bc58c094::t_91531b870cd4ed 454-456
+  s_98c1f7bc58c094::t_f799d46ad16572 450
+  s_98c1f7bc58c094::t_de4662a5bda582 442-449,451-453,457-624
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-badges-toggles-dark.json
+  s_98c1f7bc58c094::t_74cb9371016cc9 1-699
+apps/ui/src/components/ui/button-group.tsx
+  s_98c1f7bc58c094::t_f799d46ad16572 49-51
+  s_98c1f7bc58c094::t_de4662a5bda582 1,5,9-13,31-48,52-117,120,124-125,131-137,145,152,156-157,163-169
+apps/ui/src/components/ui/button.tsx
+  s_98c1f7bc58c094::t_de4662a5bda582 2,6,9-16,54,56-65,68-69,71-72,74-75,77-584,591,593-597,605-610
+  s_98c1f7bc58c094::t_f799d46ad16572 55,66-67,70,73,76
+apps/ui/src/visual-gallery/sections/buttons-extra.tsx
+  s_98c1f7bc58c094::t_de4662a5bda582 1-381
+docs/stylex-migration/conventions.md
+  s_98c1f7bc58c094::t_a110450755aa28 101-102,281,296,302,312,316-319
+  s_98c1f7bc58c094::t_280d1e609bc4fa 226-280,282-295,297-301,303-311,313-315
+  s_98c1f7bc58c094::t_93eb0d8744c401 320
+apps/ui/visual/gallery.spec.ts
+  s_98c1f7bc58c094::t_de4662a5bda582 13,25-26,123-187
+  s_98c1f7bc58c094::t_5de9920987685b 188
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-button-group-edges-light.json
+  s_98c1f7bc58c094::t_74cb9371016cc9 1-1128
+docs/stylex-migration/pr-04.md
+  s_98c1f7bc58c094::t_a110450755aa28 40-45,89-93,127-132,163-166,180-185,187-189,217-224,275
+  s_98c1f7bc58c094::t_a3e7336a5d6883 1-39,46-88,94-126,133-162,167-179,186,190-216,225-231,247-274,276-281
+  s_98c1f7bc58c094::t_137deb8e05ca4e 232-234,244-246
+  s_647045279f84a3::t_93e8f78787f697 235-243
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-buttons-matrix-light.json
+  s_98c1f7bc58c094::t_74cb9371016cc9 1-4512
+docs/stylex-migration/tailwind-values.md
+  s_98c1f7bc58c094::t_c69265a8a120fd 922
+  s_98c1f7bc58c094::t_a110450755aa28 920-921,923-967
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-buttons-matrix-dark.json
+  s_98c1f7bc58c094::t_74cb9371016cc9 1-4512
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-badges-toggles-dark.json
+  s_98c1f7bc58c094::t_352e3b4eeaf6a7 1-699
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-badges-toggles-light.json
+  s_98c1f7bc58c094::t_5482ea4ab5e1c7 1-699
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-button-group-edges-dark.json
+  s_98c1f7bc58c094::t_725787c9039347 1-1128
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-button-group-edges-light.json
+  s_98c1f7bc58c094::t_65a188d71ff0c4 1-1128
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-buttons-matrix-dark.json
+  s_98c1f7bc58c094::t_b43a6dd5a0fbda 1-4512
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-buttons-matrix-light.json
+  s_98c1f7bc58c094::t_cd98b0fb808c7e 1-4512
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "fc7a1a6fdb5db478431da756ad91cf2cab532d77",
+  "prompts": {},
+  "sessions": {
+    "s_647045279f84a3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a68effad0b41c303b",
+        "model": "unknown"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    },
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
