@@ -1,0 +1,103 @@
+apps/ui/src/visual-gallery/sections/index.ts
+  s_98c1f7bc58c094::t_ee3d7fadd20112 12,23-27
+apps/ui/src/components/typography/h2.tsx
+  s_98c1f7bc58c094::t_a3b09c9353d18d 24-27
+  s_98c1f7bc58c094::t_aab97ffd8a45e2 34-37
+  s_98c1f7bc58c094::t_cdbe116e7d5c10 2,6-23,28,30-33,38-40,42-49,51-53,56-65,70
+  s_98c1f7bc58c094::t_5e168156f7e30d 29
+docs/stylex-migration/pr-03.md
+  s_98c1f7bc58c094::t_fe201504104903 1-40,42-47,52-59,61-77,79-89,91-160,162-210,212-261
+  s_98c1f7bc58c094::t_c66a5e2b6228ee 41
+  s_98c1f7bc58c094::t_71415f488f212a 48-51
+  s_98c1f7bc58c094::t_f3f7bc55f7e268 60
+  s_98c1f7bc58c094::t_d8d02ba7ed422b 78
+  s_98c1f7bc58c094::t_a5c39b6e9f32f7 90
+  s_98c1f7bc58c094::t_3d361483ac6dd5 161
+  s_98c1f7bc58c094::t_c03be81b1c8aa1 211
+apps/ui/src/components/typography/h6.tsx
+  s_98c1f7bc58c094::t_a3b09c9353d18d 11-14
+  s_98c1f7bc58c094::t_cdbe116e7d5c10 2,6-10,15,17-20,24-32,35-44,49
+  s_98c1f7bc58c094::t_5e168156f7e30d 16
+apps/ui/src/components/typography/lead.tsx
+  s_98c1f7bc58c094::t_5e168156f7e30d 15
+  s_98c1f7bc58c094::t_cdbe116e7d5c10 2,4,7-9,14,16-17,21-29,32-41,46
+  s_98c1f7bc58c094::t_a3b09c9353d18d 10-13
+apps/ui/src/components/typography/p.tsx
+  s_98c1f7bc58c094::t_cdbe116e7d5c10 2,6-14,19-27,30-39,44
+docs/stylex-migration/conventions.md
+  s_98c1f7bc58c094::t_9e3826a00f2b51 167-177,183-191,193-203,205-209,211-219,221-241
+  s_98c1f7bc58c094::t_aab97ffd8a45e2 178-182,192,204,210,220
+apps/ui/src/components/typography/h1.tsx
+  s_98c1f7bc58c094::t_cdbe116e7d5c10 2,6-10,15,17-20,24-32,35-44,49
+  s_98c1f7bc58c094::t_a3b09c9353d18d 11-14
+  s_98c1f7bc58c094::t_5e168156f7e30d 16
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-typography-dark.json
+  s_98c1f7bc58c094::t_60e8d491f61b09 1-596
+apps/ui/src/components/typography/muted.tsx
+  s_98c1f7bc58c094::t_5e168156f7e30d 15
+  s_98c1f7bc58c094::t_cdbe116e7d5c10 2,4,7-9,14,16-17,21-29,32-41,46
+  s_98c1f7bc58c094::t_a3b09c9353d18d 10-13
+apps/ui/src/components/typography/large.tsx
+  s_98c1f7bc58c094::t_cdbe116e7d5c10 2,6-8,13,15-16,20-28,31-40,45
+  s_98c1f7bc58c094::t_5e168156f7e30d 14
+  s_98c1f7bc58c094::t_a3b09c9353d18d 9-12
+apps/ui/visual/computed-styles.spec.ts
+  s_98c1f7bc58c094::t_7152383ff05260 304-441
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-typography-extra-dark.json
+  s_98c1f7bc58c094::t_60e8d491f61b09 1-464
+apps/ui/src/visual-gallery/sections/typography-extra.tsx
+  s_98c1f7bc58c094::t_d219ab16b6c778 1,3-64,67-134
+  s_98c1f7bc58c094::t_e02e6ccfbb7339 2,65-66
+apps/ui/src/components/typography/small.tsx
+  s_98c1f7bc58c094::t_cdbe116e7d5c10 2,6-20,24-28,30-46,49
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-typography-extra-light.json
+  s_98c1f7bc58c094::t_60e8d491f61b09 1-464
+apps/ui/visual/gallery.spec.ts
+  s_98c1f7bc58c094::t_ee3d7fadd20112 11
+apps/ui/src/components/typography/h5.tsx
+  s_98c1f7bc58c094::t_5e168156f7e30d 16
+  s_98c1f7bc58c094::t_a3b09c9353d18d 11-14
+  s_98c1f7bc58c094::t_cdbe116e7d5c10 2,6-10,15,17-20,24-32,35-44,49
+apps/ui/src/components/typography/code.tsx
+  s_98c1f7bc58c094::t_cdbe116e7d5c10 2,4,7-39,44,46-67,69,71-88,91
+  s_98c1f7bc58c094::t_a3b09c9353d18d 40-43
+  s_98c1f7bc58c094::t_5e168156f7e30d 45
+apps/ui/src/components/typography/blockquote.tsx
+  s_98c1f7bc58c094::t_cdbe116e7d5c10 2,6-23,27-35,38-39,41-46,52
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-typography-light.json
+  s_98c1f7bc58c094::t_60e8d491f61b09 1-596
+apps/ui/src/components/typography/index.ts
+  s_98c1f7bc58c094::t_cdbe116e7d5c10 1,4,7,10,13,16,19,22,25,28,31,34,37
+apps/ui/src/components/typography/h3.tsx
+  s_98c1f7bc58c094::t_5e168156f7e30d 16
+  s_98c1f7bc58c094::t_a3b09c9353d18d 11-14
+  s_98c1f7bc58c094::t_cdbe116e7d5c10 2,6-10,15,17-20,24-32,35-44,49
+apps/ui/src/components/typography/h4.tsx
+  s_98c1f7bc58c094::t_5e168156f7e30d 16
+  s_98c1f7bc58c094::t_cdbe116e7d5c10 2,6-10,15,17-20,24-32,35-44,49
+  s_98c1f7bc58c094::t_a3b09c9353d18d 11-14
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-typography-dark.json
+  s_98c1f7bc58c094::t_78c751f2356980 1-596
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-typography-extra-dark.json
+  s_98c1f7bc58c094::t_065aad73cc2df7 1-464
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-typography-extra-light.json
+  s_98c1f7bc58c094::t_66ccfef42d1f11 1-464
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-typography-light.json
+  s_98c1f7bc58c094::t_ea40f5ca8e1c11 1-596
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "55eb071b5c0995d932c1c8941a66463e169ddd48",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
