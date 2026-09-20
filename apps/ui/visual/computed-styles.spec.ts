@@ -439,3 +439,186 @@ for (const theme of THEMES) {
     )
   })
 }
+
+/**
+ * Buttons, groups, badges and toggles (PR 04).
+ *
+ * Two collectors, because the risky parts are different in kind:
+ *
+ * - `collectButtonMatrix` dumps one button per variant/size plus the badge and
+ *   toggle variants, which pins the `cva` string's plain declarations (box,
+ *   colour, radius, the per-size arbitrary `min()` radius).
+ * - `collectGroupChildren` walks **every direct child** of each button group and
+ *   dumps its four corner radii, four border widths and stacking, which is the
+ *   only way to see the child-edge rules
+ *   (the `:not(:first-child)` and `:not(:last-child)` corner and border rules,
+ *   and the `!important` last-`[data-slot]`-child radius rule) resolve against
+ *   each other and against the button's own `in-data-[slot=button-group]` radius.
+ */
+const BUTTON_PROPERTIES = [
+  'display',
+  'width',
+  'height',
+  'padding',
+  'gap',
+  'font-size',
+  'line-height',
+  'font-weight',
+  'color',
+  'background-color',
+  'background-clip',
+  'border-width',
+  'border-style',
+  'border-color',
+  'border-radius',
+  'box-shadow',
+  'outline',
+  'opacity',
+  'pointer-events',
+  'user-select',
+  'white-space',
+  'flex-shrink',
+  'align-items',
+  'justify-content',
+  'transition-property',
+  'transition-duration',
+  'transition-timing-function',
+  'overflow',
+]
+
+const GROUP_CHILD_PROPERTIES = [
+  'display',
+  'position',
+  'z-index',
+  'width',
+  'height',
+  'flex',
+  'align-self',
+  'border-top-left-radius',
+  'border-top-right-radius',
+  'border-bottom-right-radius',
+  'border-bottom-left-radius',
+  'border-top-width',
+  'border-right-width',
+  'border-bottom-width',
+  'border-left-width',
+  'border-color',
+  'background-color',
+  'margin',
+  'padding',
+]
+
+const GROUP_CASES = [
+  'button-group-two',
+  'button-group-text-last',
+  'button-group-text-both',
+  'button-group-xs',
+  'button-group-sm',
+  'button-group-icon-xs',
+  'button-group-icon-sm',
+  'button-group-nested',
+  'button-group-input',
+  'button-group-select',
+  'button-group-vertical-two',
+  'button-group-vertical-text-last',
+  'button-group-vertical-separator',
+  'button-group-mixed-variants',
+]
+
+async function collectCases(page: Page, selector: string, properties: string[]): Promise<string> {
+  const report = await page.evaluate(
+    ({ selector, properties }) => {
+      const round = (value: number) => Math.round(value * 100) / 100
+      return [...document.querySelectorAll(selector)].map((element) => {
+        const caseElement = element.closest('[data-gallery-case]')
+        const rect = element.getBoundingClientRect()
+        const computed = getComputedStyle(element)
+        const styles: Record<string, string> = {}
+        for (const property of properties) {
+          styles[property] = computed.getPropertyValue(property)
+        }
+        return {
+          case: caseElement?.getAttribute('data-gallery-case') ?? '',
+          tag: element.tagName.toLowerCase(),
+          slot: element.getAttribute('data-slot'),
+          variant: element.getAttribute('data-variant'),
+          size: element.getAttribute('data-size'),
+          box: { width: round(rect.width), height: round(rect.height) },
+          styles,
+        }
+      })
+    },
+    { selector, properties }
+  )
+
+  return `${JSON.stringify(report, null, 2)}\n`
+}
+
+async function collectGroupChildren(page: Page): Promise<string> {
+  const report = await page.evaluate(
+    ({ cases, properties }) => {
+      const round = (value: number) => Math.round(value * 100) / 100
+      return cases.map((name) => {
+        const group = document.querySelector(`[data-gallery-case="${name}"] > *`)
+        if (!group) return { case: name, present: false }
+        const children = [...group.children].map((child, index) => {
+          const rect = child.getBoundingClientRect()
+          const computed = getComputedStyle(child)
+          const styles: Record<string, string> = {}
+          for (const property of properties) {
+            styles[property] = computed.getPropertyValue(property)
+          }
+          return {
+            index,
+            tag: child.tagName.toLowerCase(),
+            slot: child.getAttribute('data-slot'),
+            box: { width: round(rect.width), height: round(rect.height) },
+            styles,
+          }
+        })
+        const groupComputed = getComputedStyle(group)
+        return {
+          case: name,
+          present: true,
+          group: {
+            display: groupComputed.display,
+            flexDirection: groupComputed.flexDirection,
+            alignItems: groupComputed.alignItems,
+            gap: groupComputed.gap,
+            width: groupComputed.width,
+            orientation: group.getAttribute('data-orientation'),
+          },
+          children,
+        }
+      })
+    },
+    { cases: GROUP_CASES, properties: GROUP_CHILD_PROPERTIES }
+  )
+
+  return `${JSON.stringify(report, null, 2)}\n`
+}
+
+for (const theme of THEMES) {
+  test(`computed styles gallery buttons-extra ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/buttons-extra', {
+      theme,
+      waitFor: '[data-gallery-section="buttons-extra"]',
+    })
+    await expectTextSnapshot(
+      await collectCases(page, '[data-gallery-case] [data-slot="button"]', BUTTON_PROPERTIES),
+      `computed-buttons-matrix-${theme}.json`
+    )
+    await expectTextSnapshot(
+      await collectCases(
+        page,
+        '[data-gallery-case] [data-slot="badge"], [data-gallery-case] [data-slot="toggle"]',
+        BUTTON_PROPERTIES
+      ),
+      `computed-badges-toggles-${theme}.json`
+    )
+    await expectTextSnapshot(
+      await collectGroupChildren(page),
+      `computed-button-group-edges-${theme}.json`
+    )
+  })
+}

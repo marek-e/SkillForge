@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react'
 import { AppDialogsSection } from './app-dialogs'
 import { AppSection } from './app'
+import { ButtonsExtraSection } from './buttons-extra'
 import { ButtonsSection } from './buttons'
 import { CanarySection } from './canary'
 import { DataDisplaySection } from './data-display'
@@ -26,6 +27,11 @@ export const GALLERY_SECTIONS: GallerySection[] = [
     Component: TypographyExtraSection,
   },
   { id: 'buttons', title: 'Buttons, badges and toggles', Component: ButtonsSection },
+  {
+    id: 'buttons-extra',
+    title: 'Button matrix, group edges and interaction targets',
+    Component: ButtonsExtraSection,
+  },
   { id: 'forms', title: 'Form controls', Component: FormsSection },
   { id: 'data-display', title: 'Data display', Component: DataDisplaySection },
   { id: 'disclosure', title: 'Disclosure and panels', Component: DisclosureSection },

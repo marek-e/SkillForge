@@ -10,6 +10,7 @@ const SECTIONS = [
   'typography',
   'typography-extra',
   'buttons',
+  'buttons-extra',
   'forms',
   'data-display',
   'disclosure',
@@ -20,6 +21,8 @@ const SECTIONS = [
   'canary',
   'tokens',
 ] as const
+
+const BUTTON_VARIANTS = ['default', 'outline', 'secondary', 'ghost', 'destructive', 'link'] as const
 
 async function caseNames(page: Page): Promise<string[]> {
   return page
@@ -115,6 +118,72 @@ test.describe('interaction states', () => {
       )
       await settle(page)
       await expectCaseShot(page, 'carousel-default', `state-carousel-second-${theme}.png`)
+    })
+
+    // Every variant's hover and focus state. The focus ring composes a
+    // different colour for `destructive`, and on an `aria-invalid` button the
+    // ring and the border colour are contested by two rules of equal
+    // specificity, so the outcome is pinned rather than reasoned about.
+    test(`button variant states ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'buttons-extra', { theme })
+
+      for (const variant of BUTTON_VARIANTS) {
+        const hoverCase = `button-hover-${variant}-target`
+        await page.locator(`[data-gallery-case="${hoverCase}"] button`).hover()
+        await expectCaseShot(page, hoverCase, `state-button-hover-${variant}-${theme}.png`)
+
+        const focusCase = `button-focus-${variant}-target`
+        await page.locator(`[data-gallery-case="${focusCase}"] button`).focus()
+        await expectCaseShot(page, focusCase, `state-button-focus-${variant}-${theme}.png`)
+        await page.locator(`[data-gallery-case="${focusCase}"] button`).blur()
+      }
+
+      await page.locator('[data-gallery-case="button-invalid-focus-target"] button').focus()
+      await expectCaseShot(
+        page,
+        'button-invalid-focus-target',
+        `state-button-invalid-focus-${theme}.png`
+      )
+      await page.locator('[data-gallery-case="button-invalid-focus-target"] button').blur()
+
+      const active = page.locator('[data-gallery-case="button-active-target"] button')
+      const activeBox = await active.boundingBox()
+      if (activeBox) {
+        await page.mouse.move(activeBox.x + activeBox.width / 2, activeBox.y + activeBox.height / 2)
+        await page.mouse.down()
+        await expectCaseShot(
+          page,
+          'button-active-target',
+          `state-button-active-secondary-${theme}.png`
+        )
+        await page.mouse.up()
+      }
+    })
+
+    test(`badge toggle and switch states ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'buttons-extra', { theme })
+
+      await page.locator('[data-gallery-case="badge-hover-target"] a').hover()
+      await expectCaseShot(page, 'badge-hover-target', `state-badge-hover-${theme}.png`)
+
+      await page.locator('[data-gallery-case="badge-hover-ghost-target"] a').hover()
+      await expectCaseShot(page, 'badge-hover-ghost-target', `state-badge-hover-ghost-${theme}.png`)
+
+      await page.locator('[data-gallery-case="badge-focus-target"] a').focus()
+      await expectCaseShot(page, 'badge-focus-target', `state-badge-focus-${theme}.png`)
+
+      await page.locator('[data-gallery-case="toggle-focus-target"] button').focus()
+      await expectCaseShot(page, 'toggle-focus-target', `state-toggle-focus-${theme}.png`)
+
+      await page
+        .locator('[data-gallery-case="display-view-switch-hover-target"] button')
+        .last()
+        .hover()
+      await expectCaseShot(
+        page,
+        'display-view-switch-hover-target',
+        `state-view-switch-hover-${theme}.png`
+      )
     })
 
     // The StyleX canary's hover rule is nested in `@media (hover: hover)`, the

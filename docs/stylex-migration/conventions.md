@@ -98,7 +98,8 @@ const styles = stylex.create({
 
 | Tailwind                                   | StyleX key inside a property value object                                                                                                                        |
 | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `hover:x`                                  | `'@media (hover: hover)': { ':hover': … }` (Tailwind v4 wraps hover in this media query)                                                                         |
+| `hover:x`                                  | `':hover'` — **not** wrapped in a media query; see "`hover:` has no media query here" below                                                                      |
+| `[a]:hover:x` (arbitrary variant)          | `':is(a):hover'` — `[a]:` compiles to `&:is(a)`, and a `hover:` that is not the first variant gets no media query either                                         |
 | `focus-visible:` / `disabled:` / `active:` | `':focus-visible'`, `':disabled'`, `':active'`                                                                                                                   |
 | `dark:x`                                   | `':is(.dark *)'` (same shape/specificity as `@custom-variant dark (&:is(.dark *))`)                                                                              |
 | `data-[state=open]:x`                      | `'[data-state="open"]'`                                                                                                                                          |
@@ -221,6 +222,101 @@ specificity, so _any_ caller utility now wins. No caller passes a margin utility
 typography components today, which is why this is a note and not a blocker, but check the call
 sites before migrating a component whose own variant utility contests a property callers
 override.
+
+### `hover:` has no media query here
+
+_Corrected in [PR 04](pr-04.md); [`tailwind-values.md`](tailwind-values.md) §9 and the first
+version of the table above were wrong._
+
+Compiling the project's real `index.css` and reading the shipped CSS asset shows plain
+`.hover\:bg-muted:hover { … }`, with **no** `@media (hover: hover)` wrapper — the whole bundle
+contains zero Tailwind rules inside such a media query. The same holds for `dark:hover:` and for
+`[a]:hover:`. Write `':hover'`.
+
+The canary from PR 01 keeps its `@media (hover: hover)` nesting on purpose: it is a probe for the
+nested-condition syntax, not a copy of a Tailwind rule.
+
+### Utility source order decides a same-specificity tie
+
+Several of a component's states are written by different variants of equal specificity
+(`.x:hover`, `.x[aria-expanded="true"]`, `.x:focus-visible`, `.x[aria-invalid="true"]`, all
+(0,2,0)). Tailwind resolves those by **emission order inside `@layer utilities`**, which is fixed
+and can be read off the built CSS. Measured for this project, later wins:
+
+`hover:` → `aria-expanded:` → `focus-visible:` → `aria-invalid:` → every `dark:*` (emitted last)
+
+StyleX gives its own priority per condition (`:hover` 130, `:disabled` 92, anything starting
+`:is(` 40), so the order can come out different. **Do not rely on it.** Write the combination
+explicitly as a nested condition, which raises the specificity and settles it:
+
+```ts
+borderColor: {
+  default: 'transparent',
+  ':focus-visible': colors.ring,
+  ':is([aria-invalid="true"])': {
+    default: colors.destructive,
+    ':focus-visible': colors.destructive, // aria-invalid: beats focus-visible:
+  },
+},
+```
+
+Only nest where the two rules disagree. A gratuitous nested rule is itself a bug: an
+`[aria-expanded]:hover` rule added "for order" also outranks `dark:hover:*`, which Tailwind lets
+win — that cost PR 04 four dark-mode screenshot failures.
+
+### `stylex.props` merges a property whole
+
+`stylex.props(base, variant)` keeps only the **last** style object's entry for a property, with
+all of its conditions. A variant that sets `borderColor` therefore drops the base's
+`':focus-visible'` and `':is([aria-invalid="true"])' `borderColor rules entirely. Restate them in
+every variant that touches the property, or keep the property in exactly one object.
+
+The same trap in reverse: a size that sets the element's own `height` drops a base `height` whose
+only declaration was a descendant rule (`[&_svg…]:size-4`).
+
+### Rings and shadows: write the whole composed chain
+
+A `ring-*` or `shadow-*` utility re-declares the five-slot `box-shadow`
+(`--tw-inset-shadow, --tw-inset-ring-shadow, --tw-ring-offset-shadow, --tw-ring-shadow, --tw-shadow`)
+and fills the unused slots with `0 0 #0000`. Writing the no-op slots out keeps the _computed_
+`box-shadow` string identical, so a computed-style snapshot needs no exception:
+
+```ts
+':focus-visible':
+  '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent), 0 0 #0000',
+```
+
+## A rule that styles a foreign element stays Tailwind
+
+_Established in [PR 04](pr-04.md)._
+
+Cascade layers outrank specificity unconditionally. A StyleX rule lives in a `priorityN` layer,
+below `utilities`, so **any** utility class sitting on the element itself beats it — however
+specific the StyleX selector is. That is fine for the component's own box (the caller's
+`className` is meant to win) and wrong for every rule that reaches _out_ to an element the
+component does not own, because there the component's selector used to win on specificity.
+
+Keep those as Tailwind classes in the bridge until the element's owner is StyleX, and say in a
+comment which PR removes them. Real cases from PR 04:
+
+| Rule                                            | Foreign element it loses to                                                          |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `[&_svg:not([class*='size-'])]:size-4` (button) | `mode-toggle.tsx`'s `<Sun className="h-[1.2rem] w-[1.2rem]" />` — 16px became 19.2px |
+| `[&>svg]:size-3!` (badge)                       | any caller `size-*` on the icon; the `!` exists precisely to beat it                 |
+| `ButtonGroup`'s `[&>*…]:rounded-*`/`border-*`   | `Input`'s own `rounded-lg` and `border`, `SelectTrigger`'s `rounded-lg`              |
+| `ButtonGroupSeparator`'s `bg-input`             | `Separator`'s own `bg-border`, which `twMerge` used to delete                        |
+
+## Known coexistence gaps
+
+Cases where a caller's Tailwind class now shadows a **conditional** StyleX rule that `twMerge`
+used to leave alone, because `twMerge` only deletes a base class with the _same_ variant key.
+None is inside the frozen matrix; each disappears when the listed PR migrates the caller. Verify
+the restoration there.
+
+| Caller                                                                 | Effect                                         | Fixed by |
+| ---------------------------------------------------------------------- | ---------------------------------------------- | -------- |
+| `input-group.tsx`, `shadow-none` on `InputGroupButton`                 | a focused input-group button has no focus ring | PR 05    |
+| `routes/skill-detail.tsx`, `text-muted-foreground` on a ghost `Button` | its `hover:text-foreground` no longer applies  | PR 28    |
 
 ## Gallery cases are append-only per section
 
