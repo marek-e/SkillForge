@@ -31,9 +31,10 @@ _Wired up and verified in [PR 01](pr-01.md)._
   Verified order in dev and in the production bundle:
   `properties → theme → base → priority1…priority8 → components → utilities`.
   Effect during coexistence: StyleX beats Tailwind preflight (`base`) and the `@layer base` rules in
-  `index.css`, but loses to Tailwind utilities, which reproduces today's "caller `className` wins"
+  `styles/global.css`, but loses to Tailwind utilities, which reproduces today's "caller `className` wins"
   (`twMerge`) behaviour. Unlayered global rules (`.drag`, the `.electron-app` offsets) still beat
-  everything; they are migrated in PR 02.
+  everything; they live in `src/styles/global.css` and are migrated with the components that
+  own them (`.drag`/`.no-drag` in PR 20, the `.electron-app` sidebar offsets in PR 17).
 - StyleX CSS is collected **at transform time**, not from the final module graph: rules from a
   module the bundler later tree-shakes still ship in the CSS asset. `visual:check-gallery` only
   proves that gallery _code_ is absent from the bundle, never that its CSS is.
@@ -44,21 +45,54 @@ _Wired up and verified in [PR 01](pr-01.md)._
   `--text-*`, `--color-*`, `--radius-sm|md|lg|xl|2xl…`, `--font-*`, `--default-*`, `--ease-*`,
   `--animate-*`, `--shadow-*`, `--leading-*`, `--tracking-*`). They disappear in PR 32. Only the
   project's own tokens (`--background` … `--toaster-background`, `--radius`) and StyleX vars
-  from `src/styles/tokens.stylex.ts` are allowed.
+  from `src/styles/tokens.stylex.ts` are allowed. In practice: import the token module rather
+  than writing `var(--…)` by hand.
 
-## Tokens (`src/styles/tokens.stylex.ts`, PR 02)
+## Tokens (`src/styles/tokens.stylex.ts`)
 
-- `stylex.defineVars` **cannot** express `.dark` overrides (`':where(.dark)'` keys compile to
-  invalid nested CSS). Therefore the `:root { … }` and `.dark { … }` token blocks stay in the
-  minimal global stylesheet, and StyleX vars alias them:
-  `colors.background = 'var(--background)'`, etc. `.dark` switching by `next-themes` is untouched.
-- Derived values that Tailwind currently generates from `@theme inline` are defined as StyleX
-  vars/consts with literal values: `radius.lg = 'var(--radius)'`, `radius.md = 'calc(var(--radius) - 2px)'`,
-  `radius.sm = 'calc(var(--radius) - 4px)'`, `radius.xl = 'calc(var(--radius) + 4px)'`,
-  `font.sans = "'Geist Variable', sans-serif"`, `font.serif = "'MedievalSharp', serif"`.
-- Tailwind default scale values are written literally in styles (e.g. `0.875rem`, `150ms`,
-  `cubic-bezier(0.4, 0, 0.2, 1)`); take them from `node_modules/tailwindcss/theme.css` and
+_Built and verified in [PR 02](pr-02.md)._
+
+```ts
+import { colors, fonts, motion, radius } from '@/styles/tokens.stylex'
+
+const styles = stylex.create({
+  card: {
+    backgroundColor: colors.card, // -> var(--x1hc5pdo), itself var(--card)
+    color: colors.cardForeground,
+    borderColor: colors.border,
+    borderRadius: radius.xl, // -> calc(var(--radius) + 4px), inlined
+    fontFamily: fonts.sans, // -> 'Geist Variable', sans-serif, inlined
+    transitionDuration: motion.duration,
+  },
+})
+```
+
+- Always import from `@/styles/tokens.stylex`; never re-export the groups from another module.
+  The compiler resolves `defineVars`/`defineConsts` through the import path, and the file name
+  must end in `.stylex.ts`. The Vite `@` alias works for the compiler only because
+  `vite.config.ts` passes it `aliases: { '@/*': […] }` plus a pinned
+  `unstable_moduleResolution.rootDir`; Vite's own `resolve.alias` is invisible to it.
+- `colors` is a `stylex.defineVars` group of 32 entries (`background` … `toasterBackground`),
+  each aliasing one project custom property. `stylex.defineVars` **cannot** express `.dark`
+  overrides (`':where(.dark)'` keys compile to invalid nested CSS), so the `:root { … }` and
+  `.dark { … }` blocks stay in `src/styles/global.css` and keep doing the switching. That works
+  because `.dark` sits on `<html>`, which is `:root`. `next-themes` is untouched.
+- `radius`, `fonts` and `motion` are `stylex.defineConsts` groups: the compiler inlines them at
+  each use site and emits nothing, so the declaration is character for character what Tailwind
+  produces. `radius` carries the `@theme inline` steps (`base`/`lg` = `var(--radius)`,
+  `sm` = `calc(var(--radius) - 4px)`, `md` = `- 2px`, `xl` = `+ 4px`, `2xl` = `+ 8px`,
+  `3xl` = `+ 12px`, `4xl` = `+ 16px`); there is no `xs`, because the project does not override
+  Tailwind's `--radius-xs`. `fonts` has `sans`, `serif` and Tailwind's `mono` stack. `motion` has
+  `duration: '150ms'` and `ease: 'cubic-bezier(0.4, 0, 0.2, 1)'`, Tailwind's transition defaults.
+- Prefer a const over a var for anything that is already a literal. Reach for `defineVars` only
+  when a runtime custom property is genuinely needed.
+- Other Tailwind scale values are written literally in styles (e.g. `0.875rem`); take them from
+  [`tailwind-values.md`](tailwind-values.md), `node_modules/tailwindcss/theme.css` and
   `node_modules/tw-animate-css` — never from memory.
+- Tailwind's source scanner reads every `.ts`/`.tsx` file, **including comments**. A
+  Tailwind-shaped string such as `ring` or `rounded-xs` in a migrated file makes it emit a
+  utility rule that did not exist before, which shows up as a built-CSS diff. Inspect the built
+  CSS whenever a PR adds token-like strings.
 
 ## Selector mapping (all verified to compile)
 

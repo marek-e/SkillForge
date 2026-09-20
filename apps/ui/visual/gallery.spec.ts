@@ -17,6 +17,7 @@ const SECTIONS = [
   'app',
   'app-dialogs',
   'canary',
+  'tokens',
 ] as const
 
 async function caseNames(page: Page): Promise<string[]> {

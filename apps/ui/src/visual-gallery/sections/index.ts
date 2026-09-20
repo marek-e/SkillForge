@@ -8,6 +8,7 @@ import { DisclosureSection } from './disclosure'
 import { FormsSection } from './forms'
 import { OverlaysSection } from './overlays'
 import { SidebarPartsSection } from './sidebar-parts'
+import { TokensSection } from './tokens'
 import { TypographySection } from './typography'
 
 export interface GallerySection {
@@ -27,4 +28,5 @@ export const GALLERY_SECTIONS: GallerySection[] = [
   { id: 'app', title: 'Application components', Component: AppSection },
   { id: 'app-dialogs', title: 'Application dialogs', Component: AppDialogsSection },
   { id: 'canary', title: 'StyleX canary', Component: CanarySection },
+  { id: 'tokens', title: 'Theme tokens and native defaults', Component: TokensSection },
 ]

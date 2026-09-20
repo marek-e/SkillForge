@@ -27,6 +27,15 @@ export default defineConfig({
     // the cascade is identical whether StyleX CSS is parsed before `index.css`
     // (the dev `<link>` the plugin injects) or after it (the production bundle).
     stylex.vite({
+      // The compiler resolves `defineVars`/`defineConsts` through the *import
+      // path*, with its own resolver, which knows nothing about Vite's
+      // `resolve.alias`. Without these two options
+      // `import … from '@/styles/tokens.stylex'` fails to compile ("Could not
+      // resolve the path to the imported file"). `rootDir` is pinned rather
+      // than left at `process.cwd()` so the hashed variable names do not depend
+      // on the directory a command happens to be run from.
+      unstable_moduleResolution: { type: 'commonJS', rootDir: __dirname },
+      aliases: { '@/*': [path.resolve(__dirname, 'src', '*')] },
       useCSSLayers: {
         before: ['theme', 'base'],
         after: ['components', 'utilities'],

@@ -113,6 +113,177 @@ for (const route of ROUTES) {
   }
 }
 
+/**
+ * Every custom property the project declares on `:root` (and overrides in
+ * `.dark`). Snapshotting them catches a token whose literal, whose `.dark`
+ * override or whose cascade position moved, which no screenshot of a component
+ * would necessarily show.
+ *
+ * Each one is read back *through a probe element* rather than as the raw
+ * declaration text, because the raw text is not stable across pipelines:
+ * lightningcss rewrites `oklch(1 0 0)` to `oklch(100% 0 0)` and `0.625rem` to
+ * `.625rem` when it minifies the production bundle, while the value the browser
+ * resolves is the same in both. `--radius` is a length, so it is probed as a
+ * width; everything else is a colour.
+ */
+const THEME_PROPERTIES = [
+  '--background',
+  '--foreground',
+  '--card',
+  '--card-foreground',
+  '--popover',
+  '--popover-foreground',
+  '--primary',
+  '--primary-foreground',
+  '--secondary',
+  '--secondary-foreground',
+  '--muted',
+  '--muted-foreground',
+  '--accent',
+  '--accent-foreground',
+  '--destructive',
+  '--border',
+  '--input',
+  '--ring',
+  '--chart-1',
+  '--chart-2',
+  '--chart-3',
+  '--chart-4',
+  '--chart-5',
+  '--radius',
+  '--sidebar',
+  '--sidebar-foreground',
+  '--sidebar-primary',
+  '--sidebar-primary-foreground',
+  '--sidebar-accent',
+  '--sidebar-accent-foreground',
+  '--sidebar-border',
+  '--sidebar-ring',
+  '--toaster-background',
+]
+
+/**
+ * The tokens gallery renders one element per token through
+ * `src/styles/tokens.stylex.ts`, so reading these back resolves the whole
+ * chain: StyleX var alias -> project custom property -> `:root`/`.dark` value.
+ */
+async function collectTokens(page: Page): Promise<string> {
+  const report = await page.evaluate((properties) => {
+    const probe = document.createElement('div')
+    probe.style.position = 'absolute'
+    probe.style.visibility = 'hidden'
+    document.body.append(probe)
+    const resolve = (property: string) => {
+      const asLength = property === '--radius'
+      const target = asLength ? 'width' : 'color'
+      probe.style.setProperty(target, `var(${property})`)
+      const value = getComputedStyle(probe)[asLength ? 'width' : 'color']
+      probe.style.removeProperty(target)
+      return value
+    }
+    const resolved = Object.fromEntries(properties.map((p) => [p, resolve(p)]))
+    probe.remove()
+
+    const read = (selector: string, attribute: string, props: string[]) =>
+      Object.fromEntries(
+        [...document.querySelectorAll(selector)].map((element) => {
+          const computed = getComputedStyle(element)
+          return [
+            element.getAttribute(attribute),
+            Object.fromEntries(props.map((prop) => [prop, computed.getPropertyValue(prop)])),
+          ]
+        })
+      )
+
+    return {
+      rootClass: document.documentElement.className,
+      rootProperties: resolved,
+      swatchFills: read('[data-token-fill]', 'data-token-fill', ['background-color']),
+      swatchTexts: read('[data-token-text]', 'data-token-text', ['color']),
+      radii: read('[data-radius]', 'data-radius', ['border-radius']),
+      fonts: read('[data-font]', 'data-font', ['font-family']),
+      motion: read('[data-motion]', 'data-motion', [
+        'transition-property',
+        'transition-duration',
+        'transition-timing-function',
+      ]),
+    }
+  }, THEME_PROPERTIES)
+
+  return `${JSON.stringify(report, null, 2)}\n`
+}
+
+/**
+ * Properties that only the base layer sets on an element carrying no class at
+ * all: preflight plus the project's own `@layer base` rules.
+ */
+const NATIVE_PROPERTIES = [
+  'font-family',
+  'font-size',
+  'line-height',
+  'color',
+  'background-color',
+  'border-color',
+  'border-width',
+  'border-style',
+  'outline-color',
+  'outline-style',
+  'outline-width',
+  'margin',
+  'padding',
+  'box-sizing',
+  '-webkit-tap-highlight-color',
+]
+
+const NATIVE_CASE = '[data-gallery-case="native-defaults"]'
+
+const NATIVE_ELEMENTS: TrackedElement[] = [
+  { id: 'html', selector: 'html' },
+  { id: 'body', selector: 'body' },
+  { id: 'div', selector: `${NATIVE_CASE} > div > div` },
+  { id: 'button', selector: `${NATIVE_CASE} button` },
+  { id: 'input', selector: `${NATIVE_CASE} input` },
+  { id: 'textarea', selector: `${NATIVE_CASE} textarea` },
+  { id: 'select', selector: `${NATIVE_CASE} select` },
+  { id: 'a', selector: `${NATIVE_CASE} a` },
+  { id: 'hr', selector: `${NATIVE_CASE} hr` },
+  { id: 'h1', selector: `${NATIVE_CASE} h1` },
+  { id: 'p', selector: `${NATIVE_CASE} p` },
+]
+
+async function collectNativeDefaults(page: Page): Promise<string> {
+  const report = await page.evaluate(
+    ({ elements, properties }) =>
+      elements.map(({ id, selector }) => {
+        const element = document.querySelector(selector)
+        if (!element) return { id, selector, present: false }
+        const computed = getComputedStyle(element)
+        const styles: Record<string, string> = {}
+        for (const property of properties) {
+          styles[property] = computed.getPropertyValue(property)
+        }
+        return { id, selector, present: true, styles }
+      }),
+    { elements: NATIVE_ELEMENTS, properties: NATIVE_PROPERTIES }
+  )
+
+  return `${JSON.stringify(report, null, 2)}\n`
+}
+
+for (const theme of THEMES) {
+  test(`computed styles gallery tokens ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/tokens', {
+      theme,
+      waitFor: '[data-gallery-section="tokens"]',
+    })
+    await expectTextSnapshot(await collectTokens(page), `computed-tokens-${theme}.json`)
+    await expectTextSnapshot(
+      await collectNativeDefaults(page),
+      `computed-native-defaults-${theme}.json`
+    )
+  })
+}
+
 for (const theme of THEMES) {
   test(`computed styles gallery buttons ${theme}`, async ({ page }) => {
     await gotoRoute(page, '/__gallery/buttons', {
