@@ -92,12 +92,10 @@ function SkillDetailForm({ skill, skillId }: { skill: Skill; skillId: string }) 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <Button
-          variant="ghost"
-          size="icon-xs"
-          className="text-muted-foreground"
-          onClick={() => navigate({ to: '/skill-library' })}
-        >
+        {/* No `className`: the `ghost` variant already paints
+            `text-muted-foreground`, and passing it again shadowed the variant's
+            own `hover:text-foreground` once `Button` moved to StyleX (PR 05). */}
+        <Button variant="ghost" size="icon-xs" onClick={() => navigate({ to: '/skill-library' })}>
           <ArrowLeftIcon className="size-4" />
         </Button>
         <Input

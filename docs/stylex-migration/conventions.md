@@ -24,12 +24,21 @@ _Wired up and verified in [PR 01](pr-01.md)._
   `handleHotUpdate` is unconditional). Anything that writes inside the Vite root while a page is
   open therefore keeps the network busy forever — which is why `server.watch.ignored` excludes the
   Playwright artifact directories. Add new tooling output to that list rather than to the root.
-- `useCSSLayers` makes StyleX emit `@layer priority1 … priorityN` (N = number of distinct
-  property-priority buckets, ≤ 8). `apps/ui/src/index.css` declares the layer order **before**
-  any `@import`:
-  `@layer theme, base, priority1, priority2, priority3, priority4, priority5, priority6, priority7, priority8, components, utilities;`
+- `useCSSLayers` makes StyleX emit `@layer priority1 … priorityN`. **N is the number of distinct
+  `Math.floor(priority / 1000)` buckets the build has rules for, and the layers are named by
+  position**, so N grows as new kinds of declaration appear: it was 7 through PR 04 and reached 10
+  in PR 05, whose `::placeholder` and `::file-selector-button` rules are the first in the
+  8000/9000 range. `apps/ui/src/index.css` declares the layer order **before** any `@import`:
+  `@layer theme, base, priority1 … priority10, components, utilities;`
   Verified order in dev and in the production bundle:
-  `properties → theme → base → priority1…priority8 → components → utilities`.
+  `properties → theme → base → priority1…priority10 → components → utilities`.
+  A layer the plugin uses that the statement does not name is appended **after** every declared
+  layer, so in the production bundle (where the StyleX CSS is parsed last) it would outrank
+  `utilities`, while in dev it would land in the right place — a silent dev/production split.
+  Ten is the ceiling: a priority is a property priority (≤ 4000) plus 5000 for a pseudo-element
+  plus a few hundred for nested conditions, and the zero-priority bucket that holds `defineVars`
+  counts as one. Check `grep -o '@layer priority[0-9]*' dist/assets/*.css` after any PR that adds
+  a new kind of rule.
   Effect during coexistence: StyleX beats Tailwind preflight (`base`) and the `@layer base` rules in
   `styles/global.css`, but loses to Tailwind utilities, which reproduces today's "caller `className` wins"
   (`twMerge`) behaviour. Unlayered global rules (`.drag`, the `.electron-app` offsets) still beat
@@ -119,6 +128,18 @@ const styles = stylex.create({
 | `ring-3 ring-ring/50`                      | `boxShadow: '0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent)'` (append existing `shadow-*` value after it, in the same order Tailwind composes them) |
 | `animate-in fade-in-0 zoom-in-95` etc.     | `stylex.keyframes` + exact durations/easings copied from `tw-animate-css`                                                                                        |
 | `size-4`                                   | `width: '1rem', height: '1rem'`                                                                                                                                  |
+| `placeholder:x`                            | `'::placeholder'` (a top-level key in the style object)                                                                                                          |
+| `file:x`                                   | `'::file-selector-button'` — compiles, and lands in the 8000/9000 priority range (see below)                                                                     |
+| `last:x` / `nth-last-2:x`                  | `':last-child'` / `':nth-last-child(2)'`                                                                                                                         |
+| `[[data-variant=legend]+&]:x`              | `':is([data-variant="legend"]+*)'` — a preceding-sibling prefix has to go inside `:is()`, because a StyleX key is appended to the class                          |
+| `[.border-b]:x`                            | `':is(.border-b)'`                                                                                                                                               |
+| `has-disabled:x`                           | `':has(:disabled)'`                                                                                                                                              |
+| `has-data-checked:x`                       | `':has(:where([data-state="checked"]), :where([data-checked]:not([data-checked="false"])))'` — a `shadcn/tailwind.css` custom variant; read it off the built CSS |
+| `*:data-[slot=x]:y`                        | `':is(*)>[data-slot="x"]'`                                                                                                                                       |
+| `has-[>[data-align=x]]:[&>input]:y`        | `':has(>[data-align="x"])>input'`                                                                                                                                |
+| `group-has-data-horizontal/field:x`        | `':is(.group\\/field:has([data-orientation="horizontal"]) *)'`                                                                                                   |
+| `@container/name`                          | `containerType: 'inline-size', containerName: 'name'`                                                                                                            |
+| `@md/name:x`                               | `'@container name (min-width: 28rem)'` — compiles; worth +300 priority and a doubled class selector                                                              |
 
 Nested conditions are allowed (`':is(.dark *)': { default: …, '@media (hover: hover)': { ':hover': … } }`);
 `default` is mandatory at every level. Descendant keys are a compiler pass-through hack: keep
@@ -194,10 +215,18 @@ the pair was derived from. Keep a _standalone_ `leading-*` exactly as Tailwind h
 `leading-7` is already `1.75rem` and `leading-none` is already a whole `1`.
 
 The one behaviour this gives up is inheritance: a unitless line-height passes the ratio down to
-a descendant with a different font size, a length passes the length. No current caller nests
-differently sized text inside a typography component, and every `text-*` utility sets font-size
-and line-height together, so nothing in the suite moves. Re-check it if a component ever styles
-descendants through inheritance.
+a descendant with a different font size, a length passes the length.
+
+_PR 05 hit it._ `InputGroupAddon` is `text-sm` and both filter bars put a `<kbd class="text-[10px]">`
+inside it. `text-[10px]` compiles to `font-size: 10px; line-height: var(--tw-leading)` with no
+fallback, so the kbd's own line height is invalid at computed-value time and it **inherits**:
+`calc(1.25 / 0.875)` resolves against its 10px to 14.2857px, while `1.25rem` passes down 20px and
+grows the addon by six pixels. Writing the ratio instead is not a way out either, because
+lightningcss folds it to five decimals and moves the addon's _own_ line box off 20px.
+
+**So the rule has an exception:** if the element has (or a caller can give it) a descendant with a
+different font size and no line height of its own, the paired `text-*` **stays a Tailwind class**.
+Check the call sites before converting a `text-*` on a container.
 
 ### `twMerge` used to delete the base declaration; StyleX only overrides it
 
@@ -306,17 +335,47 @@ comment which PR removes them. Real cases from PR 04:
 | `ButtonGroup`'s `[&>*…]:rounded-*`/`border-*`   | `Input`'s own `rounded-lg` and `border`, `SelectTrigger`'s `rounded-lg`              |
 | `ButtonGroupSeparator`'s `bg-input`             | `Separator`'s own `bg-border`, which `twMerge` used to delete                        |
 
+## A caller's utility also shadows the component's own declarations
+
+_Generalised in [PR 05](pr-05.md); the section above is the same cause seen from the other side._
+
+The foreign-element rule is one half of it. The other half is that `twMerge` only ever deleted a
+base class with the **same variant key**, so a caller's plain utility used to coexist with the
+component's conditional rules and lose to them on specificity. Once those rules are StyleX, the
+caller's utility wins — it is in `utilities`, they are in `priorityN`.
+
+Two further mechanisms have no StyleX equivalent at all:
+
+- **A `--tw-*` variable one utility writes and another reads.** `leading-none` sets
+  `--tw-leading: 1`, and a caller's `text-base` resolves its line height through
+  `var(--tw-leading, …)`; `focus-visible:ring-ring/50` sets `--tw-ring-color`, which a caller's
+  `ring-0` composes its ring from. A StyleX declaration writes the property, never the variable, so
+  the caller's utility silently falls back to its own default.
+- **A media query emitted later.** `md:text-sm` and a caller's `text-2xl` are both (0,1,0), and
+  the media query is emitted after, so above 48rem the component still wins. As StyleX it loses.
+
+**Rule:** before converting a declaration, grep the call sites for a utility that touches the same
+property (or the same `--tw-*` variable). If one exists, keep the class — in one documented
+constant per file, named for what it is, with the PR that removes it. `input.tsx`, `textarea.tsx`,
+`label.tsx` and `input-group.tsx` each carry a `CONTESTED_CLASSES` block of that shape.
+
+A StyleX caller overriding a StyleX component is the opposite case and needs no class: give the
+component an `sx` prop (typed `Sx` from `src/lib/sx.ts`) and pass the styles as the last argument
+to `stylex.props`. That is how `InputGroupButton` overrides `Button`.
+
 ## Known coexistence gaps
 
-Cases where a caller's Tailwind class now shadows a **conditional** StyleX rule that `twMerge`
-used to leave alone, because `twMerge` only deletes a base class with the _same_ variant key.
-None is inside the frozen matrix; each disappears when the listed PR migrates the caller. Verify
-the restoration there.
+Cases where a caller's Tailwind class shadows a **conditional** StyleX rule that `twMerge` used to
+leave alone. Each disappears when the listed PR migrates the caller; verify the restoration there.
 
-| Caller                                                                 | Effect                                         | Fixed by |
-| ---------------------------------------------------------------------- | ---------------------------------------------- | -------- |
-| `input-group.tsx`, `shadow-none` on `InputGroupButton`                 | a focused input-group button has no focus ring | PR 05    |
-| `routes/skill-detail.tsx`, `text-muted-foreground` on a ghost `Button` | its `hover:text-foreground` no longer applies  | PR 28    |
+| Caller                                                                 | Effect                                         | Fixed by                                         |
+| ---------------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------ |
+| `input-group.tsx`, `shadow-none` on `InputGroupButton`                 | a focused input-group button has no focus ring | **closed in PR 05** (`Button` grew an `sx` prop) |
+| `routes/skill-detail.tsx`, `text-muted-foreground` on a ghost `Button` | its `hover:text-foreground` no longer applies  | **closed in PR 05** (the class was redundant)    |
+
+None is open. PR 05 opened none of its own: every declaration a current caller would have shadowed
+stayed a Tailwind class instead (see the section above), which a 440-dump before/after probe of
+both themes and both viewports confirmed.
 
 ## Gallery cases are append-only per section
 
@@ -334,6 +393,13 @@ originals in the same PR.
 A new `computed-styles.spec.ts` snapshot has no such constraint: it is a new test name, so it
 only ever creates new originals. Reading an existing gallery section for a new computed-style
 snapshot is fine — it changes no DOM.
+
+Capture a section's originals **after** its last case is written, not while the section is still
+being edited. An element screenshot rounds its clip rect to whole pixels, so a case that moves by
+half a pixel — which is what happens to every case below one whose height changed — differs from
+its original by a one-pixel shift of the entire image. PR 05 had to recapture the seven interaction
+states of `forms-extra` for exactly that reason. The symptom is a diff image where the whole border
+lights up; the cause is upstream of the case, not in it.
 
 ## Verification per PR
 

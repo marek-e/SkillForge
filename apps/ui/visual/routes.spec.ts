@@ -101,3 +101,33 @@ test.describe('shell states', () => {
     })
   }
 })
+
+/**
+ * States a route only reaches through the pointer or the keyboard (PR 05).
+ *
+ * The back button and the name input of the skill detail route are the two
+ * controls a caller `className` styles on top of the component's own rules, so
+ * they are the two places where a cascade change would show up on a real page
+ * rather than in the gallery.
+ */
+test.describe('route interactions', () => {
+  for (const theme of THEMES) {
+    test(`skill detail back button hover ${theme}`, async ({ page }) => {
+      await gotoRoute(page, '/skill-library/skill-alpha', { theme })
+      const back = page
+        .locator('main')
+        .last()
+        .locator('[data-slot="button"][data-variant="ghost"]')
+        .first()
+      await back.hover()
+      await expectShot(back, `state-skill-detail-back-hover-${theme}.png`)
+    })
+
+    test(`skill detail name input focus ${theme}`, async ({ page }) => {
+      await gotoRoute(page, '/skill-library/skill-alpha', { theme })
+      const nameInput = page.locator('main').last().locator('[data-slot="input"]').first()
+      await nameInput.focus()
+      await expectShot(nameInput, `state-skill-detail-name-focus-${theme}.png`)
+    })
+  }
+})

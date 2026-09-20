@@ -5,6 +5,7 @@ import { Slot } from 'radix-ui'
 
 import { colors, motion, radius } from '@/styles/tokens.stylex'
 import { cn } from '@/lib/utils'
+import type { Sx } from '@/lib/sx'
 
 /**
  * Kept **unchanged** for `components/ui/calendar.tsx`, which still calls
@@ -587,31 +588,54 @@ const Button = React.forwardRef<
   React.ComponentProps<'button'> &
     VariantProps<typeof buttonVariants> & {
       asChild?: boolean
+      /**
+       * StyleX overrides from a StyleX caller, applied last so they win.
+       *
+       * `InputGroupButton` (PR 05) is the first one: its `shadow-none` used to
+       * be a utility class, which — once the ring moved to StyleX — beat the
+       * focus ring instead of losing to it. Passing the reset through here puts
+       * both declarations back in the same cascade layer.
+       */
+      sx?: Sx
     }
->(({ className, style, variant = 'default', size = 'default', asChild = false, ...props }, ref) => {
-  const Comp = asChild ? Slot.Root : 'button'
-  const sx = stylex.props(
-    styles.base,
-    variantStyles[variant ?? 'default'],
-    sizeStyles[size ?? 'default']
-  )
+>(
+  (
+    {
+      className,
+      style,
+      variant = 'default',
+      size = 'default',
+      asChild = false,
+      sx: sxProp,
+      ...props
+    },
+    ref
+  ) => {
+    const Comp = asChild ? Slot.Root : 'button'
+    const sx = stylex.props(
+      styles.base,
+      variantStyles[variant ?? 'default'],
+      sizeStyles[size ?? 'default'],
+      sxProp
+    )
 
-  return (
-    <Comp
-      ref={ref}
-      data-slot="button"
-      data-variant={variant}
-      data-size={size}
-      // `group/button` stays a literal class: it carries no styling of its
-      // own, but `ProjectsTable` and `routes/project-detail` still style a
-      // descendant icon with `group-hover/button:fill-yellow-400/50`, which
-      // needs this exact class name on the ancestor until those files migrate.
-      className={cn('group/button', SIZE_ICON_CLASS[size ?? 'default'], sx.className, className)}
-      style={sx.style || style ? { ...sx.style, ...style } : undefined}
-      {...props}
-    />
-  )
-})
+    return (
+      <Comp
+        ref={ref}
+        data-slot="button"
+        data-variant={variant}
+        data-size={size}
+        // `group/button` stays a literal class: it carries no styling of its
+        // own, but `ProjectsTable` and `routes/project-detail` still style a
+        // descendant icon with `group-hover/button:fill-yellow-400/50`, which
+        // needs this exact class name on the ancestor until those files migrate.
+        className={cn('group/button', SIZE_ICON_CLASS[size ?? 'default'], sx.className, className)}
+        style={sx.style || style ? { ...sx.style, ...style } : undefined}
+        {...props}
+      />
+    )
+  }
+)
 Button.displayName = 'Button'
 
 export { Button, buttonVariants }

@@ -5,13 +5,26 @@
  * `@layer theme, base, components, utilities;` (inside `tailwindcss`) then only
  * references layers that already exist, so it cannot reorder them.
  *
- * `priority1..priority8` are the layers `@stylexjs/unplugin` emits with
+ * `priority1..priority10` are the layers `@stylexjs/unplugin` emits with
  * `useCSSLayers`. Placing them between `base` and `components` means StyleX
  * beats Tailwind preflight and the `@layer base` rules in `styles/global.css`,
  * and loses to a Tailwind utility a caller passes through `className` - which is
- * the precedence the `cn`/`twMerge` bridge has today. */
+ * the precedence the `cn`/`twMerge` bridge has today.
+ *
+ * Ten, not eight (raised in PR 05). The plugin emits one layer per *distinct*
+ * `Math.floor(priority / 1000)` bucket it has rules for, and names them by
+ * position, so the count grows as new kinds of declaration appear: PR 05's
+ * `::placeholder` and `::file-selector-button` rules are the first in the
+ * 8000/9000 range. Ten is the ceiling - a priority is a property priority
+ * (up to 4000) plus 5000 for a pseudo-element plus a few hundred for nested
+ * conditions, and the zero-priority bucket that holds `defineVars` counts as
+ * one - so this list never needs extending again. A layer the plugin does not
+ * use stays empty and harmless; a layer it uses that is *not* named here would
+ * be appended after `utilities` in the production bundle (where the StyleX CSS
+ * is parsed last) while landing in the right place in dev, which is exactly
+ * the dev/production split this statement exists to prevent. */
 @layer theme, base, priority1, priority2, priority3, priority4, priority5, priority6, priority7,
-  priority8, components, utilities;
+  priority8, priority9, priority10, components, utilities;
 
 @import 'tailwindcss';
 @import 'tw-animate-css';

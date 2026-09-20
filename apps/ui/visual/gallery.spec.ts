@@ -12,6 +12,7 @@ const SECTIONS = [
   'buttons',
   'buttons-extra',
   'forms',
+  'forms-extra',
   'data-display',
   'disclosure',
   'overlays',
@@ -183,6 +184,43 @@ test.describe('interaction states', () => {
         page,
         'display-view-switch-hover-target',
         `state-view-switch-hover-${theme}.png`
+      )
+    })
+
+    // `forms-extra` (PR 05). Focus is what the input, textarea and input-group
+    // rings are for, and an `aria-invalid` control is focused as well, because
+    // the invalid ring and the focus ring are written by two rules of equal
+    // specificity whose order decides the colour. The input-group button case
+    // also pins the ring a focused `InputGroupButton` paints through its own
+    // shadow reset.
+    test(`form extra focus states ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'forms-extra', { theme })
+
+      const focusTargets = [
+        ['input-invalid-focus-target', 'input'],
+        ['input-readonly-focus-target', 'input'],
+        ['textarea-invalid-focus-target', 'textarea'],
+        ['input-group-focus-target', 'input'],
+        ['input-group-invalid-focus-target', 'input'],
+        ['input-group-button-focus-target', 'button'],
+      ] as const
+
+      for (const [caseName, selector] of focusTargets) {
+        const target = page.locator(`[data-gallery-case="${caseName}"] ${selector}`)
+        await target.focus()
+        await expectCaseShot(
+          page,
+          caseName,
+          `state-${caseName.replace(/-target$/, '')}-${theme}.png`
+        )
+        await target.blur()
+      }
+
+      await page.locator('[data-gallery-case="field-description-link-hover-target"] a').hover()
+      await expectCaseShot(
+        page,
+        'field-description-link-hover-target',
+        `state-field-description-link-hover-${theme}.png`
       )
     })
 

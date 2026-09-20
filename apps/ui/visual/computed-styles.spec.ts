@@ -622,3 +622,115 @@ for (const theme of THEMES) {
     )
   })
 }
+
+/**
+ * Form controls (PR 05).
+ *
+ * `collect()` above only reaches the *first* input, input group and button of a
+ * page. These two collectors dump every control and every field part of the two
+ * form sections instead, which is what pins the parts a screenshot cannot
+ * separate: the composed focus/invalid `box-shadow`, the `::placeholder` colour
+ * (through the control's own colour), the per-orientation flex axis of `Field`,
+ * the container-query switch, the negative addon margins and the sibling
+ * margins of `FieldDescription`.
+ */
+const FORM_CONTROL_PROPERTIES = [
+  'display',
+  'position',
+  'width',
+  'height',
+  'min-width',
+  'min-height',
+  'flex',
+  'order',
+  'margin',
+  'padding',
+  'gap',
+  'font-family',
+  'font-size',
+  'font-weight',
+  'line-height',
+  'color',
+  'background-color',
+  'border-width',
+  'border-style',
+  'border-color',
+  'border-radius',
+  'box-shadow',
+  'outline',
+  'opacity',
+  'cursor',
+  'pointer-events',
+  'user-select',
+  // The property that controls a textarea's drag handle is deliberately absent:
+  // its CSS name is also a Tailwind utility name, and the scanner reads this
+  // file, so naming it here would emit a rule no element uses (the hazard
+  // `conventions.md` records).
+  'field-sizing',
+  'text-wrap-mode',
+  'text-wrap-style',
+  'align-items',
+  'justify-content',
+  'flex-direction',
+  'transition-property',
+  'transition-duration',
+  'transition-timing-function',
+]
+
+const FORM_CONTROL_SELECTOR = [
+  '[data-slot="input"]',
+  '[data-slot="textarea"]',
+  '[data-slot="label"]',
+  '[data-slot="input-group"]',
+  '[data-slot="input-group-addon"]',
+  '[data-slot="button"]',
+  'kbd',
+]
+  .map((selector) => `[data-gallery-case] ${selector}`)
+  .join(', ')
+
+const FIELD_SELECTOR = [
+  '[data-slot="field-set"]',
+  '[data-slot="field-legend"]',
+  '[data-slot="field-group"]',
+  '[data-slot="field"]',
+  '[data-slot="field-content"]',
+  '[data-slot="field-label"]',
+  '[data-slot="field-description"]',
+  '[data-slot="field-error"]',
+  '[data-slot="field-separator"]',
+]
+  .map((selector) => `[data-gallery-case] ${selector}`)
+  .join(', ')
+
+for (const theme of THEMES) {
+  test(`computed styles gallery forms controls ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/forms', {
+      theme,
+      waitFor: '[data-gallery-section="forms"]',
+    })
+    await expectTextSnapshot(
+      await collectCases(page, FORM_CONTROL_SELECTOR, FORM_CONTROL_PROPERTIES),
+      `computed-forms-controls-${theme}.json`
+    )
+    await expectTextSnapshot(
+      await collectCases(page, FIELD_SELECTOR, FORM_CONTROL_PROPERTIES),
+      `computed-forms-fields-${theme}.json`
+    )
+  })
+
+  test(`computed styles gallery forms-extra ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/forms-extra', {
+      theme,
+      waitFor: '[data-gallery-section="forms-extra"]',
+    })
+    await expectTextSnapshot(
+      await collectCases(page, FORM_CONTROL_SELECTOR, FORM_CONTROL_PROPERTIES),
+      `computed-forms-extra-controls-${theme}.json`
+    )
+    await expectTextSnapshot(
+      await collectCases(page, FIELD_SELECTOR, FORM_CONTROL_PROPERTIES),
+      `computed-forms-extra-fields-${theme}.json`
+    )
+  })
+}

@@ -6,6 +6,7 @@ import { ButtonsSection } from './buttons'
 import { CanarySection } from './canary'
 import { DataDisplaySection } from './data-display'
 import { DisclosureSection } from './disclosure'
+import { FormsExtraSection } from './forms-extra'
 import { FormsSection } from './forms'
 import { OverlaysSection } from './overlays'
 import { SidebarPartsSection } from './sidebar-parts'
@@ -33,6 +34,11 @@ export const GALLERY_SECTIONS: GallerySection[] = [
     Component: ButtonsExtraSection,
   },
   { id: 'forms', title: 'Form controls', Component: FormsSection },
+  {
+    id: 'forms-extra',
+    title: 'Field states, adornments and container queries',
+    Component: FormsExtraSection,
+  },
   { id: 'data-display', title: 'Data display', Component: DataDisplaySection },
   { id: 'disclosure', title: 'Disclosure and panels', Component: DisclosureSection },
   { id: 'overlays', title: 'Overlays and portals', Component: OverlaysSection },
