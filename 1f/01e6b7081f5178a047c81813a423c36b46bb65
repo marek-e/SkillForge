@@ -1,0 +1,76 @@
+apps/ui/src/visual-gallery/sections/index.ts
+  s_98c1f7bc58c094::t_8c203a03df9163 47
+  s_98c1f7bc58c094::t_915e16b3d94614 11,43-46
+apps/ui/src/components/ui/field.tsx
+  s_98c1f7bc58c094::t_09d686d31f0832 187-192,196-197
+  s_98c1f7bc58c094::t_f72592f983a1d2 317-322
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-forms-toggle-parts-light.json
+  s_bfecf22762c9fa::t_2f15207209e23d 1-3245
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-forms-toggles-light.json
+  s_bfecf22762c9fa::t_176649a361fa1f 1-3151
+apps/ui/src/visual-gallery/sections/forms-toggles.tsx
+  s_98c1f7bc58c094::t_b3349993d55333 50-52
+  s_98c1f7bc58c094::t_915e16b3d94614 1-49,53-170
+apps/ui/src/components/ui/radio-group.tsx
+  s_98c1f7bc58c094::t_8394eb2ec58079 2,5,9-127,130,133-134,138-139,147,150-153,157-161,166-167,169
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-forms-toggle-parts-dark.json
+  s_bfecf22762c9fa::t_106256c52687b6 1-3245
+apps/ui/visual/gallery.spec.ts
+  s_98c1f7bc58c094::t_75677c7046e8d4 238-249,252
+  s_98c1f7bc58c094::t_915e16b3d94614 16
+  s_98c1f7bc58c094::t_b3349993d55333 264-266
+  s_98c1f7bc58c094::t_75e48fc80dd0d5 228-237,250-251,253-263,267-313
+apps/ui/src/components/ui/checkbox.tsx
+  s_98c1f7bc58c094::t_73280342e31206 2,5,9-58,68-79,102-185,189-193,198-199
+  s_98c1f7bc58c094::t_6c33614da413ce 59-67,80-101
+apps/ui/src/components/ui/slider.tsx
+  s_98c1f7bc58c094::t_76a739e4e8de31 14-17
+  s_98c1f7bc58c094::t_b626b677415594 2,5,8-13,18-170,173,185-189,197-198,203-204,208-209,216-217
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-forms-toggles-dark.json
+  s_bfecf22762c9fa::t_9758f4da324992 1-3151
+docs/stylex-migration/pr-06.md
+  s_98c1f7bc58c094::t_0f083f1f062ee7 51,68-76,80,145-146,148,168-174
+  s_98c1f7bc58c094::t_57e498a273fd76 1-50,52-67,77-79,81-144,147,149-167,175-225
+apps/ui/src/components/ui/switch.tsx
+  s_98c1f7bc58c094::t_d2735508622052 2,5,8-162,165,171-173,178-182,187-188
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-forms-toggle-parts-light.json
+  s_98c1f7bc58c094::t_ece4e01c7e05a9 1-3245
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-forms-toggles-light.json
+  s_98c1f7bc58c094::t_ece4e01c7e05a9 1-3151
+apps/ui/visual/computed-styles.spec.ts
+  s_98c1f7bc58c094::t_ff2400dbabd58d 737-822
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-forms-toggle-parts-dark.json
+  s_bfecf22762c9fa::t_37a2af4a74036d 1-3245
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-forms-toggles-dark.json
+  s_bfecf22762c9fa::t_b098f441e319bb 1-3151
+docs/stylex-migration/conventions.md
+  s_98c1f7bc58c094::t_d58d48631d89a6 340
+  s_98c1f7bc58c094::t_0f083f1f062ee7 112,295-304,308
+  s_98c1f7bc58c094::t_7b883f03a2dfc7 110-111,256,258-260,262-267,269-281,292-294,305-307,309-311,335-339
+docs/stylex-migration/tailwind-values.md
+  s_98c1f7bc58c094::t_0f083f1f062ee7 920-967
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "1f01e6b7081f5178a047c81813a423c36b46bb65",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": null
+    },
+    "s_bfecf22762c9fa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-ae2e848194336d54b",
+        "model": "unknown"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
