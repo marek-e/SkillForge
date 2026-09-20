@@ -271,6 +271,17 @@ const styles = stylex.create({
     fontSize: '0.875rem',
     lineHeight: '1.25rem',
   },
+  /**
+   * `absolute inset-0 top-1/2`, passed to `Separator` as `sx` now that it is
+   * StyleX too (PR 07). `Separator` declares none of these four properties, so
+   * nothing has to be restated.
+   */
+  fieldSeparatorLine: {
+    position: 'absolute',
+    top: '50%',
+    insetInline: '0rem',
+    bottom: '0rem',
+  },
   // `text-muted-foreground px-2 bg-background relative mx-auto block w-fit`
   fieldSeparatorContent: {
     position: 'relative',
@@ -517,8 +528,7 @@ function FieldSeparator({
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >
-      {/* Configures `Separator`, which is still Tailwind (PR 07). */}
-      <Separator className="absolute inset-0 top-1/2" />
+      <Separator sx={styles.fieldSeparatorLine} />
       {children && (
         <span
           className={content.className}

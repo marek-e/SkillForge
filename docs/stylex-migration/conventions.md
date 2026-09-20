@@ -98,10 +98,15 @@ const styles = stylex.create({
 - Other Tailwind scale values are written literally in styles (e.g. `0.875rem`); take them from
   [`tailwind-values.md`](tailwind-values.md), `node_modules/tailwindcss/theme.css` and
   `node_modules/tw-animate-css` — never from memory.
-- Tailwind's source scanner reads every `.ts`/`.tsx` file, **including comments**. A
-  Tailwind-shaped string such as `ring` or `rounded-xs` in a migrated file makes it emit a
-  utility rule that did not exist before, which shows up as a built-CSS diff. Inspect the built
-  CSS whenever a PR adds token-like strings.
+- Tailwind's source scanner reads every text file under the Vite root (`apps/ui`), **including
+  comments and the JSON snapshots the visual suite writes**. A Tailwind-shaped string such as
+  `ring`, `rounded-xs` or `pr-0` in a migrated file makes it emit a utility rule that did not
+  exist before, which shows up as a built-CSS diff. So does a _computed value_ that happens to be
+  a utility name: PR 07's first computed-style dump tracked `display` over `thead`/`tbody`/`tfoot`,
+  whose three values are the names of three display utilities, and the build grew three rules no
+  element uses. Inspect the built CSS whenever a PR adds token-like strings **or a new
+  computed-style snapshot**, and reword — or stop dumping — whatever leaks. Files outside
+  `apps/ui` (this directory included) are not scanned.
 
 ## Selector mapping (all verified to compile)
 
@@ -141,6 +146,8 @@ const styles = stylex.create({
 | `group-has-data-horizontal/field:x`        | `':is(.group\\/field:has([data-orientation="horizontal"]) *)'`                                                                                                   |
 | `@container/name`                          | `containerType: 'inline-size', containerName: 'name'`                                                                                                            |
 | `@md/name:x`                               | `'@container name (min-width: 28rem)'` — compiles; worth +300 priority and a doubled class selector                                                              |
+| `[&>tr]:last:x`                            | `':is(*)>tr:last-child'` — the `last:` variant applies first, then the arbitrary selector                                                                        |
+| `data-horizontal:` / `data-vertical:`      | `':is([data-orientation="horizontal"])'` / `':is([data-orientation="vertical"])'` — `shadcn/tailwind.css` custom variants (`&:where(…)`)                         |
 
 Nested conditions are allowed (`':is(.dark *)': { default: …, '@media (hover: hover)': { ':hover': … } }`);
 `default` is mandatory at every level. Descendant keys are a compiler pass-through hack: keep
@@ -228,6 +235,24 @@ lightningcss folds it to five decimals and moves the addon's _own_ line box off 
 **So the rule has an exception:** if the element has (or a caller can give it) a descendant with a
 different font size and no line height of its own, the paired `text-*` **stays a Tailwind class**.
 Check the call sites before converting a `text-*` on a container.
+
+### `py-*`/`px-*` are logical, `pt-*`/`pr-*`/`pb-*`/`pl-*` are physical
+
+_Found in [PR 07](pr-07.md)._
+
+`py-4` compiles to `padding-block`, `px-4` to `padding-inline`, `my-2` to `margin-block` — logical
+properties. The single-side utilities compile to the physical longhands. Blink resolves a physical
+longhand **over** the logical property that maps to it whatever the source order, so a `pt-0`
+emitted _before_ a `py-3` of the same specificity still wins.
+
+Reading the two offsets out of the built CSS and picking a winner is therefore wrong. **Keep
+Tailwind's own choice of property**: write `paddingBlock`/`paddingInline`/`marginBlock` where
+Tailwind does and the physical longhand where Tailwind does, and the same resolution happens for
+the same reason. StyleX emits both forms unchanged.
+
+The corollary: converting a `px-*` to `paddingLeft`/`paddingRight` also makes the component's own
+rule beat a caller's `px-*` utility, which the cascade layer would otherwise let win. Same trap,
+seen from the caller's side.
 
 ### `twMerge` used to delete the base declaration; StyleX only overrides it
 
@@ -399,19 +424,23 @@ constant per file, named for what it is, with the PR that removes it. `input.tsx
 
 A StyleX caller overriding a StyleX component is the opposite case and needs no class: give the
 component an `sx` prop (typed `Sx` from `src/lib/sx.ts`) and pass the styles as the last argument
-to `stylex.props`. That is how `InputGroupButton` overrides `Button`.
+to `stylex.props`. That is how `InputGroupButton` overrides `Button`, and how
+`ButtonGroupSeparator` and `FieldSeparator` override `Separator` (PR 07). Remember that
+`stylex.props` merges a property as a whole: an `sx` that sets `width` for one orientation must
+restate the other, or the component's own declaration disappears with it.
 
 ## Known coexistence gaps
 
 Cases where a caller's Tailwind class shadows a **conditional** StyleX rule that `twMerge` used to
 leave alone. Each disappears when the listed PR migrates the caller; verify the restoration there.
 
-| Caller                                                                 | Effect                                         | Fixed by                                         |
-| ---------------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------ |
-| `input-group.tsx`, `shadow-none` on `InputGroupButton`                 | a focused input-group button has no focus ring | **closed in PR 05** (`Button` grew an `sx` prop) |
-| `routes/skill-detail.tsx`, `text-muted-foreground` on a ghost `Button` | its `hover:text-foreground` no longer applies  | **closed in PR 05** (the class was redundant)    |
+| Caller                                                                 | Effect                                                                                                                                                                                                                                                                                 | Fixed by                                         |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `input-group.tsx`, `shadow-none` on `InputGroupButton`                 | a focused input-group button has no focus ring                                                                                                                                                                                                                                         | **closed in PR 05** (`Button` grew an `sx` prop) |
+| `routes/skill-detail.tsx`, `text-muted-foreground` on a ghost `Button` | its `hover:text-foreground` no longer applies                                                                                                                                                                                                                                          | **closed in PR 05** (the class was redundant)    |
+| `sidebar.tsx`, `w-auto` on `SidebarSeparator`                          | it now beats `Separator`'s `data-horizontal:w-full` instead of losing to it. No effect measured: the separator is a block-level child of the sidebar's flex column, so `auto` and `100%` compute to the same width — verified in the `sidebar-parts` section and in PR 07's live probe | PR 17                                            |
 
-None is open. PR 05 opened none of its own: every declaration a current caller would have shadowed
+Only the `SidebarSeparator` one is open, and it changes no computed value today. PR 05 opened none of its own: every declaration a current caller would have shadowed
 stayed a Tailwind class instead (see the section above), which a 440-dump before/after probe of
 both themes and both viewports confirmed.
 

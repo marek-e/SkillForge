@@ -820,3 +820,141 @@ for (const theme of THEMES) {
     )
   })
 }
+
+/**
+ * Card, table, separator and aspect ratio (PR 07).
+ *
+ * Most of what these four write is a *selector*, not a declaration: the card's
+ * `:has()` paddings, the header's grid tracks and container query, the row
+ * borders a table's head, body and footer reach into, the checkbox column's
+ * padding reset and the per-orientation box of a separator. A screenshot shows
+ * the result but not which rule produced it, so every part of every case is
+ * dumped with the longhands those rules actually set.
+ */
+const DATA_DISPLAY_PROPERTIES = [
+  'display',
+  'position',
+  'box-sizing',
+  'width',
+  'height',
+  'flex-direction',
+  'flex-shrink',
+  'align-items',
+  'align-self',
+  'justify-self',
+  'grid-template-columns',
+  'grid-template-rows',
+  'grid-auto-rows',
+  'grid-column-start',
+  'grid-row-start',
+  'grid-row-end',
+  'gap',
+  'container-type',
+  'container-name',
+  'margin',
+  'padding-top',
+  'padding-right',
+  'padding-bottom',
+  'padding-left',
+  'font-family',
+  'font-size',
+  'font-weight',
+  'line-height',
+  'color',
+  'background-color',
+  'border-top-width',
+  'border-right-width',
+  'border-bottom-width',
+  'border-left-width',
+  'border-style',
+  'border-color',
+  'border-radius',
+  'box-shadow',
+  'opacity',
+  'overflow-x',
+  'overflow-y',
+  'caption-side',
+  'vertical-align',
+  'text-align',
+  'white-space',
+  'transition-property',
+  'transition-duration',
+  'transition-timing-function',
+]
+
+const DATA_DISPLAY_SELECTOR = [
+  '[data-slot="card"]',
+  '[data-slot="card-header"]',
+  '[data-slot="card-title"]',
+  '[data-slot="card-description"]',
+  '[data-slot="card-action"]',
+  '[data-slot="card-content"]',
+  '[data-slot="card-footer"]',
+  '[data-slot="table-container"]',
+  '[data-slot="table"]',
+  '[data-slot="table-row"]',
+  '[data-slot="table-head"]',
+  '[data-slot="table-cell"]',
+  '[data-slot="table-caption"]',
+  '[data-slot="separator"]',
+  '[data-slot="aspect-ratio"]',
+  'img',
+]
+  .map((selector) => `[data-gallery-case] ${selector}`)
+  .join(', ')
+
+/**
+ * The three table sections are dumped on their own, **without** `display`.
+ *
+ * The three values a `thead`, `tbody` and `tfoot` compute to are also the
+ * names of three Tailwind display utilities. Tailwind's source scanner reads
+ * every text file in the project — including the JSON snapshot this test
+ * writes — so dumping the property here would make the build emit three
+ * display rules no element uses. That is the hazard `conventions.md` records,
+ * met in a snapshot rather than in a comment. Nothing is lost: what these
+ * sections write is a border on their `tr` children, which the row dump above
+ * already pins.
+ */
+const DATA_DISPLAY_SECTION_SELECTOR = [
+  '[data-slot="table-header"]',
+  '[data-slot="table-body"]',
+  '[data-slot="table-footer"]',
+]
+  .map((selector) => `[data-gallery-case] ${selector}`)
+  .join(', ')
+
+const DATA_DISPLAY_SECTION_PROPERTIES = DATA_DISPLAY_PROPERTIES.filter(
+  (property) => property !== 'display'
+)
+
+for (const theme of THEMES) {
+  test(`computed styles gallery data-display parts ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/data-display', {
+      theme,
+      waitFor: '[data-gallery-section="data-display"]',
+    })
+    await expectTextSnapshot(
+      await collectCases(page, DATA_DISPLAY_SELECTOR, DATA_DISPLAY_PROPERTIES),
+      `computed-data-display-parts-${theme}.json`
+    )
+    await expectTextSnapshot(
+      await collectCases(page, DATA_DISPLAY_SECTION_SELECTOR, DATA_DISPLAY_SECTION_PROPERTIES),
+      `computed-data-display-sections-${theme}.json`
+    )
+  })
+
+  test(`computed styles gallery data-display-extra ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/data-display-extra', {
+      theme,
+      waitFor: '[data-gallery-section="data-display-extra"]',
+    })
+    await expectTextSnapshot(
+      await collectCases(page, DATA_DISPLAY_SELECTOR, DATA_DISPLAY_PROPERTIES),
+      `computed-data-display-extra-${theme}.json`
+    )
+    await expectTextSnapshot(
+      await collectCases(page, DATA_DISPLAY_SECTION_SELECTOR, DATA_DISPLAY_SECTION_PROPERTIES),
+      `computed-data-display-extra-sections-${theme}.json`
+    )
+  })
+}

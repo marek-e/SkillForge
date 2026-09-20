@@ -66,6 +66,13 @@ const ORIENTATION_CHILD_RULES = {
  */
 const TEXT_ICON_RULES = "[&_svg:not([class*='size-'])]:size-4"
 
+/**
+ * `data-horizontal:` / `data-vertical:`, the `shadcn/tailwind.css` custom
+ * variants (see `separator.tsx`).
+ */
+const HORIZONTAL = ':is([data-orientation="horizontal"])'
+const VERTICAL = ':is([data-orientation="vertical"])'
+
 const styles = stylex.create({
   group: {
     // `flex`
@@ -112,6 +119,29 @@ const styles = stylex.create({
     fontWeight: 500,
     // `[&_svg]:pointer-events-none`
     pointerEvents: { default: null, ':is(*) svg': 'none' },
+  },
+
+  /**
+   * `bg-input relative self-stretch data-horizontal:mx-px data-horizontal:w-auto
+   *  data-vertical:my-px data-vertical:h-auto`, passed to `Separator` as `sx`
+   *  now that it is StyleX too (PR 07).
+   *
+   * `width` and `height` restate the orientation `Separator` declares and this
+   * one does not override, because `stylex.props` merges a property **as a
+   * whole**: declaring only `data-horizontal:w-auto` here would drop
+   * `Separator`'s `data-vertical:w-px` and leave a vertical separator with no
+   * width at all. `align-self` is unconditional, exactly as `self-stretch` was.
+   */
+  separator: {
+    position: 'relative',
+    alignSelf: 'stretch',
+    // `bg-input` — it used to reach the element only because `twMerge` deleted
+    // `Separator`'s `bg-border` from the merged string.
+    backgroundColor: colors.input,
+    marginInline: { default: null, [HORIZONTAL]: '1px' },
+    marginBlock: { default: null, [VERTICAL]: '1px' },
+    width: { default: null, [HORIZONTAL]: 'auto', [VERTICAL]: '1px' },
+    height: { default: null, [HORIZONTAL]: '1px', [VERTICAL]: 'auto' },
   },
 })
 
@@ -161,11 +191,10 @@ function ButtonGroupText({
 }
 
 /**
- * Unchanged (PR 04). Every class here configures `Separator`, which is still a
- * Tailwind component: `bg-input` only reaches the element because `twMerge`
- * deletes `Separator`'s own `bg-border` from the merged string, and a StyleX
- * class would instead lose to it in the cascade. It migrates together with
- * `separator` in PR 07.
+ * The six classes PR 04 had to leave here are gone (PR 07): `Separator` is
+ * StyleX now and takes an `sx` prop, so this configuration lands in the same
+ * cascade layer as the styles it overrides instead of relying on `twMerge`
+ * deleting them from the merged string.
  */
 function ButtonGroupSeparator({
   className,
@@ -176,10 +205,8 @@ function ButtonGroupSeparator({
     <Separator
       data-slot="button-group-separator"
       orientation={orientation}
-      className={cn(
-        'bg-input relative self-stretch data-horizontal:mx-px data-horizontal:w-auto data-vertical:my-px data-vertical:h-auto',
-        className
-      )}
+      sx={styles.separator}
+      className={className}
       {...props}
     />
   )

@@ -4,6 +4,7 @@ import { AppSection } from './app'
 import { ButtonsExtraSection } from './buttons-extra'
 import { ButtonsSection } from './buttons'
 import { CanarySection } from './canary'
+import { DataDisplayExtraSection } from './data-display-extra'
 import { DataDisplaySection } from './data-display'
 import { DisclosureSection } from './disclosure'
 import { FormsExtraSection } from './forms-extra'
@@ -46,6 +47,11 @@ export const GALLERY_SECTIONS: GallerySection[] = [
     Component: FormsTogglesSection,
   },
   { id: 'data-display', title: 'Data display', Component: DataDisplaySection },
+  {
+    id: 'data-display-extra',
+    title: 'Card headers, table rows, separators and aspect ratios',
+    Component: DataDisplayExtraSection,
+  },
   { id: 'disclosure', title: 'Disclosure and panels', Component: DisclosureSection },
   { id: 'overlays', title: 'Overlays and portals', Component: OverlaysSection },
   { id: 'sidebar-parts', title: 'Sidebar primitives', Component: SidebarPartsSection },

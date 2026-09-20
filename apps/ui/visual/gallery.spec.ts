@@ -15,6 +15,7 @@ const SECTIONS = [
   'forms-extra',
   'forms-toggles',
   'data-display',
+  'data-display-extra',
   'disclosure',
   'overlays',
   'sidebar-parts',
@@ -309,6 +310,30 @@ test.describe('interaction states', () => {
       await settle(page)
       await expectCaseShot(page, 'slider-step', `state-slider-arrow-right-${theme}.png`)
       await stepThumb.blur()
+    })
+
+    // `data-display-extra` (PR 07). A table row is the only hover rule in this
+    // row's four components, and a *selected* row is hovered as well, because
+    // `hover:bg-muted/50` and `data-[state=selected]:bg-muted` have the same
+    // specificity and Tailwind settles them by emission order. The card hover
+    // target pins the caller-supplied ring a `Card` composes from its own
+    // `ring-1`.
+    test(`table and card hover states ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'data-display-extra', { theme })
+
+      const rows = page.locator('[data-gallery-case="table-row-hover-target"] tr')
+      await rows.first().hover()
+      await expectCaseShot(page, 'table-row-hover-target', `state-table-row-hover-${theme}.png`)
+
+      await rows.nth(1).hover()
+      await expectCaseShot(
+        page,
+        'table-row-hover-target',
+        `state-table-row-selected-hover-${theme}.png`
+      )
+
+      await page.locator('[data-gallery-case="card-hover-target"] [data-slot="card"]').hover()
+      await expectCaseShot(page, 'card-hover-target', `state-card-hover-${theme}.png`)
     })
 
     // The StyleX canary's hover rule is nested in `@media (hover: hover)`, the
