@@ -1,0 +1,80 @@
+apps/ui/src/components/ui/skeleton.tsx
+  s_98c1f7bc58c094::t_49e04e22404eb5 1-4,7-34,39-40
+  s_98c1f7bc58c094::t_65d558c37179a2 35
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-feedback-data-display-dark.json
+  s_98c1f7bc58c094::t_13b8355f128a35 1-576,578-642,644-708,710-734,737-782,784-800,803-848,850-2906
+  s_98c1f7bc58c094::t_f50084f501e7c7 577,643,709,735-736,783,801-802,849
+apps/ui/src/visual-gallery/sections/feedback.tsx
+  s_98c1f7bc58c094::t_636f641af56ffe 1-189
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-feedback-dark.json
+  s_98c1f7bc58c094::t_13b8355f128a35 1-576,578-642,644-708,710-774,776-840,842-866,869-914,916-932,935-980,982-998,1001-1046,1048-1064,1067-1112,1114-3566
+  s_98c1f7bc58c094::t_f50084f501e7c7 577,643,709,775,841,867-868,915,933-934,981,999-1000,1047,1065-1066,1113
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-feedback-data-display-light.json
+  s_98c1f7bc58c094::t_13b8355f128a35 1-576,578-642,644-708,710-734,737-782,784-800,803-848,850-2906
+  s_98c1f7bc58c094::t_f50084f501e7c7 577,643,709,735-736,783,801-802,849
+apps/ui/src/components/ui/progress.tsx
+  s_98c1f7bc58c094::t_4aceb34ec27fd3 2,5,8-35,38,42-44,48-49,54-57
+apps/ui/visual/gallery.spec.ts
+  s_98c1f7bc58c094::t_efa037b6b23edf 20
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-feedback-data-display-dark.json
+  s_98c1f7bc58c094::t_13b8355f128a35 1-576,578-642,644-708,710-734,737-782,784-800,803-848,850-2906
+  s_98c1f7bc58c094::t_f50084f501e7c7 577,643,709,735-736,783,801-802,849
+apps/ui/src/components/ui/alert.tsx
+  s_98c1f7bc58c094::t_5bd4d8115776d2 27-29
+  s_98c1f7bc58c094::t_65d558c37179a2 146,172
+  s_98c1f7bc58c094::t_28fda4963ea6e9 2,5,8-26,30-100,119,123-127,132-138,144-145,150-151,157-159,163-164,170-171,174-179
+apps/ui/visual/computed-styles.spec.ts
+  s_98c1f7bc58c094::t_a1ba565a993b37 967-1052,1064-1069,1071-1081,1083-1088
+  s_98c1f7bc58c094::t_ae9ee913e4be5d 2-8,1053-1063,1070,1082
+apps/ui/visual/animations.spec.ts
+  s_98c1f7bc58c094::t_c8586458ca59ce 98-124,132-135
+  s_98c1f7bc58c094::t_13b8355f128a35 125-131
+docs/stylex-migration/conventions.md
+  s_98c1f7bc58c094::t_7192dc1ab3fb46 401-415,462-478
+  s_98c1f7bc58c094::t_648fc578e010ac 479
+apps/ui/src/components/ui/spinner.tsx
+  s_98c1f7bc58c094::t_328a2310a43565 28-31
+  s_98c1f7bc58c094::t_db83badc3d4c45 36,45
+  s_98c1f7bc58c094::t_49e04e22404eb5 1-2,5-27,32-35,37-39,46
+  s_98c1f7bc58c094::t_65d558c37179a2 40
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-feedback-dark.json
+  s_98c1f7bc58c094::t_f50084f501e7c7 577,643,709,775,841,867-868,915,933-934,981,999-1000,1047,1065-1066,1113
+  s_98c1f7bc58c094::t_13b8355f128a35 1-576,578-642,644-708,710-774,776-840,842-866,869-914,916-932,935-980,982-998,1001-1046,1048-1064,1067-1112,1114-3566
+apps/ui/src/components/ui/empty.tsx
+  s_98c1f7bc58c094::t_bcfd6e8d272a80 1,4,7-25,27-75,78-92,94-120,136-160,164,169,174-180,186-188,192-193,199-200,205-206,212-214,218-219
+  s_98c1f7bc58c094::t_65d558c37179a2 161,201
+  s_98c1f7bc58c094::t_5bd4d8115776d2 76-77
+  s_98c1f7bc58c094::t_9cb75ec520628b 168
+docs/stylex-migration/pr-08.md
+  s_98c1f7bc58c094::t_87969d52e65539 1-54,67-77,82-131,137-151,159-191,193-210
+  s_98c1f7bc58c094::t_7192dc1ab3fb46 55-66,78-81,132-136,152-158,192
+apps/ui/src/components/ui/not-found.tsx
+  s_98c1f7bc58c094::t_5367a6fb3a3f14 1,31-53,55-57,59,69
+apps/ui/src/visual-gallery/sections/index.ts
+  s_98c1f7bc58c094::t_efa037b6b23edf 10,57-61
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-feedback-light.json
+  s_98c1f7bc58c094::t_f50084f501e7c7 577,643,709,775,841,867-868,915,933-934,981,999-1000,1047,1065-1066,1113
+  s_98c1f7bc58c094::t_13b8355f128a35 1-576,578-642,644-708,710-774,776-840,842-866,869-914,916-932,935-980,982-998,1001-1046,1048-1064,1067-1112,1114-3566
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-feedback-data-display-light.json
+  s_98c1f7bc58c094::t_13b8355f128a35 1-576,578-642,644-708,710-734,737-782,784-800,803-848,850-2906
+  s_98c1f7bc58c094::t_f50084f501e7c7 577,643,709,735-736,783,801-802,849
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-feedback-light.json
+  s_98c1f7bc58c094::t_13b8355f128a35 1-576,578-642,644-708,710-774,776-840,842-866,869-914,916-932,935-980,982-998,1001-1046,1048-1064,1067-1112,1114-3566
+  s_98c1f7bc58c094::t_f50084f501e7c7 577,643,709,775,841,867-868,915,933-934,981,999-1000,1047,1065-1066,1113
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "58beb56e6b935e3a6837ad40f1e97a442dd45ca1",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
