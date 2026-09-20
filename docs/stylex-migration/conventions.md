@@ -301,9 +301,23 @@ backgroundColor: {
 The one shape that really is bare is a `:hover` written inside an **arbitrary** selector, such as
 `[&>a:hover]:text-primary`, which Tailwind emits as `.x>a:hover` with no wrapper.
 
-PR 01's canary was right all along; PR 04's `button.tsx`, `badge.tsx`, `toggle.tsx` and
-`display-view-switch.tsx` are not, and still need the wrapper added. No screenshot can catch it —
-Chromium reports `hover: hover` in both viewport projects.
+PR 01's canary was right all along. PR 04's `button.tsx`, `badge.tsx`, `toggle.tsx` and
+`display-view-switch.tsx` were not; **all 25 of their hover rules were wrapped in the correction
+commit that opens [PR 09](pr-09.md)**, including the eight `[a]:hover:` ones in `badge.tsx`.
+
+**A no-hover pointer is what catches it, and it is not a media emulation.** Chromium reports
+`hover: hover` in both viewport projects, and `Emulation.setEmulatedMedia` does _not_ help:
+Blink's media-feature overrides have no `hover` entry, so the call is accepted and silently
+ignored. What moves it is touch emulation — `Emulation.setTouchEmulationEnabled` makes
+`DevToolsEmulator` set the primary hover type to none and the primary pointer type to coarse,
+while the mouse keeps working, so `locator.hover()` still matches `:hover`. That is
+`emulateNoHover` in `visual/helpers.ts`, and `visual/hover-media.spec.ts` captures five hover
+targets through it against originals taken from the frozen tree. The bare rules failed it by
+2106 pixels.
+
+**The wrapper also changes the rule's priority**, from 2130 to 2330 in the table below, so it has
+to be added at _every_ level of a nested condition at once. A `':is(.dark *)'` branch whose
+`':hover'` stays bare drops from 2170 to below the plain hover's new 2330 and stops winning.
 
 ### Utility source order decides a same-specificity tie
 

@@ -94,14 +94,21 @@ const styles = stylex.create({
   // a whole, so a variant's own `borderColor` would drop them.
   //
   // `[a]:hover:` is Tailwind's arbitrary-variant form and compiles to
-  // `&:is(a):hover` — the badge only changes colour on hover when `asChild`
-  // rendered it as an anchor.
+  // `&:is(a):hover { @media (hover: hover) { … } }` — the badge only changes
+  // colour on hover when `asChild` rendered it as an anchor, and only on a
+  // pointer that can hover. Every hover *variant* in this file carries that
+  // wrapper (added by PR 09's correction commit); the one shape Tailwind leaves
+  // bare is a `:hover` written inside an arbitrary *selector*, which this file
+  // has none of. See `conventions.md`.
 
   // `bg-primary text-primary-foreground [a]:hover:bg-primary/80`
   default: {
     backgroundColor: {
       default: colors.primary,
-      ':is(a):hover': 'color-mix(in oklab, var(--primary) 80%, transparent)',
+      '@media (hover: hover)': {
+        default: null,
+        ':is(a):hover': 'color-mix(in oklab, var(--primary) 80%, transparent)',
+      },
     },
     color: colors.primaryForeground,
     // `border-transparent`, `focus-visible:border-ring`, `aria-invalid:border-destructive`
@@ -134,7 +141,10 @@ const styles = stylex.create({
   secondary: {
     backgroundColor: {
       default: colors.secondary,
-      ':is(a):hover': 'color-mix(in oklab, var(--secondary) 80%, transparent)',
+      '@media (hover: hover)': {
+        default: null,
+        ':is(a):hover': 'color-mix(in oklab, var(--secondary) 80%, transparent)',
+      },
     },
     color: colors.secondaryForeground,
     borderColor: {
@@ -168,10 +178,16 @@ const styles = stylex.create({
   destructive: {
     backgroundColor: {
       default: 'color-mix(in oklab, var(--destructive) 10%, transparent)',
-      ':is(a):hover': 'color-mix(in oklab, var(--destructive) 20%, transparent)',
+      '@media (hover: hover)': {
+        default: null,
+        ':is(a):hover': 'color-mix(in oklab, var(--destructive) 20%, transparent)',
+      },
       ':is(.dark *)': {
         default: 'color-mix(in oklab, var(--destructive) 20%, transparent)',
-        ':is(a):hover': 'color-mix(in oklab, var(--destructive) 20%, transparent)',
+        '@media (hover: hover)': {
+          default: null,
+          ':is(a):hover': 'color-mix(in oklab, var(--destructive) 20%, transparent)',
+        },
       },
     },
     color: colors.destructive,
@@ -202,11 +218,11 @@ const styles = stylex.create({
   outline: {
     backgroundColor: {
       default: null,
-      ':is(a):hover': colors.muted,
+      '@media (hover: hover)': { default: null, ':is(a):hover': colors.muted },
     },
     color: {
       default: colors.foreground,
-      ':is(a):hover': colors.mutedForeground,
+      '@media (hover: hover)': { default: null, ':is(a):hover': colors.mutedForeground },
     },
     borderColor: {
       default: colors.border,
@@ -238,15 +254,18 @@ const styles = stylex.create({
   ghost: {
     backgroundColor: {
       default: null,
-      ':hover': colors.muted,
+      '@media (hover: hover)': { default: null, ':hover': colors.muted },
       ':is(.dark *)': {
         default: null,
-        ':hover': 'color-mix(in oklab, var(--muted) 50%, transparent)',
+        '@media (hover: hover)': {
+          default: null,
+          ':hover': 'color-mix(in oklab, var(--muted) 50%, transparent)',
+        },
       },
     },
     color: {
       default: null,
-      ':hover': colors.mutedForeground,
+      '@media (hover: hover)': { default: null, ':hover': colors.mutedForeground },
     },
     borderColor: {
       default: 'transparent',
@@ -279,7 +298,7 @@ const styles = stylex.create({
     textUnderlineOffset: '4px',
     textDecorationLine: {
       default: null,
-      ':hover': 'underline',
+      '@media (hover: hover)': { default: null, ':hover': 'underline' },
     },
     borderColor: {
       default: 'transparent',

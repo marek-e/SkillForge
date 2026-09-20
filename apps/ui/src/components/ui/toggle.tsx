@@ -42,6 +42,12 @@ const RING_DESTRUCTIVE_20 =
 const RING_DESTRUCTIVE_40 =
   '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 3px color-mix(in oklab, var(--destructive) 40%, transparent), 0 0 #0000'
 
+/**
+ * The hover rules below are nested in `@media (hover: hover)`, the shape
+ * Tailwind v4 emits for a hover variant (PR 09's correction commit). All three
+ * ask for the same value as the rules they tie with, so the priority the
+ * wrapper adds changes nothing here.
+ */
 const styles = stylex.create({
   base: {
     // `inline-flex`
@@ -86,7 +92,7 @@ const styles = stylex.create({
     // `hover:text-foreground`
     color: {
       default: null,
-      ':hover': colors.foreground,
+      '@media (hover: hover)': { default: null, ':hover': colors.foreground },
     },
     // `focus-visible:border-ring` and `aria-invalid:border-destructive`. The
     // `default` variant has no border width, so only `outline` shows them.
@@ -130,7 +136,7 @@ const styles = stylex.create({
   default: {
     backgroundColor: {
       default: 'transparent',
-      ':hover': colors.muted,
+      '@media (hover: hover)': { default: null, ':hover': colors.muted },
       ':is([aria-pressed="true"])': colors.muted,
       '[data-state="on"]': colors.muted,
     },
@@ -140,7 +146,7 @@ const styles = stylex.create({
   outline: {
     backgroundColor: {
       default: 'transparent',
-      ':hover': colors.muted,
+      '@media (hover: hover)': { default: null, ':hover': colors.muted },
       ':is([aria-pressed="true"])': colors.muted,
       '[data-state="on"]': colors.muted,
     },

@@ -78,6 +78,17 @@ const RING_DESTRUCTIVE_20 =
 const RING_DESTRUCTIVE_40 =
   '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 3px color-mix(in oklab, var(--destructive) 40%, transparent), 0 0 #0000'
 
+/**
+ * Every hover *variant* below is nested in `@media (hover: hover)`, because
+ * that is the shape Tailwind v4 emits for one (`&:hover { @media … { … } }`).
+ * PR 04 wrote them bare; the wrapper was added by PR 09's correction commit.
+ * A `:hover` inside an arbitrary *selector* is the one shape that stays bare,
+ * and this file has none. See `conventions.md`.
+ *
+ * The wrapper also raises the rule's StyleX priority, so a nested combination
+ * that has to keep beating a plain hover (the `secondary` expanded background,
+ * every `dark:` hover below) carries the wrapper at its own level too.
+ */
 const styles = stylex.create({
   base: {
     // `inline-flex`
@@ -138,7 +149,10 @@ const styles = stylex.create({
   default: {
     backgroundColor: {
       default: colors.primary,
-      ':hover': 'color-mix(in oklab, var(--primary) 80%, transparent)',
+      '@media (hover: hover)': {
+        default: null,
+        ':hover': 'color-mix(in oklab, var(--primary) 80%, transparent)',
+      },
     },
     color: colors.primaryForeground,
     // `border-transparent`, `focus-visible:border-ring`,
@@ -187,7 +201,7 @@ const styles = stylex.create({
   outline: {
     backgroundColor: {
       default: colors.background,
-      ':hover': colors.muted,
+      '@media (hover: hover)': { default: null, ':hover': colors.muted },
       // `aria-expanded:bg-muted` and `hover:bg-muted` set the same value, so
       // the light mode combination needs no nesting — and must not have any,
       // because a `[aria-expanded]:hover` rule would also outrank
@@ -200,13 +214,16 @@ const styles = stylex.create({
         // keeps the input background instead of turning muted.
         ':is([aria-expanded="true"])': 'color-mix(in oklab, var(--input) 30%, transparent)',
         // `dark:hover:bg-input/50` is (0,3,0) and outranks both of the above.
-        ':hover': 'color-mix(in oklab, var(--input) 50%, transparent)',
+        '@media (hover: hover)': {
+          default: null,
+          ':hover': 'color-mix(in oklab, var(--input) 50%, transparent)',
+        },
       },
     },
     color: {
       default: null,
       ':is([aria-expanded="true"])': colors.foreground,
-      ':hover': colors.foreground,
+      '@media (hover: hover)': { default: null, ':hover': colors.foreground },
     },
     borderColor: {
       default: colors.border,
@@ -252,14 +269,17 @@ const styles = stylex.create({
   secondary: {
     backgroundColor: {
       default: colors.secondary,
-      ':hover': 'color-mix(in oklab, var(--secondary) 80%, transparent)',
+      '@media (hover: hover)': {
+        default: null,
+        ':hover': 'color-mix(in oklab, var(--secondary) 80%, transparent)',
+      },
       // `aria-expanded:bg-secondary` is emitted after `hover:bg-secondary/80`,
       // so an expanded button keeps the solid colour while hovered. This is the
       // only variant where the two rules disagree (`outline` and `ghost` set the
       // same value in both), so only this one has to say it.
       ':is([aria-expanded="true"])': {
         default: colors.secondary,
-        ':hover': colors.secondary,
+        '@media (hover: hover)': { default: null, ':hover': colors.secondary },
       },
     },
     color: {
@@ -307,12 +327,12 @@ const styles = stylex.create({
     backgroundColor: {
       default: null,
       ':is([aria-expanded="true"])': colors.muted,
-      ':hover': colors.muted,
+      '@media (hover: hover)': { default: null, ':hover': colors.muted },
     },
     color: {
       default: colors.mutedForeground,
       ':is([aria-expanded="true"])': colors.foreground,
-      ':hover': colors.foreground,
+      '@media (hover: hover)': { default: null, ':hover': colors.foreground },
     },
     borderColor: {
       default: 'transparent',
@@ -356,10 +376,16 @@ const styles = stylex.create({
   destructive: {
     backgroundColor: {
       default: 'color-mix(in oklab, var(--destructive) 10%, transparent)',
-      ':hover': 'color-mix(in oklab, var(--destructive) 20%, transparent)',
+      '@media (hover: hover)': {
+        default: null,
+        ':hover': 'color-mix(in oklab, var(--destructive) 20%, transparent)',
+      },
       ':is(.dark *)': {
         default: 'color-mix(in oklab, var(--destructive) 20%, transparent)',
-        ':hover': 'color-mix(in oklab, var(--destructive) 30%, transparent)',
+        '@media (hover: hover)': {
+          default: null,
+          ':hover': 'color-mix(in oklab, var(--destructive) 30%, transparent)',
+        },
       },
     },
     color: colors.destructive,
@@ -408,7 +434,7 @@ const styles = stylex.create({
     textUnderlineOffset: '4px',
     textDecorationLine: {
       default: null,
-      ':hover': 'underline',
+      '@media (hover: hover)': { default: null, ':hover': 'underline' },
     },
     borderColor: {
       default: 'transparent',

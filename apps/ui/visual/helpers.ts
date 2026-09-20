@@ -318,3 +318,25 @@ export async function freezeAnimationsAt(page: Page, timeMs: number): Promise<vo
 }
 
 export const THEMES: Theme[] = ['light', 'dark']
+
+/**
+ * Emulates a pointer that cannot hover, so `@media (hover: hover)` stops
+ * matching while `:hover` itself still does.
+ *
+ * Tailwind v4 wraps every hover *variant* it emits in `@media (hover: hover)`,
+ * so a touch-only pointer gets no hover styling at all. Chromium reports
+ * `hover: hover` in both viewport projects, which is why no other screenshot in
+ * the suite can tell a correctly wrapped StyleX rule from a bare `:hover` one.
+ *
+ * Neither `page.emulateMedia` (which covers only colour scheme, reduced motion,
+ * forced colours and print) nor `Emulation.setEmulatedMedia` with a `hover`
+ * feature does this: Blink's media-feature overrides do not include `hover`, and
+ * the call is accepted and ignored. Touch emulation is what moves it — Blink's
+ * `DevToolsEmulator` sets the primary hover type to none and the primary pointer
+ * type to coarse alongside the touch points. The mouse still works, so
+ * `locator.hover()` keeps matching `:hover`.
+ */
+export async function emulateNoHover(page: Page): Promise<void> {
+  const session = await page.context().newCDPSession(page)
+  await session.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 })
+}

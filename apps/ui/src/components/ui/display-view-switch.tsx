@@ -24,6 +24,10 @@ const TRANSITION_TRANSFORM = 'transform, translate, scale, rotate'
 const SHADOW_SM =
   '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 #0000, 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)'
 
+/**
+ * The inactive button's hover colour is nested in `@media (hover: hover)`, the
+ * shape Tailwind v4 emits for a hover variant (PR 09's correction commit).
+ */
 const styles = stylex.create({
   // `relative inline-flex items-center bg-muted rounded-lg p-[3px]`
   root: {
@@ -82,7 +86,7 @@ const styles = stylex.create({
   buttonInactive: {
     color: {
       default: colors.mutedForeground,
-      ':hover': colors.foreground,
+      '@media (hover: hover)': { default: null, ':hover': colors.foreground },
     },
   },
   // `size-3.5`
