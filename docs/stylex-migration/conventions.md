@@ -164,6 +164,81 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 - Runtime values (widths, transforms, CSS vars) that are inline styles today stay inline styles
   (StyleX dynamic styles are fine: `stylex.create({ w: (w: string) => ({ width: w }) })`).
 
+## Value traps
+
+_Found in [PR 03](pr-03.md)._
+
+### Paired line-heights: never write the ratio
+
+`@stylexjs/unplugin` runs every rule it emits through `lightningcss.transform`, which parses
+numbers as `f32` and **serialises them to five decimal places**, folding `calc()` on the way.
+That happens with or without `lightningcssOptions`, and a longer literal is rounded just the
+same:
+
+| authored in `stylex.create` | emitted CSS |
+| --------------------------- | ----------- |
+| `'calc(2.5 / 2.25)'`        | `1.11111`   |
+| `'1.1111111111111112'`      | `1.11111`   |
+| `'2.5rem'`                  | `2.5rem`    |
+
+Tailwind never hits this, because its ratio lives inside a custom property
+(`--text-4xl--line-height: calc(2.5 / 2.25)`) that nothing folds, and the browser does the
+division itself at full precision. So `text-4xl` computes to exactly `40px` while a StyleX
+`1.11111` computes to `39.99996px` — a visible one-pixel box difference and a different
+`line-height` string in the computed-style snapshots.
+
+**Rule:** write a Tailwind paired line-height as the length it resolves to
+(`text-4xl` → `fontSize: '2.25rem', lineHeight: '2.5rem'`), which is exact and is the number
+the pair was derived from. Keep a _standalone_ `leading-*` exactly as Tailwind has it —
+`leading-7` is already `1.75rem` and `leading-none` is already a whole `1`.
+
+The one behaviour this gives up is inheritance: a unitless line-height passes the ratio down to
+a descendant with a different font size, a length passes the length. No current caller nests
+differently sized text inside a typography component, and every `text-*` utility sets font-size
+and line-height together, so nothing in the suite moves. Re-check it if a component ever styles
+descendants through inheritance.
+
+### `twMerge` used to delete the base declaration; StyleX only overrides it
+
+`cn(base, callerClassName)` removes the conflicting base class outright, so a caller class that
+is _partially_ invalid removes the base value with it. A StyleX base style survives and is
+merely overridden, so the two diverge whenever the caller's declaration is
+"invalid at computed-value time".
+
+The live example is `text-[10px]`, which compiles to
+`font-size: 10px; line-height: var(--tw-leading)` — and `--tw-leading` has no initial value, so
+that second declaration is invalid and the property falls back to _inherit_, not to the StyleX
+value it beat. Before the migration `twMerge` had already deleted `text-4xl`, so the outcome was
+the same by accident. Watch for it whenever a caller passes an arbitrary-value utility.
+
+### Variant utilities lose their specificity advantage
+
+`first:mt-0` compiles to `.first\:mt-0:first-child` and
+`[&:not(:first-child)]:mt-6` to `.…:not(:first-child)` — both (0,2,0) **inside
+`@layer utilities`**, so they beat a caller's plain `.mt-6` (0,1,0) in the same layer. Once
+migrated they are ordinary StyleX rules in a `priorityN` layer, and layer order outranks
+specificity, so _any_ caller utility now wins. No caller passes a margin utility to the
+typography components today, which is why this is a note and not a blocker, but check the call
+sites before migrating a component whose own variant utility contests a property callers
+override.
+
+## Gallery cases are append-only per section
+
+`gallery.spec.ts` captures one **full-page** screenshot per section on top of the per-case
+element shots. Adding a case to an existing section therefore changes that section's page
+height and invalidates a frozen original, which `visual:update` (`--update-snapshots=missing`)
+cannot rewrite and no migration PR may replace.
+
+New cases for an already-covered component go in a **new sibling section** (PR 03 added
+`typography-extra` next to `typography`). Register it in
+`src/visual-gallery/sections/index.ts` and in `SECTIONS` in `visual/gallery.spec.ts`, capture
+its originals with `visual:update` **before** touching the component, and commit those
+originals in the same PR.
+
+A new `computed-styles.spec.ts` snapshot has no such constraint: it is a new test name, so it
+only ever creates new originals. Reading an existing gallery section for a new computed-style
+snapshot is fine — it changes no DOM.
+
 ## Verification per PR
 
 1. `pnpm typecheck && pnpm lint && pnpm format && pnpm knip`

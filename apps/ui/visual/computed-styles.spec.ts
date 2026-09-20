@@ -301,3 +301,141 @@ for (const theme of THEMES) {
     await expectTextSnapshot(await collect(page), `computed-gallery-forms-${theme}.json`)
   })
 }
+
+/**
+ * Typography (PR 03).
+ *
+ * The 12 typography components are pure text styling, so a pixel comparison can
+ * only prove that the glyphs landed in the same place — it says nothing about
+ * *which* declaration put them there. These snapshots pin the values the
+ * migration translates by hand: the paired `font-size`/`line-height` of every
+ * `text-*` step, `letter-spacing`, `scroll-margin` (`scroll-m-20`, which nothing
+ * renders until an anchor jump), the sibling margins (`[&:not(:first-child)]:mt-6`,
+ * `first:mt-0`, `mt-6`) and the two code variants' box.
+ */
+const TYPOGRAPHY_PROPERTIES = [
+  'display',
+  'position',
+  'width',
+  'margin',
+  'padding',
+  'font-family',
+  'font-size',
+  'font-weight',
+  'font-style',
+  'line-height',
+  'letter-spacing',
+  'color',
+  'background-color',
+  'border-width',
+  'border-style',
+  'border-color',
+  'border-radius',
+  'overflow-x',
+  'scroll-margin',
+  'text-wrap-mode',
+  'text-wrap-style',
+  'white-space',
+]
+
+const TYPOGRAPHY_ELEMENTS: TrackedElement[] = [
+  { id: 'h1', selector: '[data-gallery-case="typography-h1"] h1' },
+  { id: 'h2', selector: '[data-gallery-case="typography-h2"] h2' },
+  { id: 'h3', selector: '[data-gallery-case="typography-h3"] h3' },
+  { id: 'h4', selector: '[data-gallery-case="typography-h4"] h4' },
+  { id: 'h5', selector: '[data-gallery-case="typography-h5"] h5' },
+  { id: 'h6', selector: '[data-gallery-case="typography-h6"] h6' },
+  { id: 'p', selector: '[data-gallery-case="typography-p"] p' },
+  { id: 'p-stacked-first', selector: '[data-gallery-case="typography-p-stacked"] p:first-child' },
+  { id: 'p-stacked-second', selector: '[data-gallery-case="typography-p-stacked"] p:nth-child(2)' },
+  { id: 'lead', selector: '[data-gallery-case="typography-lead"] p' },
+  { id: 'large', selector: '[data-gallery-case="typography-large"] > div' },
+  { id: 'small', selector: '[data-gallery-case="typography-small"] small' },
+  { id: 'muted', selector: '[data-gallery-case="typography-muted"] p' },
+  { id: 'blockquote', selector: '[data-gallery-case="typography-blockquote"] blockquote' },
+  { id: 'code-inline', selector: '[data-gallery-case="typography-code-inline"] code' },
+  { id: 'code-block', selector: '[data-gallery-case="typography-code-block"] pre' },
+  { id: 'h1-override', selector: '[data-gallery-case="typography-h1-override"] h1' },
+  { id: 'muted-override', selector: '[data-gallery-case="typography-muted-override"] p' },
+]
+
+const TYPOGRAPHY_EXTRA_ELEMENTS: TrackedElement[] = [
+  { id: 'h2-flow-first', selector: '[data-gallery-case="typography-h2-in-flow"] h2:first-child' },
+  { id: 'p-flow-second', selector: '[data-gallery-case="typography-h2-in-flow"] p:nth-child(2)' },
+  { id: 'h2-flow-third', selector: '[data-gallery-case="typography-h2-in-flow"] h2:nth-child(3)' },
+  { id: 'p-flow-fourth', selector: '[data-gallery-case="typography-h2-in-flow"] p:nth-child(4)' },
+  { id: 'p-only-child', selector: '[data-gallery-case="typography-p-only-child"] p' },
+  {
+    id: 'blockquote-after-p',
+    selector: '[data-gallery-case="typography-blockquote-after-p"] blockquote',
+  },
+  { id: 'code-in-paragraph', selector: '[data-gallery-case="typography-code-in-paragraph"] code' },
+  {
+    id: 'code-block-overflow',
+    selector: '[data-gallery-case="typography-code-block-overflow"] pre',
+  },
+  { id: 'h2-flex-override', selector: '[data-gallery-case="typography-h2-flex-override"] h2' },
+  { id: 'h1-size-override', selector: '[data-gallery-case="typography-h1-size-override"] h1' },
+  { id: 'p-override', selector: '[data-gallery-case="typography-p-override"] p' },
+  { id: 'code-override', selector: '[data-gallery-case="typography-code-override"] code' },
+  {
+    id: 'blockquote-override',
+    selector: '[data-gallery-case="typography-blockquote-override"] blockquote',
+  },
+  {
+    id: 'code-block-override',
+    selector: '[data-gallery-case="typography-code-block-override"] pre',
+  },
+]
+
+async function collectTypography(page: Page, elements: TrackedElement[]): Promise<string> {
+  const report = await page.evaluate(
+    ({ elements, properties }) => {
+      const round = (value: number) => Math.round(value * 100) / 100
+      return elements.map(({ id, selector }) => {
+        const element = document.querySelector(selector)
+        if (!element) return { id, selector, present: false }
+        const rect = element.getBoundingClientRect()
+        const computed = getComputedStyle(element)
+        const styles: Record<string, string> = {}
+        for (const property of properties) {
+          styles[property] = computed.getPropertyValue(property)
+        }
+        return {
+          id,
+          selector,
+          present: true,
+          box: { width: round(rect.width), height: round(rect.height) },
+          styles,
+        }
+      })
+    },
+    { elements, properties: TYPOGRAPHY_PROPERTIES }
+  )
+
+  return `${JSON.stringify(report, null, 2)}\n`
+}
+
+for (const theme of THEMES) {
+  test(`computed styles gallery typography ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/typography', {
+      theme,
+      waitFor: '[data-gallery-section="typography"]',
+    })
+    await expectTextSnapshot(
+      await collectTypography(page, TYPOGRAPHY_ELEMENTS),
+      `computed-typography-${theme}.json`
+    )
+  })
+
+  test(`computed styles gallery typography-extra ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/typography-extra', {
+      theme,
+      waitFor: '[data-gallery-section="typography-extra"]',
+    })
+    await expectTextSnapshot(
+      await collectTypography(page, TYPOGRAPHY_EXTRA_ELEMENTS),
+      `computed-typography-extra-${theme}.json`
+    )
+  })
+}

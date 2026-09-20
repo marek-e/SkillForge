@@ -8,6 +8,7 @@ import { expectCaseShot, expectShot, gotoGallery, settle, THEMES, waitForStable 
  */
 const SECTIONS = [
   'typography',
+  'typography-extra',
   'buttons',
   'forms',
   'data-display',

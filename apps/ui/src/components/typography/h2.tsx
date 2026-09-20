@@ -1,30 +1,70 @@
 import * as React from 'react'
-import { cva, type VariantProps } from 'class-variance-authority'
+import * as stylex from '@stylexjs/stylex'
 
 import { cn } from '@/lib/utils'
 
-const h2Variants = cva(
-  'scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0',
-  {
-    variants: {
-      variant: {
-        default: '',
-      },
+/**
+ * Was `cva('scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0')`
+ * (PR 03).
+ *
+ * `border-b` sets only the bottom width and style; the colour keeps coming from
+ * the `* { border-color: var(--border) }` rule in `@layer base`, which StyleX
+ * deliberately does not contest.
+ */
+const styles = stylex.create({
+  base: {
+    // `scroll-m-20` -> calc(var(--spacing) * 20), with --spacing: 0.25rem
+    scrollMargin: '5rem',
+    // `border-b` -> border-bottom-width: 1px, border-bottom-style: solid
+    //  (Tailwind writes the style through --tw-border-style, which defaults to solid)
+    borderBottomStyle: 'solid',
+    borderBottomWidth: '1px',
+    // `pb-2`
+    paddingBottom: '0.5rem',
+    // `text-3xl` -> font-size plus the line-height Tailwind pairs with it,
+    // `calc(2.25 / 1.875)`, written as the length it resolves to. lightningcss folds a
+    // ratio to five decimals, which no longer multiplies out to a whole pixel
+    // (see conventions.md, "Paired line-heights").
+    fontSize: '1.875rem',
+    lineHeight: '2.25rem',
+    // `font-semibold`
+    fontWeight: 600,
+    // `tracking-tight`
+    letterSpacing: '-0.025em',
+    // `first:mt-0` -> the zero step of the spacing scale. Nothing else sets a
+    // top margin here, so it only bites when a caller adds one.
+    // (Spelling the utility out would be enough for Tailwind's scanner to start
+    // emitting a rule for it; see conventions.md.)
+    marginTop: {
+      default: null,
+      ':first-child': '0rem',
     },
-    defaultVariants: {
-      variant: 'default',
-    },
-  }
-)
+  },
+})
 
-export interface H2Props
-  extends React.HTMLAttributes<HTMLHeadingElement>, VariantProps<typeof h2Variants> {}
+/**
+ * The `default` variant added no classes, so it maps to no style. Keeping the
+ * lookup keeps the prop's contract (and its `null`) exactly as `cva` had it.
+ */
+const variantStyles = { default: null } as const
+
+export interface H2Props extends React.HTMLAttributes<HTMLHeadingElement> {
+  variant?: keyof typeof variantStyles | null | undefined
+}
 
 const H2 = React.forwardRef<HTMLHeadingElement, H2Props>(
-  ({ className, variant, ...props }, ref) => {
-    return <h2 ref={ref} className={cn(h2Variants({ variant, className }))} {...props} />
+  ({ className, style, variant, ...props }, ref) => {
+    const sx = stylex.props(styles.base, variantStyles[variant ?? 'default'])
+    return (
+      <h2
+        ref={ref}
+        className={cn(sx.className, className)}
+        style={sx.style || style ? { ...sx.style, ...style } : undefined}
+        {...props}
+      />
+    )
   }
 )
 H2.displayName = 'H2'
 
-export { H2, h2Variants }
+export { H2 }

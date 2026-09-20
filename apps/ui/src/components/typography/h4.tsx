@@ -1,27 +1,49 @@
 import * as React from 'react'
-import { cva, type VariantProps } from 'class-variance-authority'
+import * as stylex from '@stylexjs/stylex'
 
 import { cn } from '@/lib/utils'
 
-const h4Variants = cva('scroll-m-20 text-xl font-semibold tracking-tight', {
-  variants: {
-    variant: {
-      default: '',
-    },
-  },
-  defaultVariants: {
-    variant: 'default',
+/** Was `cva('scroll-m-20 text-xl font-semibold tracking-tight')` (PR 03). */
+const styles = stylex.create({
+  base: {
+    // `scroll-m-20` -> calc(var(--spacing) * 20), with --spacing: 0.25rem
+    scrollMargin: '5rem',
+    // `text-xl` -> font-size plus the line-height Tailwind pairs with it,
+    // `calc(1.75 / 1.25)`, written as the length it resolves to. lightningcss folds a
+    // ratio to five decimals, which no longer multiplies out to a whole pixel
+    // (see conventions.md, "Paired line-heights").
+    fontSize: '1.25rem',
+    lineHeight: '1.75rem',
+    // `font-semibold`
+    fontWeight: 600,
+    // `tracking-tight`
+    letterSpacing: '-0.025em',
   },
 })
 
-export interface H4Props
-  extends React.HTMLAttributes<HTMLHeadingElement>, VariantProps<typeof h4Variants> {}
+/**
+ * The `default` variant added no classes, so it maps to no style. Keeping the
+ * lookup keeps the prop's contract (and its `null`) exactly as `cva` had it.
+ */
+const variantStyles = { default: null } as const
+
+export interface H4Props extends React.HTMLAttributes<HTMLHeadingElement> {
+  variant?: keyof typeof variantStyles | null | undefined
+}
 
 const H4 = React.forwardRef<HTMLHeadingElement, H4Props>(
-  ({ className, variant, ...props }, ref) => {
-    return <h4 ref={ref} className={cn(h4Variants({ variant, className }))} {...props} />
+  ({ className, style, variant, ...props }, ref) => {
+    const sx = stylex.props(styles.base, variantStyles[variant ?? 'default'])
+    return (
+      <h4
+        ref={ref}
+        className={cn(sx.className, className)}
+        style={sx.style || style ? { ...sx.style, ...style } : undefined}
+        {...props}
+      />
+    )
   }
 )
 H4.displayName = 'H4'
 
-export { H4, h4Variants }
+export { H4 }

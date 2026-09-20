@@ -9,6 +9,7 @@ import { FormsSection } from './forms'
 import { OverlaysSection } from './overlays'
 import { SidebarPartsSection } from './sidebar-parts'
 import { TokensSection } from './tokens'
+import { TypographyExtraSection } from './typography-extra'
 import { TypographySection } from './typography'
 
 export interface GallerySection {
@@ -19,6 +20,11 @@ export interface GallerySection {
 
 export const GALLERY_SECTIONS: GallerySection[] = [
   { id: 'typography', title: 'Typography', Component: TypographySection },
+  {
+    id: 'typography-extra',
+    title: 'Typography flow, wrapping and overrides',
+    Component: TypographyExtraSection,
+  },
   { id: 'buttons', title: 'Buttons, badges and toggles', Component: ButtonsSection },
   { id: 'forms', title: 'Form controls', Component: FormsSection },
   { id: 'data-display', title: 'Data display', Component: DataDisplaySection },
