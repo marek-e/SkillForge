@@ -1,0 +1,40 @@
+apps/ui/visual/helpers.ts
+  s_98c1f7bc58c094::t_172d255f513cd9 323-324,328-329,331-337,339,341
+  s_98c1f7bc58c094::t_9ebca71c24c342 321-322,325-327,330,338,340,342
+apps/ui/src/components/ui/display-view-switch.tsx
+  s_98c1f7bc58c094::t_cb50e53b7d9603 27-30
+  s_98c1f7bc58c094::t_0fc18074b9adb0 89
+apps/ui/src/components/ui/toggle.tsx
+  s_98c1f7bc58c094::t_cb50e53b7d9603 45-50
+  s_98c1f7bc58c094::t_0fc18074b9adb0 95,139,149
+apps/ui/visual/hover-media.spec.ts
+  s_98c1f7bc58c094::t_e63c8b56f6f9c4 1-46,48-56
+  s_98c1f7bc58c094::t_172d255f513cd9 47
+docs/stylex-migration/conventions.md
+  s_98c1f7bc58c094::t_74bfb2eb2cc499 304-320
+apps/ui/src/components/ui/badge.tsx
+  s_98c1f7bc58c094::t_5936259ac9a3d3 99-102
+  s_98c1f7bc58c094::t_fb2e4dc54f16e6 97-98
+  s_98c1f7bc58c094::t_27b710aa3555e2 108-111,144-147,181-184,187-190,260-263
+  s_98c1f7bc58c094::t_0fc18074b9adb0 221,225,257,268,301
+apps/ui/src/components/ui/button.tsx
+  s_98c1f7bc58c094::t_0fc18074b9adb0 204,226,282,330,335,437
+  s_98c1f7bc58c094::t_27b710aa3555e2 152-155,217-220,272-275,379-382,385-388
+  s_98c1f7bc58c094::t_cb50e53b7d9603 81-91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "d3f8a3da73c91d58ba9448c37c4ebb6ec34df2d6",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
