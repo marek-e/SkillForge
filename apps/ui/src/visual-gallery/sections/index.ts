@@ -8,6 +8,7 @@ import { DataDisplaySection } from './data-display'
 import { DisclosureSection } from './disclosure'
 import { FormsExtraSection } from './forms-extra'
 import { FormsSection } from './forms'
+import { FormsTogglesSection } from './forms-toggles'
 import { OverlaysSection } from './overlays'
 import { SidebarPartsSection } from './sidebar-parts'
 import { TokensSection } from './tokens'
@@ -38,6 +39,11 @@ export const GALLERY_SECTIONS: GallerySection[] = [
     id: 'forms-extra',
     title: 'Field states, adornments and container queries',
     Component: FormsExtraSection,
+  },
+  {
+    id: 'forms-toggles',
+    title: 'Checkbox, radio, switch and slider states',
+    Component: FormsTogglesSection,
   },
   { id: 'data-display', title: 'Data display', Component: DataDisplaySection },
   { id: 'disclosure', title: 'Disclosure and panels', Component: DisclosureSection },

@@ -107,8 +107,9 @@ const styles = stylex.create({
 
 | Tailwind                                   | StyleX key inside a property value object                                                                                                                        |
 | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `hover:x`                                  | `':hover'` — **not** wrapped in a media query; see "`hover:` has no media query here" below                                                                      |
-| `[a]:hover:x` (arbitrary variant)          | `':is(a):hover'` — `[a]:` compiles to `&:is(a)`, and a `hover:` that is not the first variant gets no media query either                                         |
+| `hover:x`                                  | `'@media (hover: hover)': { default: null, ':hover': … }` — see "`hover:` **is** wrapped" below                                                                  |
+| `[a]:hover:x` (arbitrary variant)          | `':is(a)'` inside the same media query; `[a]:` compiles to `&:is(a)`                                                                                             |
+| `[&>a:hover]:x` (arbitrary **selector**)   | `':is(*)>a:hover'` — no media query; the wrapper comes from the `hover:` _variant_, not from the `:hover` pseudo-class                                           |
 | `focus-visible:` / `disabled:` / `active:` | `':focus-visible'`, `':disabled'`, `':active'`                                                                                                                   |
 | `dark:x`                                   | `':is(.dark *)'` (same shape/specificity as `@custom-variant dark (&:is(.dark *))`)                                                                              |
 | `data-[state=open]:x`                      | `'[data-state="open"]'`                                                                                                                                          |
@@ -252,18 +253,32 @@ typography components today, which is why this is a note and not a blocker, but 
 sites before migrating a component whose own variant utility contests a property callers
 override.
 
-### `hover:` has no media query here
+### `hover:` **is** wrapped in `@media (hover: hover)`
 
-_Corrected in [PR 04](pr-04.md); [`tailwind-values.md`](tailwind-values.md) §9 and the first
-version of the table above were wrong._
+_PR 04 claimed the opposite and changed this section and
+[`tailwind-values.md`](tailwind-values.md) §9 to match. Both are corrected back in
+[PR 06](pr-06.md)._
 
-Compiling the project's real `index.css` and reading the shipped CSS asset shows plain
-`.hover\:bg-muted:hover { … }`, with **no** `@media (hover: hover)` wrapper — the whole bundle
-contains zero Tailwind rules inside such a media query. The same holds for `dark:hover:` and for
-`[a]:hover:`. Write `':hover'`.
+The shipped CSS asset contains **nine** `@media (hover: hover)` blocks, and every one of the 31
+`hover:` utilities in the bundle sits inside one — `hover:bg-muted`, `hover:bg-primary/80`,
+`hover:underline`, `hover:ring-3`, `dark:hover:bg-blue-500/25` and `[a]:hover:bg-destructive/20`
+included. Count the occurrences, not the lines: the asset is minified onto one line, so
+`grep -c` reports `1` however many blocks there are, which is how the earlier measurement went
+wrong.
 
-The canary from PR 01 keeps its `@media (hover: hover)` nesting on purpose: it is a probe for the
-nested-condition syntax, not a copy of a Tailwind rule.
+```ts
+backgroundColor: {
+  default: colors.background,
+  '@media (hover: hover)': { default: null, ':hover': colors.muted },
+},
+```
+
+The one shape that really is bare is a `:hover` written inside an **arbitrary** selector, such as
+`[&>a:hover]:text-primary`, which Tailwind emits as `.x>a:hover` with no wrapper.
+
+PR 01's canary was right all along; PR 04's `button.tsx`, `badge.tsx`, `toggle.tsx` and
+`display-view-switch.tsx` are not, and still need the wrapper added. No screenshot can catch it —
+Chromium reports `hover: hover` in both viewport projects.
 
 ### Utility source order decides a same-specificity tie
 
@@ -274,9 +289,26 @@ and can be read off the built CSS. Measured for this project, later wins:
 
 `hover:` → `aria-expanded:` → `focus-visible:` → `aria-invalid:` → every `dark:*` (emitted last)
 
-StyleX gives its own priority per condition (`:hover` 130, `:disabled` 92, anything starting
-`:is(` 40), so the order can come out different. **Do not rely on it.** Write the combination
-explicitly as a nested condition, which raises the specificity and settles it:
+StyleX gives its own priority per condition. Measured with the compiler, for a property whose
+base priority is 2000:
+
+| Key                                                   | Priority |
+| ----------------------------------------------------- | -------- |
+| `default`                                             | 2000     |
+| `':is(…)'` — including every `data-*` mapping         | 2040     |
+| `':focus-visible'`                                    | 2040     |
+| `':hover'`                                            | 2130     |
+| `':active'`                                           | 2170     |
+| `'@media (hover: hover)'` + `':hover'`                | 2330     |
+| a bare attribute key, e.g. `'[data-state="checked"]'` | 5000     |
+| each extra nesting level                              | +40      |
+
+So `':is(…)'` and `':focus-visible'` **tie**, and a tie is not settled by the order the keys appear
+in `stylex.create`: identical declarations are deduplicated across the whole app, so a rule's
+position in the sheet is wherever the _first_ module that emitted that exact declaration put it.
+PR 06 watched a checked, focused checkbox come out `--primary` instead of `--ring` for precisely
+that reason. **Do not rely on it.** Write the combination explicitly as a nested condition, which
+raises the priority and settles it:
 
 ```ts
 borderColor: {
@@ -299,6 +331,12 @@ win — that cost PR 04 four dark-mode screenshot failures.
 all of its conditions. A variant that sets `borderColor` therefore drops the base's
 `':focus-visible'` and `':is([aria-invalid="true"])' `borderColor rules entirely. Restate them in
 every variant that touches the property, or keep the property in exactly one object.
+
+**An `sx` prop is subject to the same rule, across files.** PR 05's `FieldLabel` passed an `sx`
+that declared `opacity` for one condition and silently dropped the two `opacity` conditions
+`Label` declares (`peer-disabled:`, `group-data-[disabled=true]:`), so a `FieldLabel` next to a
+disabled control stopped dimming. PR 06's `checkbox-in-disabled-field` case caught it. Before
+passing `sx`, read what the target component declares for the same property.
 
 The same trap in reverse: a size that sets the element's own `height` drops a base `height` whose
 only declaration was a descendant rule (`[&_svg…]:size-4`).

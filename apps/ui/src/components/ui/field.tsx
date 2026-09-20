@@ -184,9 +184,17 @@ const styles = stylex.create({
         [HAS_CHECKED]: 'color-mix(in oklab, var(--primary) 20%, transparent)',
       },
     },
+    // `group-data-[disabled=true]/field:opacity-50`, plus the two rules `Label`
+    // itself declares for this property. They have to be restated here:
+    // `stylex.props` merges a property as a whole, so an `sx` that declares
+    // `opacity` replaces `Label`'s conditions rather than adding to them —
+    // which is what used to dim a `FieldLabel` whose `peer` control is
+    // disabled (`checkbox-in-disabled-field`).
     opacity: {
       default: null,
       [IN_DISABLED_FIELD]: '50%',
+      ':is(.group[data-disabled="true"] *)': '50%',
+      ':is(.peer:disabled ~ *)': '50%',
     },
     // `*:data-[slot=field]:p-2.5` — the wrapped `Field`, which this file owns.
     paddingTop: { default: null, ':is(*)>[data-slot="field"]': '0.625rem' },
@@ -306,9 +314,12 @@ const CHILD_CLASSES = {
   vertical: '*:w-full [&>.sr-only]:w-auto',
   /**
    * `has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px`
-   * — a `Checkbox` or a `RadioGroupItem`, which PR 06 migrates. (The compiled
-   * selector matches `>[role=checkbox]` but any descendant `[role=radio]`;
-   * that asymmetry is Tailwind's and is kept.)
+   * — whatever control the caller put inside the field, which is why it stays
+   * a class even though `Checkbox` and `RadioGroupItem` are themselves StyleX
+   * now: the rule has to keep beating a utility on that child. It goes when
+   * the utility layer does (PR 32). (The compiled selector matches
+   * `>[role=checkbox]` but any descendant `[role=radio]`; that asymmetry is
+   * Tailwind's and is kept.)
    */
   horizontalChildren: 'has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px',
   /**

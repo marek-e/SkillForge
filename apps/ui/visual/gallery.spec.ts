@@ -13,6 +13,7 @@ const SECTIONS = [
   'buttons-extra',
   'forms',
   'forms-extra',
+  'forms-toggles',
   'data-display',
   'disclosure',
   'overlays',
@@ -222,6 +223,92 @@ test.describe('interaction states', () => {
         'field-description-link-hover-target',
         `state-field-description-link-hover-${theme}.png`
       )
+    })
+
+    // `forms-toggles` (PR 06). Hover, focus and the active state of a slider
+    // thumb are the only pointer states these four components have, and the
+    // checkbox/radio/switch focus rings are contested by their `aria-invalid`
+    // rules, so each combination is captured rather than reasoned about.
+    test(`form toggle states ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'forms-toggles', { theme })
+
+      await page.locator('[data-gallery-case="checkbox-hover-target"] button').hover()
+      await expectCaseShot(page, 'checkbox-hover-target', `state-checkbox-hover-${theme}.png`)
+
+      // Explicit snapshot names: `switch-focus-target` would otherwise derive
+      // `state-switch-focus`, which PR 00 already uses for the `switch-off`
+      // case of the `forms` section.
+      const focusTargets = [
+        ['checkbox-invalid-focus-target', 'state-checkbox-invalid-focus'],
+        ['checkbox-checked-focus-target', 'state-checkbox-checked-focus'],
+        ['switch-focus-target', 'state-switch-unchecked-focus'],
+        ['switch-checked-focus-target', 'state-switch-checked-focus'],
+        ['switch-invalid-focus-target', 'state-switch-invalid-focus'],
+      ] as const
+
+      for (const [caseName, snapshot] of focusTargets) {
+        const target = page.locator(`[data-gallery-case="${caseName}"] button`)
+        await target.focus()
+        await expectCaseShot(page, caseName, `${snapshot}-${theme}.png`)
+        await target.blur()
+      }
+
+      await page.locator('[data-gallery-case="radio-group-hover-target"] button').hover()
+      await expectCaseShot(page, 'radio-group-hover-target', `state-radio-hover-${theme}.png`)
+
+      const radio = page.locator('[data-gallery-case="radio-group-focus-target"] button')
+      await radio.focus()
+      await expectCaseShot(page, 'radio-group-focus-target', `state-radio-focus-${theme}.png`)
+      await radio.blur()
+
+      await page
+        .locator('[data-gallery-case="slider-hover-target"] [data-slot="slider-thumb"]')
+        .hover()
+      await expectCaseShot(page, 'slider-hover-target', `state-slider-hover-${theme}.png`)
+
+      const secondThumb = page
+        .locator('[data-gallery-case="slider-range-focus-target"] [data-slot="slider-thumb"]')
+        .nth(1)
+      await secondThumb.focus()
+      await expectCaseShot(
+        page,
+        'slider-range-focus-target',
+        `state-slider-range-focus-${theme}.png`
+      )
+      await secondThumb.blur()
+
+      const activeThumb = page
+        .locator('[data-gallery-case="slider-active-target"] [data-slot="slider-thumb"]')
+        .first()
+      const thumbBox = await activeThumb.boundingBox()
+      if (thumbBox) {
+        await page.mouse.move(thumbBox.x + thumbBox.width / 2, thumbBox.y + thumbBox.height / 2)
+        await page.mouse.down()
+        await expectCaseShot(page, 'slider-active-target', `state-slider-active-${theme}.png`)
+        await page.mouse.up()
+      }
+
+      // Keyboard: the space bar checks the hovered checkbox, and an arrow key
+      // moves the focused thumb by one step.
+      const spaceTarget = page.locator('[data-gallery-case="checkbox-hover-target"] button')
+      await spaceTarget.focus()
+      await page.keyboard.press('Space')
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'checkbox-hover-target',
+        `state-checkbox-space-checked-${theme}.png`
+      )
+      await spaceTarget.blur()
+
+      const stepThumb = page
+        .locator('[data-gallery-case="slider-step"] [data-slot="slider-thumb"]')
+        .first()
+      await stepThumb.focus()
+      await page.keyboard.press('ArrowRight')
+      await settle(page)
+      await expectCaseShot(page, 'slider-step', `state-slider-arrow-right-${theme}.png`)
+      await stepThumb.blur()
     })
 
     // The StyleX canary's hover rule is nested in `@media (hover: hover)`, the

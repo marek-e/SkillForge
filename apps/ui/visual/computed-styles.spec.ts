@@ -734,3 +734,89 @@ for (const theme of THEMES) {
     )
   })
 }
+
+/**
+ * Checkbox, radio, switch and slider (PR 06).
+ *
+ * These four are built from several elements each — a root plus an indicator,
+ * a thumb, a track and a range — and most of their styling is written by an
+ * ancestor's `data-state` or `data-orientation`. The collector therefore dumps
+ * every part of every case, including the `translate` of a switch thumb and the
+ * per-orientation width and height of a slider track.
+ */
+const TOGGLE_PROPERTIES = [
+  'display',
+  'position',
+  'width',
+  'height',
+  'aspect-ratio',
+  'box-sizing',
+  'margin',
+  'padding',
+  'top',
+  'left',
+  'border-width',
+  'border-style',
+  'border-color',
+  'border-radius',
+  'background-color',
+  'color',
+  'fill',
+  'box-shadow',
+  'outline',
+  'opacity',
+  'cursor',
+  'pointer-events',
+  'user-select',
+  'flex-shrink',
+  'align-items',
+  'justify-content',
+  'place-content',
+  'overflow',
+  'touch-action',
+  'translate',
+  'transform',
+  'transition-property',
+  'transition-duration',
+  'transition-timing-function',
+]
+
+const TOGGLE_SELECTOR = [
+  '[data-slot="checkbox"]',
+  '[data-slot="checkbox-indicator"]',
+  '[data-slot="radio-group"]',
+  '[data-slot="radio-group-item"]',
+  '[data-slot="radio-group-indicator"]',
+  '[data-slot="switch"]',
+  '[data-slot="switch-thumb"]',
+  '[data-slot="slider"]',
+  '[data-slot="slider-track"]',
+  '[data-slot="slider-range"]',
+  '[data-slot="slider-thumb"]',
+]
+  .map((selector) => `[data-gallery-case] ${selector}`)
+  .join(', ')
+
+for (const theme of THEMES) {
+  test(`computed styles gallery forms toggle parts ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/forms', {
+      theme,
+      waitFor: '[data-gallery-section="forms"]',
+    })
+    await expectTextSnapshot(
+      await collectCases(page, TOGGLE_SELECTOR, TOGGLE_PROPERTIES),
+      `computed-forms-toggle-parts-${theme}.json`
+    )
+  })
+
+  test(`computed styles gallery forms-toggles ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/forms-toggles', {
+      theme,
+      waitFor: '[data-gallery-section="forms-toggles"]',
+    })
+    await expectTextSnapshot(
+      await collectCases(page, TOGGLE_SELECTOR, TOGGLE_PROPERTIES),
+      `computed-forms-toggles-${theme}.json`
+    )
+  })
+}
