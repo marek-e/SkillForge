@@ -1,0 +1,108 @@
+apps/ui/src/routes/skill-detail.tsx
+  s_98c1f7bc58c094::t_afc0f488da867b 95-98
+apps/ui/visual/computed-styles.spec.ts
+  s_98c1f7bc58c094::t_4aa917a295f8ff 625-664,669-736
+  s_98c1f7bc58c094::t_6ff9046ae0fc68 665-668
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-forms-extra-fields-dark.json
+  s_98c1f7bc58c094::t_ed170bdc909da5 1-1920,1922-1926,1928-2109
+  s_98c1f7bc58c094::t_49f2a6f3617b60 1921
+  s_98c1f7bc58c094::t_e3e9deed9a59bd 1927
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-forms-fields-light.json
+  s_98c1f7bc58c094::t_ed170bdc909da5 1-1325
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-forms-extra-controls-dark.json
+  s_98c1f7bc58c094::t_ed170bdc909da5 1-2746
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-forms-extra-controls-light.json
+  s_98c1f7bc58c094::t_ed170bdc909da5 1-2746
+docs/stylex-migration/pr-05.md
+  s_98c1f7bc58c094::t_900c5a368ed7fc 1-50,54-67,69-73,84-134,136-165,172-196,206-267
+  s_98c1f7bc58c094::t_a18ceb33ff96c4 51-53,68,74-83,135,166-171,197-205
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-forms-fields-dark.json
+  s_98c1f7bc58c094::t_ed170bdc909da5 1-1325
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-forms-controls-light.json
+  s_98c1f7bc58c094::t_ed170bdc909da5 1-2305
+apps/ui/src/index.css
+  s_98c1f7bc58c094::t_39c93839d4991a 8,12-25,27
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-forms-controls-dark.json
+  s_98c1f7bc58c094::t_ed170bdc909da5 1-2305
+apps/ui/src/components/ui/input.tsx
+  s_98c1f7bc58c094::t_ed52fc5b4fa1ef 107,112-113,115-128
+  s_98c1f7bc58c094::t_7bf8d066802541 135
+  s_98c1f7bc58c094::t_5382941bb3cfdd 2,4,7-106,108-111,114,129-134,136,138-139,144-145
+  s_98c1f7bc58c094::t_7f3e93d8dc47ed 137
+apps/ui/src/visual-gallery/sections/forms-extra.tsx
+  s_98c1f7bc58c094::t_5cbd9d966763ae 1-241,246-247,250-381
+  s_98c1f7bc58c094::t_fb84d382f9640c 242-245,248-249
+apps/ui/src/components/ui/textarea.tsx
+  s_98c1f7bc58c094::t_428f524ced005b 2,4,7-90,104,107-110,114-115
+  s_98c1f7bc58c094::t_ed52fc5b4fa1ef 91-103,105-106
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-forms-extra-fields-dark.json
+  s_98c1f7bc58c094::t_ed170bdc909da5 1-1920,1922-1926,1928-2109
+  s_98c1f7bc58c094::t_a3f1c5f05f67d1 1921
+  s_98c1f7bc58c094::t_7277b0a4a6c5f2 1927
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-forms-extra-controls-dark.json
+  s_98c1f7bc58c094::t_ed170bdc909da5 1-2746
+apps/ui/src/lib/sx.ts
+  s_98c1f7bc58c094::t_885f2f6374549a 1-20
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-forms-extra-fields-light.json
+  s_98c1f7bc58c094::t_ed170bdc909da5 1-1920,1922-1926,1928-2109
+  s_98c1f7bc58c094::t_7c551417777440 1921
+  s_98c1f7bc58c094::t_1579ab26f42522 1927
+apps/ui/src/components/ui/button.tsx
+  s_98c1f7bc58c094::t_6ee7925f926a95 8,591-599
+  s_98c1f7bc58c094::t_7f3e93d8dc47ed 601-620,622-638
+apps/ui/visual/gallery.spec.ts
+  s_98c1f7bc58c094::t_8649067515ba40 15
+  s_98c1f7bc58c094::t_7f3e93d8dc47ed 211-215
+  s_98c1f7bc58c094::t_e09e65e7b812c7 190-210,216-226
+apps/ui/src/visual-gallery/sections/index.ts
+  s_98c1f7bc58c094::t_8649067515ba40 9,37-41
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-forms-extra-fields-light.json
+  s_98c1f7bc58c094::t_ed170bdc909da5 1-1920,1922-1926,1928-2109
+  s_98c1f7bc58c094::t_a19279a8d24f66 1921
+  s_98c1f7bc58c094::t_2eb982c7c8c8bd 1927
+apps/ui/src/components/ui/field.tsx
+  s_98c1f7bc58c094::t_7f3e93d8dc47ed 313,513-514
+  s_98c1f7bc58c094::t_fdadb2716b6fc7 2,5,10-312,318-324,328-329,337,341-345,350-351,357-359,363-366,372-377,393-404,407,411-413,418-422,428-430,434-435,445-450,456-458,461-462,464-465,471-473,477-478,481,484,493,498-500,505-506,509,526,533,550,554,560-561,566-567
+  s_98c1f7bc58c094::t_f8175b7c9b1fa1 314-317
+apps/ui/src/components/ui/label.tsx
+  s_98c1f7bc58c094::t_05296af7a38caa 6,67,69-73
+  s_98c1f7bc58c094::t_ab299d1a50a55f 2,8-66,68,78-79
+  s_98c1f7bc58c094::t_04826c7850f97f 7
+apps/ui/src/components/ui/input-group.tsx
+  s_98c1f7bc58c094::t_d30866de8dc827 93,96,326-342,345
+  s_98c1f7bc58c094::t_f2dd419f0b1572 2,5,11-92,94-95,97-281,286-288,294-298,318-325,343-344,346,349,353-355,360-362,374-378,393-412,421-422,426,428-433,439-441,444-445,447-448,451,457-466
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-forms-fields-dark.json
+  s_98c1f7bc58c094::t_ed170bdc909da5 1-1325
+docs/stylex-migration/conventions.md
+  s_98c1f7bc58c094::t_5768bb95e43d69 131-142
+  s_98c1f7bc58c094::t_a53072824dfbac 397-403
+  s_98c1f7bc58c094::t_fa7b5843ccdb17 338-365,368-369,371-378
+  s_98c1f7bc58c094::t_a18ceb33ff96c4 225
+  s_98c1f7bc58c094::t_577af240149248 27-32,34-41,218-224,226-229
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-forms-extra-controls-light.json
+  s_98c1f7bc58c094::t_ed170bdc909da5 1-2746
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-forms-controls-dark.json
+  s_98c1f7bc58c094::t_ed170bdc909da5 1-2305
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-forms-fields-light.json
+  s_98c1f7bc58c094::t_ed170bdc909da5 1-1325
+apps/ui/visual/routes.spec.ts
+  s_98c1f7bc58c094::t_d617053942886a 104-133
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-forms-controls-light.json
+  s_98c1f7bc58c094::t_ed170bdc909da5 1-2305
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "7a0e9e9b34fe7b1f1f49a6a72ae1ddd63d4b38d9",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
