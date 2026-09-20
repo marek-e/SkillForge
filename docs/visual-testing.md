@@ -12,7 +12,7 @@ pnpm --filter @skillforge/ui visual:check-originals   # fail on failure artifact
 pnpm --filter @skillforge/ui visual:check-gallery     # fail if gallery code reaches the shipped bundle
 ```
 
-The suite starts its own Vite server on port 4320 with `VITE_VISUAL_GALLERY=true`. No runtime server is needed: every API call is served from fixtures.
+The suite starts its own Vite server on port 4320 (override with `VISUAL_PORT=<port>` to run several checkouts side by side) with `VITE_VISUAL_GALLERY=true`. No runtime server is needed: every API call is served from fixtures.
 
 ## The one rule
 

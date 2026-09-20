@@ -77,7 +77,7 @@ test.describe('real electron host', () => {
             // Storage may be unavailable.
           }
         }, theme)
-        await win.goto('http://localhost:4320/')
+        await win.goto(`http://localhost:${process.env.VISUAL_PORT ?? 4320}/`)
         await settle(win)
         await expectShot(win, `electron-real-window-${theme}.png`, { fullPage: true })
       } finally {

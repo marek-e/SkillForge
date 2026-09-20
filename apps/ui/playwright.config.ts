@@ -15,13 +15,21 @@ import { defineConfig } from '@playwright/test'
  */
 const useProductionBuild = process.env.VISUAL_BUILD === '1'
 
+/**
+ * The UI server port. Defaults to the dev server's 4320; `VISUAL_PORT` lets
+ * several checkouts run the suite on one machine at the same time. The API
+ * origin is never started (api-mock.ts intercepts it), so it stays fixed.
+ */
+const uiPort = Number(process.env.VISUAL_PORT ?? 4320)
+const uiOrigin = `http://localhost:${uiPort}`
+
 const serverEnv = {
   VITE_VISUAL_GALLERY: 'true',
   VITE_API_URL: 'http://localhost:4321/api',
 }
 
-const devCommand = 'pnpm exec vite --port 4320 --strictPort'
-const buildCommand = 'pnpm exec vite build && pnpm exec vite preview --port 4320 --strictPort'
+const devCommand = `pnpm exec vite --port ${uiPort} --strictPort`
+const buildCommand = `pnpm exec vite build && pnpm exec vite preview --port ${uiPort} --strictPort`
 
 export default defineConfig({
   testDir: './visual',
@@ -59,7 +67,7 @@ export default defineConfig({
   },
 
   use: {
-    baseURL: 'http://localhost:4320',
+    baseURL: uiOrigin,
     browserName: 'chromium',
     // Chromium re-rasterises only the tiles it thinks are dirty, across several
     // raster threads, with runtime-selected Skia paths. That makes the
@@ -110,7 +118,7 @@ export default defineConfig({
 
   webServer: {
     command: useProductionBuild ? buildCommand : devCommand,
-    url: 'http://localhost:4320',
+    url: uiOrigin,
     env: serverEnv,
     reuseExistingServer: !process.env.CI && !useProductionBuild,
     stdout: 'ignore',
