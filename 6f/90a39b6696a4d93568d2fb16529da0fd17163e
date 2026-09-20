@@ -1,0 +1,21 @@
+apps/ui/src/visual-gallery/sections/tokens.tsx
+  s_98c1f7bc58c094::t_df2f60099f94b8 67-72,226-242
+docs/stylex-migration/pr-00.md
+  s_98c1f7bc58c094::t_74c008dd98635f 128-161
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "6f90a39b6696a4d93568d2fb16529da0fd17163e",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
