@@ -107,6 +107,13 @@ const styles = stylex.create({
   element uses. Inspect the built CSS whenever a PR adds token-like strings **or a new
   computed-style snapshot**, and reword — or stop dumping — whatever leaks. Files outside
   `apps/ui` (this directory included) are not scanned.
+- **One shape cannot be reworded away: a CSS _keyword_ the migration has to emit that is also a
+  utility name.** PR 09's accordion animation is `ease-out`, and Chrome does not serialise the
+  equivalent `cubic-bezier()` back to the keyword (measured), so both the component and the JSON
+  snapshot of its computed value must contain the literal string. The build gains an `.ease-out`
+  rule no element renders **and** an `--ease-out` entry in the `:root` token block. Accept it,
+  measure that it changes no pixel, and say so in the PR notes — the alternative is either losing
+  the value or losing the coverage.
 
 ## Selector mapping (all verified to compile)
 
@@ -148,6 +155,12 @@ const styles = stylex.create({
 | `@md/name:x`                               | `'@container name (min-width: 28rem)'` — compiles; worth +300 priority and a doubled class selector                                                              |
 | `[&>tr]:last:x`                            | `':is(*)>tr:last-child'` — the `last:` variant applies first, then the arbitrary selector                                                                        |
 | `data-horizontal:` / `data-vertical:`      | `':is([data-orientation="horizontal"])'` / `':is([data-orientation="vertical"])'` — `shadcn/tailwind.css` custom variants (`&:where(…)`)                         |
+| `data-active:x`                            | `':is([data-state="active"])'` — the same custom-variant family; Radix never writes the `data-active` arm                                                        |
+| `not-last:x`                               | `':not(:last-child)'`                                                                                                                                            |
+| `aria-[orientation=vertical]:x`            | `':is([aria-orientation="vertical"])'` — an arbitrary variant, so a plain attribute selector on the element itself                                               |
+| `**:data-[slot=x]:y`                       | `':is(*) [data-slot="x"]'`, or the declaration moved onto the element when the file renders it                                                                   |
+| `[&[attr]>div]:x`                          | `':is([attr])>div'` on the parent                                                                                                                                |
+| `after:x` / `before:x`                     | a `'::after'` / `'::before'` **top-level key**, with `content: '""'` — see "`after:` always writes `content`" below                                              |
 
 Nested conditions are allowed (`':is(.dark *)': { default: …, '@media (hover: hover)': { ':hover': … } }`);
 `default` is mandatory at every level. Descendant keys are a compiler pass-through hack: keep
@@ -235,6 +248,14 @@ lightningcss folds it to five decimals and moves the addon's _own_ line box off 
 **So the rule has an exception:** if the element has (or a caller can give it) a descendant with a
 different font size and no line height of its own, the paired `text-*` **stays a Tailwind class**.
 Check the call sites before converting a `text-*` on a container.
+
+_PR 09 hit it four times_ — `TabsTrigger`, `TabsContent`, `AccordionTrigger` and the accordion
+body — and its **first probe missed it**. A `Button size="sm"` inside those containers inherits the
+line height and changes nothing a screenshot can see, because a button has a fixed height. The
+probe has to sit where the inherited line box actually **sizes a box**: a ten-pixel span in a
+vertical tab trigger (content-sized) moved it from `20.2812px` to `26px`, and the same span in an
+accordion trigger from `38px` to `42px`. Write the probe case that way before concluding that a
+container's `text-*` is safe to convert.
 
 ### `py-*`/`px-*` are logical, `pt-*`/`pr-*`/`pb-*`/`pl-*` are physical
 
@@ -392,6 +413,42 @@ and fills the unused slots with `0 0 #0000`. Writing the no-op slots out keeps t
   '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent), 0 0 #0000',
 ```
 
+### `after:` always writes `content`, and where it writes it decides whether the pseudo exists
+
+_Found in [PR 09](pr-09.md)._
+
+Tailwind's `before:`/`after:` variants emit `content: var(--tw-content)` in **every** rule they
+generate, and `--tw-content` is registered with an initial value of `""`. So an element with any
+`after:*` utility always has a generated `::after` — the tab indicator and the resize handle's hit
+area both do. But an `after:*` that appears only behind another variant generates the pseudo-element
+only in that state: the accordion trigger's `focus-visible:after:border-ring` brings a zero-width
+flex item into a `justify-between` row while the trigger is focused, and nothing at all otherwise.
+Reproduce whichever shape the file has:
+
+```ts
+'::after': {
+  content: '""',                                        // always generated
+  content: { default: null, ':focus-visible': '""' },   // only while focused
+},
+```
+
+A pseudo-element is a **top-level key** in the style object, and conditions nest _inside_ it:
+StyleX emits the pseudo-class before the pseudo-element, so `{ ':focus-visible': … }` inside
+`'::after'` compiles to `.x:focus-visible::after`. Verified against `::after` computed-style dumps,
+which `getComputedStyle(el, '::after')` makes snapshottable — and which return the _originating
+element's_ style when the pseudo-element does not exist, so `content: none` is how a dump says "not
+generated".
+
+### `data-active:` and its family cost a specificity point
+
+_Found in [PR 09](pr-09.md)._
+
+The `shadcn/tailwind.css` custom variants wrap their selector in `:where()`, which contributes
+nothing: `data-active:bg-background` is `.x:where([data-state="active"])`, i.e. (0,1,0), while an
+ordinary `group-data-[…]:` rule next to it is (0,2,0). In `tabs.tsx` that means a trigger inside a
+`line` list is transparent **whether it is active or not** — the active rule never gets a turn.
+Read the specificity, not the variant name.
+
 ## A rule that styles a foreign element stays Tailwind
 
 _Established in [PR 04](pr-04.md)._
@@ -503,6 +560,12 @@ New cases for an already-covered component go in a **new sibling section** (PR 0
 `src/visual-gallery/sections/index.ts` and in `SECTIONS` in `visual/gallery.spec.ts`, capture
 its originals with `visual:update` **before** touching the component, and commit those
 originals in the same PR.
+
+**Copy the migrated components to a scratch directory before capturing.** The procedure ends in
+`git checkout HEAD -- apps/ui/src/components`, which restores them to `HEAD` — and `HEAD` does not
+contain the row being written, so an uncommitted migration is destroyed without warning. PR 09 lost
+two rounds of work to it. Restore from the copy, not from git, and only put the frozen tree in
+place once the copy exists.
 
 A new `computed-styles.spec.ts` snapshot has no such constraint: it is a new test name, so it
 only ever creates new originals. Reading an existing gallery section for a new computed-style

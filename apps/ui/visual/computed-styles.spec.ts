@@ -1086,3 +1086,175 @@ for (const theme of THEMES) {
     )
   })
 }
+
+/**
+ * Tabs, accordion, collapsible, scroll area and resizable (PR 09).
+ *
+ * Four of these five are built almost entirely out of state selectors, and
+ * three of them own a generated `::after` that a pixel comparison can only see
+ * where it happens to paint. So the pseudo-element is dumped next to its host,
+ * and the animation longhands come along for the accordion body, whose two
+ * keyframes are the only ones in this row.
+ *
+ * The property names below are deliberately spelled as CSS properties rather
+ * than as the utilities that set them, and the values that reach the snapshot
+ * were checked against the built CSS: Tailwind's scanner reads this file and
+ * the JSON it writes, so a value that happens to be a utility name would make
+ * the build emit a rule no element renders.
+ */
+const DISCLOSURE_PROPERTIES = [
+  'display',
+  'position',
+  'box-sizing',
+  'width',
+  'height',
+  'min-height',
+  'flex',
+  'flex-direction',
+  'flex-shrink',
+  'align-items',
+  'justify-content',
+  'gap',
+  'margin-left',
+  'padding-top',
+  'padding-right',
+  'padding-bottom',
+  'padding-left',
+  'font-size',
+  'font-weight',
+  'line-height',
+  'text-align',
+  'text-decoration-line',
+  'color',
+  'background-color',
+  'border-top-width',
+  'border-right-width',
+  'border-bottom-width',
+  'border-left-width',
+  'border-top-color',
+  'border-right-color',
+  'border-bottom-color',
+  'border-left-color',
+  'border-style',
+  'border-radius',
+  'box-shadow',
+  'outline-color',
+  'outline-style',
+  'outline-width',
+  'opacity',
+  'z-index',
+  'overflow-x',
+  'overflow-y',
+  'touch-action',
+  'user-select',
+  'translate',
+  'rotate',
+  'top',
+  'right',
+  'bottom',
+  'left',
+  'content',
+  'animation-duration',
+  'animation-timing-function',
+  'animation-iteration-count',
+  'animation-direction',
+  'animation-fill-mode',
+  'transition-property',
+  'transition-duration',
+  'transition-timing-function',
+]
+
+const DISCLOSURE_SELECTOR = [
+  '[data-slot="tabs"]',
+  '[data-slot="tabs-list"]',
+  '[data-slot="tabs-trigger"]',
+  '[data-slot="tabs-content"]',
+  '[data-slot="accordion"]',
+  '[data-slot="accordion-item"]',
+  'h3',
+  '[data-slot="accordion-trigger"]',
+  '[data-slot="accordion-trigger-icon"]',
+  '[data-slot="accordion-content"]',
+  '[data-slot="accordion-content"] > div',
+  '[data-slot="collapsible"]',
+  '[data-slot="collapsible-trigger"]',
+  '[data-slot="collapsible-content"]',
+  '[data-slot="scroll-area"]',
+  '[data-slot="scroll-area-viewport"]',
+  '[data-slot="scroll-area-scrollbar"]',
+  '[data-slot="scroll-area-thumb"]',
+  '[data-slot="resizable-panel-group"]',
+  '[data-slot="resizable-panel"]',
+  '[data-slot="resizable-handle"]',
+  '[data-slot="resizable-handle"] > div',
+]
+  .map((selector) => `[data-gallery-case] ${selector}`)
+  .join(', ')
+
+/** The hosts whose `::after` carries styling of its own. */
+const DISCLOSURE_PSEUDO_HOSTS = ['tabs-trigger', 'accordion-trigger', 'resizable-handle']
+
+async function collectDisclosure(page: Page): Promise<string> {
+  const report = await page.evaluate(
+    ({ selector, properties, pseudoHosts }) => {
+      const round = (value: number) => Math.round(value * 100) / 100
+      const read = (element: Element, pseudo: string | null) => {
+        const computed = getComputedStyle(element, pseudo)
+        const styles: Record<string, string> = {}
+        for (const property of properties) {
+          styles[property] = computed.getPropertyValue(property)
+        }
+        return styles
+      }
+      return [...document.querySelectorAll(selector)].map((element) => {
+        const caseElement = element.closest('[data-gallery-case]')
+        const rect = element.getBoundingClientRect()
+        const slot = element.getAttribute('data-slot')
+        return {
+          case: caseElement?.getAttribute('data-gallery-case') ?? '',
+          tag: element.tagName.toLowerCase(),
+          slot,
+          state: element.getAttribute('data-state'),
+          orientation: element.getAttribute('data-orientation'),
+          variant: element.getAttribute('data-variant'),
+          box: {
+            width: round(rect.width),
+            height: round(rect.height),
+            top: round(rect.top),
+            left: round(rect.left),
+          },
+          styles: read(element, null),
+          after: slot && pseudoHosts.includes(slot) ? read(element, '::after') : undefined,
+        }
+      })
+    },
+    {
+      selector: DISCLOSURE_SELECTOR,
+      properties: DISCLOSURE_PROPERTIES,
+      pseudoHosts: DISCLOSURE_PSEUDO_HOSTS,
+    }
+  )
+
+  return `${JSON.stringify(report, null, 2)}\n`
+}
+
+for (const theme of THEMES) {
+  test(`computed styles gallery disclosure parts ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/disclosure', {
+      theme,
+      waitFor: '[data-gallery-section="disclosure"]',
+    })
+    await expectTextSnapshot(await collectDisclosure(page), `computed-disclosure-${theme}.json`)
+  })
+
+  test(`computed styles gallery disclosure-extra parts ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/disclosure-extra', {
+      theme,
+      waitFor: '[data-gallery-section="disclosure-extra"]',
+    })
+    await expectTextSnapshot(
+      await collectDisclosure(page),
+      `computed-disclosure-extra-${theme}.json`
+    )
+  })
+}

@@ -17,6 +17,7 @@ const SECTIONS = [
   'data-display',
   'data-display-extra',
   'disclosure',
+  'disclosure-extra',
   'feedback',
   'overlays',
   'sidebar-parts',
@@ -335,6 +336,94 @@ test.describe('interaction states', () => {
 
       await page.locator('[data-gallery-case="card-hover-target"] [data-slot="card"]').hover()
       await expectCaseShot(page, 'card-hover-target', `state-card-hover-${theme}.png`)
+    })
+
+    // `disclosure-extra` (PR 09). The tab trigger's box shadow is written by
+    // three rules that can all apply at once — the focus ring, the active
+    // shadow of a `default` list and the shadow reset of a `line` list — and
+    // Tailwind composes them through `--tw-ring-shadow` and `--tw-shadow`
+    // rather than by picking a winner, so each combination is captured. The
+    // accordion trigger's focus ring also brings a generated `::after` into its
+    // flex row, and the scroll area and the drag handle each have exactly one
+    // pointer or keyboard state.
+    test(`disclosure extra states ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'disclosure-extra', { theme })
+
+      const focusTabTrigger = async (caseName: string, index: number, snapshot: string) => {
+        const trigger = page
+          .locator(`[data-gallery-case="${caseName}"] [data-slot="tabs-trigger"]`)
+          .nth(index)
+        await trigger.focus()
+        await expectCaseShot(page, caseName, `${snapshot}-${theme}.png`)
+        await trigger.blur()
+      }
+
+      await focusTabTrigger('tabs-default-focus-target', 0, 'state-tabs-active-focus')
+      await focusTabTrigger('tabs-default-focus-target', 1, 'state-tabs-inactive-focus')
+      await focusTabTrigger('tabs-line-focus-target', 0, 'state-tabs-line-active-focus')
+      await focusTabTrigger('tabs-line-focus-target', 1, 'state-tabs-line-inactive-focus')
+
+      await page
+        .locator('[data-gallery-case="tabs-line-hover-target"] [data-slot="tabs-trigger"]')
+        .nth(1)
+        .hover()
+      await expectCaseShot(page, 'tabs-line-hover-target', `state-tabs-line-hover-${theme}.png`)
+
+      // Arrow keys move the active tab, which is the keyboard path Radix owns
+      // and the only way the `::after` indicator changes side in a vertical list.
+      const firstTab = page
+        .locator('[data-gallery-case="tabs-vertical-line"] [data-slot="tabs-trigger"]')
+        .first()
+      await firstTab.focus()
+      await page.keyboard.press('ArrowDown')
+      await settle(page)
+      await expectCaseShot(page, 'tabs-vertical-line', `state-tabs-vertical-arrow-${theme}.png`)
+
+      const accordionTrigger = page.locator(
+        '[data-gallery-case="accordion-focus-target"] [data-slot="accordion-trigger"]'
+      )
+      await accordionTrigger.focus()
+      await expectCaseShot(page, 'accordion-focus-target', `state-accordion-focus-${theme}.png`)
+      await accordionTrigger.blur()
+
+      await page
+        .locator('[data-gallery-case="accordion-hover-target"] [data-slot="accordion-trigger"]')
+        .hover()
+      await expectCaseShot(page, 'accordion-hover-target', `state-accordion-hover-${theme}.png`)
+
+      // Chromium makes a scroll container keyboard focusable on its own, which
+      // is the only way the viewport's focus ring can ever paint.
+      const viewport = page.locator(
+        '[data-gallery-case="scroll-area-focus-target"] [data-slot="scroll-area-viewport"]'
+      )
+      await viewport.focus()
+      await expectCaseShot(page, 'scroll-area-focus-target', `state-scroll-area-focus-${theme}.png`)
+      await viewport.blur()
+
+      // A wheel scroll moves the thumb, which is the one part of a scroll area
+      // whose position no static shot pins.
+      const scroller = page.locator(
+        '[data-gallery-case="scroll-area-always-vertical"] [data-slot="scroll-area-viewport"]'
+      )
+      await scroller.hover()
+      await page.mouse.wheel(0, 120)
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'scroll-area-always-vertical',
+        `state-scroll-area-scrolled-${theme}.png`
+      )
+
+      const handle = page.locator(
+        '[data-gallery-case="resizable-handle-focus-target"] [data-slot="resizable-handle"]'
+      )
+      await handle.focus()
+      await expectCaseShot(
+        page,
+        'resizable-handle-focus-target',
+        `state-resizable-handle-focus-${theme}.png`
+      )
+      await handle.blur()
     })
 
     // The StyleX canary's hover rule is nested in `@media (hover: hover)`, the

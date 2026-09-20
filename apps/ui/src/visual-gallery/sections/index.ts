@@ -6,6 +6,7 @@ import { ButtonsSection } from './buttons'
 import { CanarySection } from './canary'
 import { DataDisplayExtraSection } from './data-display-extra'
 import { DataDisplaySection } from './data-display'
+import { DisclosureExtraSection } from './disclosure-extra'
 import { DisclosureSection } from './disclosure'
 import { FeedbackSection } from './feedback'
 import { FormsExtraSection } from './forms-extra'
@@ -54,6 +55,11 @@ export const GALLERY_SECTIONS: GallerySection[] = [
     Component: DataDisplayExtraSection,
   },
   { id: 'disclosure', title: 'Disclosure and panels', Component: DisclosureSection },
+  {
+    id: 'disclosure-extra',
+    title: 'Tab states, accordion bodies, scrollbars and panel handles',
+    Component: DisclosureExtraSection,
+  },
   {
     id: 'feedback',
     title: 'Progress, skeletons, spinners, empty states and alerts',
