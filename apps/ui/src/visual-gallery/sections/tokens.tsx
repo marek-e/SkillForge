@@ -64,6 +64,12 @@ const styles = stylex.create({
     lineHeight: '1.75rem',
     color: colors.foreground,
   },
+  // Holds the bare `<select>` of `native-defaults` outside the flow and
+  // unpainted; see the comment at its use site.
+  nativeProbe: {
+    position: 'absolute',
+    visibility: 'hidden',
+  },
   // Tailwind's `transition` defaults, which no state in the gallery triggers:
   // the declarations are here so their computed values can be snapshotted.
   motionBox: {
@@ -217,10 +223,23 @@ export function TokensSection() {
               <button type="button">button</button>
               <input defaultValue="input" />
               <textarea defaultValue="textarea" />
-              <select defaultValue="one">
-                <option value="one">one</option>
-                <option value="two">two</option>
-              </select>
+              {/* The bare <select> stays a descendant of this case, because
+                  `computed-styles.spec.ts` reads it at
+                  `[data-gallery-case="native-defaults"] select` and its entry
+                  must keep the same values. It is taken out of the flow and
+                  left unpainted because Chromium rasterises its OS-drawn arrow
+                  one or two pixels differently between runs of
+                  `vite build && vite preview`, which made `gallery tokens
+                  light` flaky (recorded in pr-04.md). The wrapper sets no
+                  inherited property and the probe tracks nothing that depends
+                  on layout or paint, so the select's own computed values are
+                  unchanged. */}
+              <div {...stylex.props(styles.nativeProbe)}>
+                <select defaultValue="one">
+                  <option value="one">one</option>
+                  <option value="two">two</option>
+                </select>
+              </div>
               <a href="#native-defaults">anchor</a>
               <hr />
               <h1>h1</h1>
