@@ -1,0 +1,23 @@
+apps/ui/playwright.config.ts
+  s_98c1f7bc58c094::t_6dcd02bb5f3c31 18-25,31-32,70,121
+apps/ui/visual/electron.spec.ts
+  s_98c1f7bc58c094::t_6d55b6a1fb2d02 80
+docs/visual-testing.md
+  s_98c1f7bc58c094::t_578973ea173885 15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "a5d5212f27118db00c8aae098bd5c7ef670d4f38",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
