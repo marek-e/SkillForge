@@ -4,7 +4,9 @@ import {
   freezeAnimationsAt,
   gotoRoute,
   installAnimationFreeze,
+  settle,
   THEMES,
+  waitForAnimationsToFinish,
 } from './helpers'
 
 /**
@@ -1257,4 +1259,243 @@ for (const theme of THEMES) {
       `computed-disclosure-extra-${theme}.json`
     )
   })
+}
+
+/**
+ * Dialog and alert dialog (PR 10).
+ *
+ * Both live in a portal and only exist while open, so each case is opened,
+ * dumped and dismissed in turn and the results are concatenated into one
+ * snapshot per section. The alert dialog's header, footer, media and title are
+ * a grid whose rows, columns and alignment are picked by three conditions at
+ * once — `data-size`, the presence of a media slot and the 40rem breakpoint —
+ * and a screenshot at one viewport can only ever show one corner of that.
+ *
+ * As in the disclosure dump, the property names are spelled as CSS properties
+ * and the values that land in the JSON were checked against the built CSS:
+ * Tailwind's scanner reads this file and the originals it writes, so a value
+ * that happens to spell a utility keeps that utility alive. Two do —
+ * `isolation: isolate` and `overflow-y: hidden` — and both name rules the app
+ * renders elsewhere, so nothing new is emitted; see `pr-10.md`.
+ */
+const DIALOG_PROPERTIES = [
+  'display',
+  'position',
+  'box-sizing',
+  'width',
+  'height',
+  'max-width',
+  'margin-top',
+  'margin-right',
+  'margin-bottom',
+  'margin-left',
+  'padding-top',
+  'padding-right',
+  'padding-bottom',
+  'padding-left',
+  'row-gap',
+  'column-gap',
+  'grid-template-rows',
+  'grid-template-columns',
+  'grid-row-start',
+  'grid-row-end',
+  'grid-column-start',
+  'align-items',
+  'justify-items',
+  'justify-content',
+  'flex-direction',
+  'flex-shrink',
+  'font-size',
+  'font-weight',
+  'line-height',
+  'text-align',
+  'text-wrap-mode',
+  'text-wrap-style',
+  'color',
+  'background-color',
+  'border-top-width',
+  'border-top-style',
+  'border-top-color',
+  'border-radius',
+  'box-shadow',
+  'outline-style',
+  'outline-width',
+  'opacity',
+  'z-index',
+  'isolation',
+  'overflow-x',
+  'overflow-y',
+  'backdrop-filter',
+  'translate',
+  'transform',
+  'animation-duration',
+  'animation-timing-function',
+  'animation-delay',
+  'animation-iteration-count',
+  'animation-direction',
+  'animation-fill-mode',
+  'transition-property',
+  'transition-duration',
+  'transition-timing-function',
+  'pointer-events',
+]
+
+const DIALOG_SELECTOR = [
+  '[data-slot="dialog-overlay"]',
+  '[data-slot="dialog-content"]',
+  '[data-slot="dialog-content"] > button',
+  '[data-slot="dialog-header"]',
+  '[data-slot="dialog-footer"]',
+  '[data-slot="dialog-title"]',
+  '[data-slot="dialog-description"]',
+  '[data-slot="dialog-title"] span',
+  '[data-slot="dialog-description"] span',
+  '[data-slot="alert-dialog-overlay"]',
+  '[data-slot="alert-dialog-content"]',
+  '[data-slot="alert-dialog-header"]',
+  '[data-slot="alert-dialog-footer"]',
+  '[data-slot="alert-dialog-media"]',
+  '[data-slot="alert-dialog-media"] svg',
+  '[data-slot="alert-dialog-title"]',
+  '[data-slot="alert-dialog-description"]',
+  '[data-slot="alert-dialog-title"] span',
+  '[data-slot="alert-dialog-description"] span',
+  '[data-slot="alert-dialog-action"]',
+  '[data-slot="alert-dialog-cancel"]',
+].join(', ')
+
+interface DialogCase {
+  /** Label written into the snapshot. */
+  id: string
+  /** Selector for the gallery button that opens it. */
+  trigger: string
+  /** Selector that must be visible once it is open. */
+  content: string
+}
+
+const DIALOG_CASES: Record<string, DialogCase[]> = {
+  overlays: [
+    {
+      id: 'dialog',
+      trigger: '[data-gallery-case="dialog-trigger"] button',
+      content: '[data-slot="dialog-content"]',
+    },
+    {
+      id: 'alert-dialog',
+      trigger: '[data-gallery-case="alert-dialog-trigger"] button',
+      content: '[data-slot="alert-dialog-content"]',
+    },
+    {
+      id: 'alert-dialog-sm',
+      trigger: '[data-gallery-case="alert-dialog-sm-trigger"] button',
+      content: '[data-slot="alert-dialog-content"]',
+    },
+  ],
+  'overlays-extra': [
+    {
+      id: 'dialog-no-close',
+      trigger: '[data-gallery-case="dialog-no-close-trigger"] button',
+      content: '[data-slot="dialog-content"]',
+    },
+    {
+      id: 'dialog-footer-close',
+      trigger: '[data-gallery-case="dialog-footer-close-trigger"] button',
+      content: '[data-slot="dialog-content"]',
+    },
+    {
+      id: 'dialog-wide-child',
+      trigger: '[data-gallery-case="dialog-wide-child-trigger"] button',
+      content: '[data-slot="dialog-content"]',
+    },
+    {
+      id: 'dialog-inherited-leading',
+      trigger: '[data-gallery-case="dialog-inherited-leading-trigger"] button',
+      content: '[data-slot="dialog-content"]',
+    },
+    {
+      id: 'command-dialog',
+      trigger: '[data-gallery-case="command-dialog-trigger"] button',
+      content: '[data-slot="dialog-content"]',
+    },
+    {
+      id: 'alert-dialog-default-no-media',
+      trigger: '[data-gallery-case="alert-dialog-default-no-media-trigger"] button',
+      content: '[data-slot="alert-dialog-content"]',
+    },
+    {
+      id: 'alert-dialog-sm-media',
+      trigger: '[data-gallery-case="alert-dialog-sm-media-trigger"] button',
+      content: '[data-slot="alert-dialog-content"]',
+    },
+    {
+      id: 'alert-dialog-small-actions',
+      trigger: '[data-gallery-case="alert-dialog-small-actions-trigger"] button',
+      content: '[data-slot="alert-dialog-content"]',
+    },
+    {
+      id: 'alert-dialog-inherited-leading',
+      trigger: '[data-gallery-case="alert-dialog-inherited-leading-trigger"] button',
+      content: '[data-slot="alert-dialog-content"]',
+    },
+  ],
+}
+
+async function collectOpenDialog(page: Page, id: string): Promise<unknown[]> {
+  return page.evaluate(
+    ({ id, selector, properties }) => {
+      const round = (value: number) => Math.round(value * 100) / 100
+      return [...document.querySelectorAll(selector)].map((element) => {
+        const rect = element.getBoundingClientRect()
+        const computed = getComputedStyle(element)
+        const styles: Record<string, string> = {}
+        for (const property of properties) {
+          styles[property] = computed.getPropertyValue(property)
+        }
+        return {
+          case: id,
+          tag: element.tagName.toLowerCase(),
+          slot: element.getAttribute('data-slot'),
+          size: element.getAttribute('data-size'),
+          state: element.getAttribute('data-state'),
+          box: {
+            width: round(rect.width),
+            height: round(rect.height),
+            top: round(rect.top),
+            left: round(rect.left),
+          },
+          styles,
+        }
+      })
+    },
+    { id, selector: DIALOG_SELECTOR, properties: DIALOG_PROPERTIES }
+  )
+}
+
+for (const [section, cases] of Object.entries(DIALOG_CASES)) {
+  for (const theme of THEMES) {
+    test(`computed styles gallery ${section} dialogs ${theme}`, async ({ page }) => {
+      await gotoRoute(page, `/__gallery/${section}`, {
+        theme,
+        waitFor: `[data-gallery-section="${section}"]`,
+      })
+
+      const report: unknown[] = []
+      for (const dialog of cases) {
+        await page.locator(dialog.trigger).first().click()
+        await page.locator(dialog.content).first().waitFor({ state: 'visible' })
+        await settle(page)
+        // The 100ms enter animation is still running when `settle` returns, and
+        // a dump taken inside it records a fractional opacity and a scale matrix.
+        await waitForAnimationsToFinish(page)
+        report.push(...(await collectOpenDialog(page, dialog.id)))
+        await page.keyboard.press('Escape')
+        await page.locator(dialog.content).first().waitFor({ state: 'detached' })
+      }
+
+      await expectTextSnapshot(
+        `${JSON.stringify(report, null, 2)}\n`,
+        `computed-${section}-dialogs-${theme}.json`
+      )
+    })
+  }
 }

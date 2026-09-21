@@ -238,3 +238,135 @@ test.describe('route overlays', () => {
     })
   }
 })
+
+/**
+ * The dialog and alert-dialog branches that live in the `overlays-extra`
+ * section (PR 10).
+ *
+ * Same open-and-capture shape as `OVERLAY_CASES` above, on the sibling
+ * section. `command-dialog` has no trigger inside the overlay tree: it is a
+ * controlled dialog opened by a plain button, which is exactly the call site
+ * that overrides half of the content's `translate`.
+ */
+const OVERLAY_EXTRA_CASES: OverlayCase[] = [
+  {
+    id: 'dialog-no-close',
+    trigger: '[data-gallery-case="dialog-no-close-trigger"] button',
+    content: '[data-slot="dialog-content"]',
+  },
+  {
+    id: 'dialog-footer-close',
+    trigger: '[data-gallery-case="dialog-footer-close-trigger"] button',
+    content: '[data-slot="dialog-content"]',
+  },
+  {
+    id: 'dialog-tall',
+    trigger: '[data-gallery-case="dialog-tall-trigger"] button',
+    content: '[data-slot="dialog-content"]',
+  },
+  {
+    id: 'dialog-wide-child',
+    trigger: '[data-gallery-case="dialog-wide-child-trigger"] button',
+    content: '[data-slot="dialog-content"]',
+  },
+  {
+    id: 'dialog-nested-select',
+    trigger: '[data-gallery-case="dialog-nested-select-trigger"] button',
+    content: '[data-slot="dialog-content"]',
+  },
+  {
+    id: 'dialog-inherited-leading',
+    trigger: '[data-gallery-case="dialog-inherited-leading-trigger"] button',
+    content: '[data-slot="dialog-content"]',
+  },
+  {
+    id: 'command-dialog',
+    trigger: '[data-gallery-case="command-dialog-trigger"] button',
+    content: '[data-slot="dialog-content"]',
+  },
+  {
+    id: 'alert-dialog-default-no-media',
+    trigger: '[data-gallery-case="alert-dialog-default-no-media-trigger"] button',
+    content: '[data-slot="alert-dialog-content"]',
+  },
+  {
+    id: 'alert-dialog-sm-media',
+    trigger: '[data-gallery-case="alert-dialog-sm-media-trigger"] button',
+    content: '[data-slot="alert-dialog-content"]',
+  },
+  {
+    id: 'alert-dialog-small-actions',
+    trigger: '[data-gallery-case="alert-dialog-small-actions-trigger"] button',
+    content: '[data-slot="alert-dialog-content"]',
+  },
+  {
+    id: 'alert-dialog-inherited-leading',
+    trigger: '[data-gallery-case="alert-dialog-inherited-leading-trigger"] button',
+    content: '[data-slot="alert-dialog-content"]',
+  },
+]
+
+for (const overlay of OVERLAY_EXTRA_CASES) {
+  for (const theme of THEMES) {
+    test(`overlay ${overlay.id} ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'overlays-extra', { theme })
+      await open(page, overlay)
+      await expectShot(page, `overlay-${overlay.id}-${theme}.png`, { fullPage: true })
+    })
+  }
+}
+
+test.describe('dialog interaction states', () => {
+  for (const theme of THEMES) {
+    test(`dialog close button ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'overlays', { theme })
+      await page.locator('[data-gallery-case="dialog-trigger"] button').click()
+      await page.locator('[data-slot="dialog-content"]').waitFor({ state: 'visible' })
+      await settle(page)
+
+      // `DialogPrimitive.Close asChild` hands its props to a `Button`, whose own
+      // `data-slot` wins the merge, so the corner button is addressed by position.
+      const close = page.locator('[data-slot="dialog-content"] > button')
+      await close.focus()
+      await expectShot(page, `state-dialog-close-focus-${theme}.png`, { fullPage: true })
+
+      await close.hover()
+      await expectShot(page, `state-dialog-close-hover-${theme}.png`, { fullPage: true })
+    })
+
+    test(`dialog footer close button ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'overlays-extra', { theme })
+      await page.locator('[data-gallery-case="dialog-footer-close-trigger"] button').click()
+      await page.locator('[data-slot="dialog-footer"]').waitFor({ state: 'visible' })
+      await settle(page)
+
+      await page.locator('[data-slot="dialog-footer"] button').last().focus()
+      await expectShot(page, `state-dialog-footer-close-focus-${theme}.png`, { fullPage: true })
+    })
+
+    test(`alert dialog action focus ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'overlays-extra', { theme })
+      await page.locator('[data-gallery-case="alert-dialog-sm-media-trigger"] button').click()
+      await page.locator('[data-slot="alert-dialog-content"]').waitFor({ state: 'visible' })
+      await settle(page)
+
+      await page.locator('[data-slot="alert-dialog-action"]').focus()
+      await expectShot(page, `state-alert-dialog-action-focus-${theme}.png`, { fullPage: true })
+
+      await page.locator('[data-slot="alert-dialog-cancel"]').focus()
+      await expectShot(page, `state-alert-dialog-cancel-focus-${theme}.png`, { fullPage: true })
+    })
+
+    test(`dialog nested select open ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'overlays-extra', { theme })
+      await page.locator('[data-gallery-case="dialog-nested-select-trigger"] button').click()
+      await page.locator('[data-slot="dialog-content"]').waitFor({ state: 'visible' })
+      await settle(page)
+
+      await page.locator('[data-slot="select-trigger"]').click()
+      await page.locator('[data-slot="select-content"]').waitFor({ state: 'visible' })
+      await settle(page)
+      await expectShot(page, `state-dialog-nested-select-${theme}.png`, { fullPage: true })
+    })
+  }
+})

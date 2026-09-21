@@ -4,7 +4,9 @@ import {
   freezeAnimationsAt,
   gotoGallery,
   installAnimationFreeze,
+  settle,
   THEMES,
+  waitForAnimationsToFinish,
 } from './helpers'
 
 /**
@@ -129,6 +131,68 @@ for (const loop of LOOP_CASES) {
             animations: 'allow',
           }
         )
+      }
+    })
+  }
+}
+
+/**
+ * The exit half of the two dialog animations (PR 10).
+ *
+ * The exit `@keyframes` is a separate one from the enter pair and reads a
+ * separate set of variables, so nothing above covers it: every case there
+ * captures a panel on its way *in*. The freeze is installed after the enter
+ * animation has finished rather than before it starts, so these frames begin
+ * from a settled panel; `animation-play-state: paused` also keeps the element
+ * mounted, because Radix removes it on `animationend`.
+ */
+const EXIT_CASES: AnimationCase[] = [
+  {
+    id: 'dialog-close',
+    trigger: '[data-gallery-case="dialog-trigger"] button',
+    content: '[data-slot="dialog-content"]',
+  },
+  {
+    id: 'alert-dialog-close',
+    trigger: '[data-gallery-case="alert-dialog-trigger"] button',
+    content: '[data-slot="alert-dialog-content"]',
+  },
+]
+
+for (const animation of EXIT_CASES) {
+  for (const theme of THEMES) {
+    test(`animation ${animation.id} ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'overlays', { theme })
+
+      await page.locator(animation.trigger).first().click()
+      await page.locator(animation.content).first().waitFor({ state: 'visible' })
+      await settle(page)
+      // The enter animation has to be over before the freeze goes in, or these
+      // frames start from a half-faded panel.
+      await waitForAnimationsToFinish(page)
+
+      await installAnimationFreeze(page)
+      await page.keyboard.press('Escape')
+      await page
+        .locator(`${animation.content}[data-state="closed"]`)
+        .first()
+        .waitFor({ state: 'attached' })
+      // Radix keeps focus on the first button inside the panel for as long as
+      // the panel is mounted, and the freeze keeps it mounted, so these frames
+      // are taken with a focused — but, after a mouse-opened panel, not
+      // focus-*visible* — button in them. One desktop frame out of twelve full
+      // runs, on a cold server, came out with Chromium having promoted that
+      // button to `:focus-visible` after the Escape keydown; see the flake note
+      // in `docs/stylex-migration/pr-10.md`. Neither clearing the focus nor
+      // dispatching an untrusted keydown fixes it — both change the frozen
+      // frames — so the sequence is left exactly as the originals were
+      // captured.
+      for (const frame of FRAMES) {
+        await freezeAnimationsAt(page, frame)
+        await expectShot(page, `animation-${animation.id}-${theme}-${frame}ms.png`, {
+          fullPage: true,
+          animations: 'allow',
+        })
       }
     })
   }

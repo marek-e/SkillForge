@@ -20,6 +20,7 @@ const SECTIONS = [
   'disclosure-extra',
   'feedback',
   'overlays',
+  'overlays-extra',
   'sidebar-parts',
   'app',
   'app-dialogs',

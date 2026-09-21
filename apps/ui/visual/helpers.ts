@@ -340,3 +340,26 @@ export async function emulateNoHover(page: Page): Promise<void> {
   const session = await page.context().newCDPSession(page)
   await session.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 })
 }
+
+/**
+ * Waits until every finite animation on the page has finished.
+ *
+ * `settle` covers network, fonts and one frame, but a CSS animation started by
+ * an overlay opening is still running at that point: the dialog enter animation
+ * lasts 100ms, and a computed-style dump taken inside it records a fractional
+ * opacity and a scale matrix that move by a thousandth from run to run.
+ * Infinite animations — the skeleton pulse, the spinner — are skipped, because
+ * they never finish; `installAnimationFreeze` and `freezeAnimationsAt` are what
+ * pins those.
+ */
+export async function waitForAnimationsToFinish(page: Page): Promise<void> {
+  await page.evaluate(async () => {
+    const finite = document.getAnimations().filter((animation) => {
+      const timing = animation.effect?.getComputedTiming()
+      if (!timing) return false
+      return timing.iterations !== Infinity && Number.isFinite(Number(timing.endTime))
+    })
+    await Promise.all(finite.map((animation) => animation.finished.catch(() => undefined)))
+  })
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => resolve(null))))
+}

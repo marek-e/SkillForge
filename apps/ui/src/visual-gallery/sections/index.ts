@@ -12,6 +12,7 @@ import { FeedbackSection } from './feedback'
 import { FormsExtraSection } from './forms-extra'
 import { FormsSection } from './forms'
 import { FormsTogglesSection } from './forms-toggles'
+import { OverlaysExtraSection } from './overlays-extra'
 import { OverlaysSection } from './overlays'
 import { SidebarPartsSection } from './sidebar-parts'
 import { TokensSection } from './tokens'
@@ -66,6 +67,11 @@ export const GALLERY_SECTIONS: GallerySection[] = [
     Component: FeedbackSection,
   },
   { id: 'overlays', title: 'Overlays and portals', Component: OverlaysSection },
+  {
+    id: 'overlays-extra',
+    title: 'Dialog shape, alert-dialog matrix and nested overlays',
+    Component: OverlaysExtraSection,
+  },
   { id: 'sidebar-parts', title: 'Sidebar primitives', Component: SidebarPartsSection },
   { id: 'app', title: 'Application components', Component: AppSection },
   { id: 'app-dialogs', title: 'Application dialogs', Component: AppDialogsSection },
