@@ -14,6 +14,7 @@ import { FormsSection } from './forms'
 import { FormsTogglesSection } from './forms-toggles'
 import { OverlaysExtraSection } from './overlays-extra'
 import { OverlaysSection } from './overlays'
+import { OverlaysSheetDrawerSection } from './overlays-sheet-drawer'
 import { SidebarPartsSection } from './sidebar-parts'
 import { TokensSection } from './tokens'
 import { TypographyExtraSection } from './typography-extra'
@@ -77,4 +78,9 @@ export const GALLERY_SECTIONS: GallerySection[] = [
   { id: 'app-dialogs', title: 'Application dialogs', Component: AppDialogsSection },
   { id: 'canary', title: 'StyleX canary', Component: CanarySection },
   { id: 'tokens', title: 'Theme tokens and native defaults', Component: TokensSection },
+  {
+    id: 'overlays-sheet-drawer',
+    title: 'Sheet and drawer edges, bare close and overflow',
+    Component: OverlaysSheetDrawerSection,
+  },
 ]

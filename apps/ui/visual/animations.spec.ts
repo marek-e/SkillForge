@@ -197,3 +197,34 @@ for (const animation of EXIT_CASES) {
     })
   }
 }
+
+/**
+ * The sheet's enter curve, one frame past its end (PR 11).
+ *
+ * `SheetContent` runs `enter` for 200 ms with `ease-in-out`, so the 0/100/200
+ * frames above only prove the first half of the migration: they never show what
+ * the element settles on once the animation is over. 300 ms does, and the extra
+ * frame is what distinguishes a 200 ms run from a longer one that happens to
+ * pass through the same three points.
+ */
+const SHEET_FRAMES = [0, 100, 200, 300]
+
+test.describe('sheet enter frames', () => {
+  for (const theme of THEMES) {
+    test(`sheet right open settled ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'overlays-sheet-drawer', { theme })
+      await installAnimationFreeze(page)
+
+      await page.locator('[data-gallery-case="sheet-right-no-close-trigger"] button').click()
+      await page.locator('[data-slot="sheet-content"]').first().waitFor({ state: 'attached' })
+
+      for (const frame of SHEET_FRAMES) {
+        await freezeAnimationsAt(page, frame)
+        await expectShot(page, `animation-sheet-right-settled-${theme}-${frame}ms.png`, {
+          fullPage: true,
+          animations: 'allow',
+        })
+      }
+    })
+  }
+})

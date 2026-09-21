@@ -370,3 +370,64 @@ test.describe('dialog interaction states', () => {
     })
   }
 })
+
+/**
+ * Sheet and drawer states the list above does not reach (PR 11).
+ *
+ * The four sheet sides and the bottom/right drawer are already covered; these
+ * add the left and top drawer directions, a sheet without its close button and
+ * a body taller than the viewport. Full-page captures, because the content is
+ * portalled to `document.body` and the overlay covers the whole viewport.
+ */
+test.describe('sheet and drawer edges', () => {
+  const EXTRA_CASES: OverlayCase[] = [
+    {
+      id: 'sheet-right-no-close',
+      trigger: '[data-gallery-case="sheet-right-no-close-trigger"] button',
+      content: '[data-slot="sheet-content"]',
+    },
+    {
+      id: 'sheet-left-no-close',
+      trigger: '[data-gallery-case="sheet-left-no-close-trigger"] button',
+      content: '[data-slot="sheet-content"]',
+    },
+    {
+      id: 'sheet-right-long',
+      trigger: '[data-gallery-case="sheet-right-long-trigger"] button',
+      content: '[data-slot="sheet-content"]',
+    },
+    {
+      id: 'sheet-bottom-long',
+      trigger: '[data-gallery-case="sheet-bottom-long-trigger"] button',
+      content: '[data-slot="sheet-content"]',
+    },
+    {
+      id: 'drawer-left',
+      trigger: '[data-gallery-case="drawer-left-trigger"] button',
+      content: '[data-slot="drawer-content"]',
+      jsMotion: true,
+    },
+    {
+      id: 'drawer-top',
+      trigger: '[data-gallery-case="drawer-top-trigger"] button',
+      content: '[data-slot="drawer-content"]',
+      jsMotion: true,
+    },
+    {
+      id: 'drawer-bottom-long',
+      trigger: '[data-gallery-case="drawer-bottom-long-trigger"] button',
+      content: '[data-slot="drawer-content"]',
+      jsMotion: true,
+    },
+  ]
+
+  for (const overlay of EXTRA_CASES) {
+    for (const theme of THEMES) {
+      test(`overlay ${overlay.id} ${theme}`, async ({ page }) => {
+        await gotoGallery(page, 'overlays-sheet-drawer', { theme })
+        await open(page, overlay)
+        await expectShot(page, `overlay-${overlay.id}-${theme}.png`, { fullPage: true })
+      })
+    }
+  }
+})

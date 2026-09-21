@@ -26,6 +26,7 @@ const SECTIONS = [
   'app-dialogs',
   'canary',
   'tokens',
+  'overlays-sheet-drawer',
 ] as const
 
 const BUTTON_VARIANTS = ['default', 'outline', 'secondary', 'ghost', 'destructive', 'link'] as const
