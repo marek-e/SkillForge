@@ -1,0 +1,71 @@
+apps/ui/playwright.config.ts
+  s_98c1f7bc58c094::t_6dcd02bb5f3c31 18-25,31-32,70,121
+apps/ui/visual/electron.spec.ts
+  s_98c1f7bc58c094::t_6d55b6a1fb2d02 80
+docs/visual-testing.md
+  s_98c1f7bc58c094::t_578973ea173885 15
+docs/stylex-migration/pr-12.md
+  s_98c1f7bc58c094::t_7bf3ff08d10e21 132-150
+  s_98c1f7bc58c094::t_d5d50d1aceb197 193-195
+  s_98c1f7bc58c094::t_4898ffe99ed1e7 1-131,151-184,188-192,196-220
+  s_98c1f7bc58c094::t_f39e4a4b4ff5ea 185-187
+  s_98c1f7bc58c094::t_c0de36924cdb65 221-226
+apps/ui/src/visual-gallery/sections/floating-extra.tsx
+  s_98c1f7bc58c094::t_295a68080a6cca 1-194
+apps/ui/src/components/ui/hover-card.tsx
+  s_98c1f7bc58c094::t_aba00092625860 2,5,8-138,149,154-155,162-163
+apps/ui/src/components/ui/popover.tsx
+  s_98c1f7bc58c094::t_ed0cc4f49d8a9a 2,5,8-206,217,222-223,230-231,242-244,248-249,255-265,268-270,274-275
+apps/ui/src/components/ui/tooltip.tsx
+  s_98c1f7bc58c094::t_d99c3c4ed6622f 2,5,8-169,193,198-199,205-206,210
+apps/ui/src/visual-gallery/sections/index.ts
+  s_98c1f7bc58c094::t_460a70336fc94f 12,87-91
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-floating-hover-card-dark.json
+  s_98c1f7bc58c094::t_2605440886db9d 1-51
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-floating-hover-card-light.json
+  s_98c1f7bc58c094::t_83a16dc6601724 1-51
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-floating-popover-dark.json
+  s_98c1f7bc58c094::t_7457fe3425eb62 1-198
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-floating-popover-light.json
+  s_98c1f7bc58c094::t_743484be54e490 1-198
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-floating-tooltip-dark.json
+  s_98c1f7bc58c094::t_97d8da65436938 1-100
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-floating-tooltip-light.json
+  s_98c1f7bc58c094::t_4a35f6d5ad3884 1-100
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-floating-hover-card-dark.json
+  s_98c1f7bc58c094::t_c5f408529884de 1-51
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-floating-hover-card-light.json
+  s_98c1f7bc58c094::t_6e19cf3a328c93 1-51
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-floating-popover-dark.json
+  s_98c1f7bc58c094::t_defb96d917949e 1-198
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-floating-popover-light.json
+  s_98c1f7bc58c094::t_b35cfc6662cb00 1-198
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-floating-tooltip-dark.json
+  s_98c1f7bc58c094::t_2c258e912836ce 1-100
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-floating-tooltip-light.json
+  s_98c1f7bc58c094::t_df4fb5ab794c62 1-100
+apps/ui/visual/animations.spec.ts
+  s_98c1f7bc58c094::t_c4161661b74379 138,232-319
+apps/ui/visual/computed-styles.spec.ts
+  s_98c1f7bc58c094::t_80070f5d88b8c0 1091,1503-1607
+apps/ui/visual/gallery.spec.ts
+  s_98c1f7bc58c094::t_107ad50ad5e045 30
+apps/ui/visual/overlays.spec.ts
+  s_98c1f7bc58c094::t_2e46c242a014c4 241,435-554
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c75872e25e73c8f684705aac6486f7d4c68d24e8",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
