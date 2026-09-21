@@ -1499,3 +1499,109 @@ for (const [section, cases] of Object.entries(DIALOG_CASES)) {
     })
   }
 }
+
+/**
+ * Popover, tooltip and hover-card content (PR 12).
+ *
+ * All three are portalled, so they sit outside every `[data-gallery-case]` and
+ * are selected on their own. They are also the first elements in this file that
+ * only exist while something is open, and each one is dumped with its enter
+ * animation seeked past its end, so the resting geometry is what is captured
+ * rather than a frame of the `enter` keyframes.
+ *
+ * `animation-name` is deliberately absent: `stylex.keyframes` hashes the name,
+ * which is the one computed value this migration cannot keep
+ * (`conventions.md`). The longhands around it are dumped instead, and the
+ * frames themselves are pinned by `animations.spec.ts`.
+ *
+ * `transform-origin` is here because all three contents take it from a Radix
+ * custom property that changes with the resolved side, and `box-shadow`
+ * because the popover and the hover-card compose `shadow-md` and `ring-1` into
+ * one five-slot chain that StyleX has to write out whole.
+ */
+const FLOATING_PROPERTIES = [
+  'display',
+  'position',
+  'box-sizing',
+  'width',
+  'height',
+  'max-width',
+  'min-width',
+  'flex-direction',
+  'gap',
+  'padding-top',
+  'padding-right',
+  'padding-bottom',
+  'padding-left',
+  'font-size',
+  'font-weight',
+  'line-height',
+  'color',
+  'background-color',
+  'fill',
+  'border-radius',
+  'box-shadow',
+  'outline-style',
+  'outline-width',
+  'outline-color',
+  'opacity',
+  'z-index',
+  'transform',
+  'transform-origin',
+  'rotate',
+  'translate',
+  'animation-duration',
+  'animation-timing-function',
+  'animation-iteration-count',
+  'animation-direction',
+  'animation-fill-mode',
+  'transition-duration',
+]
+
+const FLOATING_SELECTORS = {
+  popover: [
+    '[data-slot="popover-content"]',
+    '[data-slot="popover-header"]',
+    '[data-slot="popover-title"]',
+    '[data-slot="popover-description"]',
+  ].join(', '),
+  tooltip: ['[data-slot="tooltip-content"]', '[data-slot="tooltip-content"] svg'].join(', '),
+  'hover-card': '[data-slot="hover-card-content"]',
+}
+
+/** Opens a floating element and parks its enter animation past its own end. */
+async function settleFloating(page: Page, content: string): Promise<void> {
+  await page.locator(content).first().waitFor({ state: 'visible' })
+  await freezeAnimationsAt(page, 1000)
+}
+
+for (const theme of THEMES) {
+  test(`computed styles floating ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/floating-extra', {
+      theme,
+      waitFor: '[data-gallery-section="floating-extra"]',
+    })
+    await installAnimationFreeze(page)
+
+    await page.locator('[data-gallery-case="popover-side-bottom-trigger"] button').click()
+    await settleFloating(page, '[data-slot="popover-content"]')
+    await expectTextSnapshot(
+      await collectCases(page, FLOATING_SELECTORS.popover, FLOATING_PROPERTIES),
+      `computed-floating-popover-${theme}.json`
+    )
+
+    await page.locator('[data-gallery-case="tooltip-side-bottom-target"] button').hover()
+    await settleFloating(page, '[data-slot="tooltip-content"]')
+    await expectTextSnapshot(
+      await collectCases(page, FLOATING_SELECTORS.tooltip, FLOATING_PROPERTIES),
+      `computed-floating-tooltip-${theme}.json`
+    )
+
+    await page.locator('[data-gallery-case="hover-card-rich-trigger"] button').hover()
+    await settleFloating(page, '[data-slot="hover-card-content"]')
+    await expectTextSnapshot(
+      await collectCases(page, FLOATING_SELECTORS['hover-card'], FLOATING_PROPERTIES),
+      `computed-floating-hover-card-${theme}.json`
+    )
+  })
+}

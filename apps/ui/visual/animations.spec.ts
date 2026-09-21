@@ -228,3 +228,92 @@ test.describe('sheet enter frames', () => {
     })
   }
 })
+
+/**
+ * Popover and tooltip enter frames (PR 12).
+ *
+ * Both are `tw-animate-css`'s `enter` keyframes — an opacity, a scale and a
+ * per-side translate composed into one `transform` — but they run for
+ * different durations: the popover carries `duration-100`, which sets
+ * `--tw-duration`, while the tooltip has none and falls back to the 0.15s the
+ * `--animate-in` shorthand names. So 100 ms is the popover's last frame and the
+ * tooltip's two-thirds point, which is what separates a correct
+ * `animation-duration` from a plausible one.
+ *
+ * The popover case asks for `side="top"`, the tooltip for the default side, so
+ * the two translate along opposite directions as well.
+ */
+test.describe('floating frames', () => {
+  for (const theme of THEMES) {
+    test(`popover side top open ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'floating-extra', { theme })
+      await installAnimationFreeze(page)
+
+      await page.locator('[data-gallery-case="popover-side-top-trigger"] button').click()
+      await page.locator('[data-slot="popover-content"]').waitFor({ state: 'attached' })
+
+      for (const frame of FRAMES) {
+        await freezeAnimationsAt(page, frame)
+        await expectShot(page, `animation-popover-side-top-open-${theme}-${frame}ms.png`, {
+          fullPage: true,
+          animations: 'allow',
+        })
+      }
+    })
+
+    test(`tooltip open ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'floating-extra', { theme })
+      await installAnimationFreeze(page)
+
+      await page.locator('[data-gallery-case="tooltip-side-bottom-target"] button').hover()
+      await page.locator('[data-slot="tooltip-content"]').waitFor({ state: 'attached' })
+
+      for (const frame of FRAMES) {
+        await freezeAnimationsAt(page, frame)
+        await expectShot(page, `animation-tooltip-open-${theme}-${frame}ms.png`, {
+          fullPage: true,
+          animations: 'allow',
+        })
+      }
+    })
+  }
+})
+
+/**
+ * The popover's exit frames (PR 12).
+ *
+ * `data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95` is
+ * the only part of this row that nothing else reaches: the keyboard test in
+ * `overlays.spec.ts` waits for the content to detach, and a computed-style dump
+ * of an element mid-unmount is not reproducible. There is no `slide-out-to-*`
+ * class on any of the three, so the exit translate stays at zero whatever side
+ * the content resolved to — which is why one side is enough here.
+ *
+ * The freeze style is installed before the popover opens, so the enter
+ * animation never completes and Radix's `Presence` still has the element
+ * mounted when the second click flips `data-state` to `closed`.
+ */
+test.describe('floating exit frames', () => {
+  for (const theme of THEMES) {
+    test(`popover side top close ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'floating-extra', { theme })
+      await installAnimationFreeze(page)
+
+      const trigger = page.locator('[data-gallery-case="popover-side-top-trigger"] button')
+      await trigger.click()
+      await page.locator('[data-slot="popover-content"]').waitFor({ state: 'attached' })
+      await trigger.click()
+      await page
+        .locator('[data-slot="popover-content"][data-state="closed"]')
+        .waitFor({ state: 'attached' })
+
+      for (const frame of FRAMES) {
+        await freezeAnimationsAt(page, frame)
+        await expectShot(page, `animation-popover-side-top-close-${theme}-${frame}ms.png`, {
+          fullPage: true,
+          animations: 'allow',
+        })
+      }
+    })
+  }
+})

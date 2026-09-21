@@ -1,0 +1,51 @@
+[
+  {
+    "case": "",
+    "tag": "div",
+    "slot": "hover-card-content",
+    "variant": null,
+    "size": null,
+    "box": {
+      "width": 256,
+      "height": 84
+    },
+    "styles": {
+      "display": "block",
+      "position": "static",
+      "box-sizing": "border-box",
+      "width": "256px",
+      "height": "84px",
+      "max-width": "none",
+      "min-width": "0px",
+      "flex-direction": "row",
+      "gap": "normal",
+      "padding-top": "10px",
+      "padding-right": "10px",
+      "padding-bottom": "10px",
+      "padding-left": "10px",
+      "font-size": "14px",
+      "font-weight": "400",
+      "line-height": "20px",
+      "color": "oklch(0.985 0 0)",
+      "background-color": "oklch(0.205 0 0)",
+      "fill": "rgb(0, 0, 0)",
+      "border-radius": "10px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, oklab(0.985 0 0 / 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+      "outline-style": "none",
+      "outline-width": "3px",
+      "outline-color": "oklab(0.556 0 0 / 0.5)",
+      "opacity": "1",
+      "z-index": "50",
+      "transform": "none",
+      "transform-origin": "128px 84px",
+      "rotate": "none",
+      "translate": "none",
+      "animation-duration": "0.1s",
+      "animation-timing-function": "ease",
+      "animation-iteration-count": "1",
+      "animation-direction": "normal",
+      "animation-fill-mode": "none",
+      "transition-duration": "0.1s"
+    }
+  }
+]

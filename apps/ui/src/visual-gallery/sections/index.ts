@@ -9,6 +9,7 @@ import { DataDisplaySection } from './data-display'
 import { DisclosureExtraSection } from './disclosure-extra'
 import { DisclosureSection } from './disclosure'
 import { FeedbackSection } from './feedback'
+import { FloatingExtraSection } from './floating-extra'
 import { FormsExtraSection } from './forms-extra'
 import { FormsSection } from './forms'
 import { FormsTogglesSection } from './forms-toggles'
@@ -82,5 +83,10 @@ export const GALLERY_SECTIONS: GallerySection[] = [
     id: 'overlays-sheet-drawer',
     title: 'Sheet and drawer edges, bare close and overflow',
     Component: OverlaysSheetDrawerSection,
+  },
+  {
+    id: 'floating-extra',
+    title: 'Popover, tooltip and hover-card sides, collisions and keyboard',
+    Component: FloatingExtraSection,
   },
 ]

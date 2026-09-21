@@ -27,6 +27,7 @@ const SECTIONS = [
   'canary',
   'tokens',
   'overlays-sheet-drawer',
+  'floating-extra',
 ] as const
 
 const BUTTON_VARIANTS = ['default', 'outline', 'secondary', 'ghost', 'destructive', 'link'] as const

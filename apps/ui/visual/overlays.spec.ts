@@ -431,3 +431,124 @@ test.describe('sheet and drawer edges', () => {
     }
   }
 })
+
+/**
+ * Popover, tooltip and hover-card (PR 12).
+ *
+ * Each `side` is captured on its own: the four enter animations differ only in
+ * which axis they slide along, and the content's `transform-origin` comes from
+ * a Radix custom property that changes with the resolved side. The two
+ * collision cases ask for the side that has no room, so the placement flips and
+ * a *different* keyframe than the one the prop names runs.
+ *
+ * Full-page shots, because the content is portalled to `<body>` and sits
+ * outside its trigger's case element.
+ */
+const FLOATING_CASES: OverlayCase[] = [
+  ...(['top', 'right', 'bottom', 'left'] as const).flatMap((side) => [
+    {
+      id: `popover-side-${side}`,
+      trigger: `[data-gallery-case="popover-side-${side}-trigger"] button`,
+      content: '[data-slot="popover-content"]',
+    },
+    {
+      id: `tooltip-side-${side}`,
+      trigger: `[data-gallery-case="tooltip-side-${side}-target"] button`,
+      content: '[data-slot="tooltip-content"]',
+      openBy: 'hover' as const,
+    },
+  ]),
+  {
+    id: 'popover-collision-start',
+    trigger: '[data-gallery-case="popover-collision-start-trigger"] button',
+    content: '[data-slot="popover-content"]',
+  },
+  {
+    id: 'popover-collision-end',
+    trigger: '[data-gallery-case="popover-collision-end-trigger"] button',
+    content: '[data-slot="popover-content"]',
+  },
+  {
+    id: 'tooltip-long',
+    trigger: '[data-gallery-case="tooltip-long-target"] button',
+    content: '[data-slot="tooltip-content"]',
+    openBy: 'hover',
+  },
+  {
+    id: 'hover-card-side-right',
+    trigger: '[data-gallery-case="hover-card-side-right-trigger"] button',
+    content: '[data-slot="hover-card-content"]',
+    openBy: 'hover',
+  },
+  {
+    id: 'hover-card-rich',
+    trigger: '[data-gallery-case="hover-card-rich-trigger"] button',
+    content: '[data-slot="hover-card-content"]',
+    openBy: 'hover',
+  },
+  {
+    id: 'hover-card-collision-end',
+    trigger: '[data-gallery-case="hover-card-collision-end-trigger"] button',
+    content: '[data-slot="hover-card-content"]',
+    openBy: 'hover',
+  },
+]
+
+for (const floating of FLOATING_CASES) {
+  for (const theme of THEMES) {
+    test(`floating ${floating.id} ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'floating-extra', { theme })
+      await open(page, floating)
+      await expectShot(page, `floating-${floating.id}-${theme}.png`, { fullPage: true })
+    })
+  }
+}
+
+/**
+ * The same three components opened from the keyboard, and dismissed (PR 12).
+ *
+ * A popover opens on Enter *and* on Space, moves focus into the content, and on
+ * Escape closes and returns focus to its trigger — which is why the last shot
+ * of each pair is taken after the dismissal: it shows the trigger's focus ring,
+ * the only visible proof that focus came back. A tooltip has no focus of its
+ * own; it opens because its trigger is focused.
+ */
+test.describe('floating keyboard', () => {
+  for (const theme of THEMES) {
+    test(`popover keyboard open and escape ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'floating-extra', { theme })
+
+      const trigger = page.locator('[data-gallery-case="popover-keyboard-trigger"] button')
+      await trigger.focus()
+      await page.keyboard.press('Enter')
+      await page.locator('[data-slot="popover-content"]').waitFor({ state: 'visible' })
+      await settle(page)
+      await expectShot(page, `floating-popover-keyboard-enter-${theme}.png`, { fullPage: true })
+
+      await page.keyboard.press('Escape')
+      await page.locator('[data-slot="popover-content"]').waitFor({ state: 'detached' })
+      await settle(page)
+      await expectShot(page, `floating-popover-keyboard-escape-${theme}.png`, { fullPage: true })
+
+      await page.keyboard.press('Space')
+      await page.locator('[data-slot="popover-content"]').waitFor({ state: 'visible' })
+      await settle(page)
+      await expectShot(page, `floating-popover-keyboard-space-${theme}.png`, { fullPage: true })
+    })
+
+    test(`tooltip keyboard focus ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'floating-extra', { theme })
+
+      const trigger = page.locator('[data-gallery-case="tooltip-focus-target"] button')
+      await trigger.focus()
+      await page.locator('[data-slot="tooltip-content"]').waitFor({ state: 'visible' })
+      await settle(page)
+      await expectShot(page, `floating-tooltip-keyboard-focus-${theme}.png`, { fullPage: true })
+
+      await page.keyboard.press('Escape')
+      await page.locator('[data-slot="tooltip-content"]').waitFor({ state: 'detached' })
+      await settle(page)
+      await expectShot(page, `floating-tooltip-keyboard-escape-${theme}.png`, { fullPage: true })
+    })
+  }
+})
