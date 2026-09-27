@@ -1,0 +1,37 @@
+apps/ui/src/visual-gallery/sections/index.ts
+  s_98c1f7bc58c094::t_956de17ea446b6 69-73
+  s_98c1f7bc58c094::t_b32457f207c6eb 15
+apps/ui/visual/gallery.spec.ts
+  s_98c1f7bc58c094::t_02788a07427d4a 27
+  s_98c1f7bc58c094::t_3d5e425dbaba20 363-427
+apps/ui/src/components/ui/combobox.tsx
+  s_98c1f7bc58c094::t_7aefd574359964 2,5,16-427,435-436,440,444,450-451,459,476,485,500,512-514,523-524,529-530,538-540,544-545,551-555,559-560,565,567,577-579,583-584,594-596,600-601,607-609,613-614,622,625-626,630-631,639,646-648,652-653,659,662,669-671,675-676
+apps/ui/src/components/ui/select.tsx
+  s_98c1f7bc58c094::t_a77d247bd96736 2,5,9-416,421-427,431-432,444,451-453,458-459,464,472,478-484,490-491,499-500,510-516,520-521,529,533-536,540-541,544,546,556,559-560,564-565,573,576-577,581-582,592,595-596,600-601
+apps/ui/src/visual-gallery/sections/select-combobox-extra.tsx
+  s_98c1f7bc58c094::t_8be1234aa9de2e 1-404
+apps/ui/visual/animations.spec.ts
+  s_98c1f7bc58c094::t_6a11ae419337ec 136-166
+apps/ui/visual/hover-media.spec.ts
+  s_98c1f7bc58c094::t_750ad674ab219d 57-79
+apps/ui/visual/overlays.spec.ts
+  s_98c1f7bc58c094::t_00eda689178dfd 241-341
+docs/stylex-migration/pr-15.md
+  s_98c1f7bc58c094::t_cf7cceb332e4ef 1-123
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "26c356ca1ceea68559aa965a582d24a381739c19",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
