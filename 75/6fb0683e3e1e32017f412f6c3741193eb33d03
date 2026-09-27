@@ -1,0 +1,73 @@
+apps/ui/playwright.config.ts
+  s_98c1f7bc58c094::t_6dcd02bb5f3c31 18-25,31-32,70,121
+apps/ui/visual/electron.spec.ts
+  s_98c1f7bc58c094::t_6d55b6a1fb2d02 80
+docs/visual-testing.md
+  s_98c1f7bc58c094::t_578973ea173885 15
+apps/ui/src/visual-gallery/sections/menus-extra.tsx
+  s_98c1f7bc58c094::t_eb5d86c22678da 1-271
+apps/ui/src/components/ui/dropdown-menu.tsx
+  s_98c1f7bc58c094::t_f0ec346ae7bdc2 2,5,9-137,147-315,334,339-340,347-348,361,369-375,382-388,391,399,407-414,420-423,426,431-432,452,459-466,472-475,478,482-483,497,503-504,509-510,518,521-522,526-527,533-535,539-540,552,559-561,567-571,574,578,585,588-589,593-594
+  s_98c1f7bc58c094::t_e8e920fe4734c2 138-146
+docs/stylex-migration/pr-13.md
+  s_98c1f7bc58c094::t_65b744b313b469 15,30-31,35,51-56,62,64-66,69,73-74,94-95
+  s_98c1f7bc58c094::t_913bc2a85a064a 1-7,13-14,17-20,27-29,43-45,48-50,57-59,63,76-78,87-89,96-99,108-114,118-120
+  s_98c1f7bc58c094::t_7a0ec9d0eca9c7 8-12,32-34,46-47,67-68,70,75,79-86,90-93,100-107,117
+  s_98c1f7bc58c094::t_2671a1804b2d31 16,22,60-61,71-72,115-116
+  s_98c1f7bc58c094::t_7f5a7d5fa435f5 36-40,42
+  s_98c1f7bc58c094::t_05f6e8f6b4adcc 21,23-26,41
+apps/ui/src/components/ui/context-menu.tsx
+  s_98c1f7bc58c094::t_70900895d81352 2,5,9-115,120-287,294,297-298,302-303,329,334-335,340-341,350,358-364,371-377,380,388,395-397,402-403,407,414,417-418,422-423,431,439-446,451-452,456,468,475-482,487-488,491,503,509-510,515-516,524,527-528,532-533,539-541,545-546
+  s_98c1f7bc58c094::t_16123dcdfa7c92 116-119
+apps/ui/visual/animations.spec.ts
+  s_98c1f7bc58c094::t_e0b751280b95ec 349,367-392,407
+  s_98c1f7bc58c094::t_77e58d6ca088e3 138,321-348,350-366,393-406,408-424
+apps/ui/src/visual-gallery/sections/index.ts
+  s_98c1f7bc58c094::t_e32c3100947f4c 17,93-97
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-context-menu-dark.json
+  s_98c1f7bc58c094::t_2a10e3ec0e9eb2 1-1451
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-context-menu-light.json
+  s_98c1f7bc58c094::t_ac67626fcb3a4a 1-1451
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-dropdown-menu-dark.json
+  s_98c1f7bc58c094::t_33d7dc6b2312ad 1-2396
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-dropdown-menu-inset-dark.json
+  s_98c1f7bc58c094::t_2884766e5c965b 1-632
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-dropdown-menu-inset-light.json
+  s_98c1f7bc58c094::t_b3ac8ecda47938 1-632
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-dropdown-menu-light.json
+  s_98c1f7bc58c094::t_79ba42f91a53e0 1-2396
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-context-menu-dark.json
+  s_98c1f7bc58c094::t_13ae238e498002 1-1451
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-context-menu-light.json
+  s_98c1f7bc58c094::t_47481f4ea2cfb6 1-1451
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-dropdown-menu-dark.json
+  s_98c1f7bc58c094::t_994529f19f8fff 1-2396
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-dropdown-menu-inset-dark.json
+  s_98c1f7bc58c094::t_4ad504db56cf8e 1-632
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-dropdown-menu-inset-light.json
+  s_98c1f7bc58c094::t_da82b815a1140c 1-632
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-dropdown-menu-light.json
+  s_98c1f7bc58c094::t_6470628bc51fbc 1-2396
+apps/ui/visual/computed-styles.spec.ts
+  s_98c1f7bc58c094::t_995c810d523980 1091,1609-1776
+apps/ui/visual/gallery.spec.ts
+  s_98c1f7bc58c094::t_c852ba30905106 31
+apps/ui/visual/overlays.spec.ts
+  s_98c1f7bc58c094::t_c3fd45c3c0c899 241,556-727
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "756fb0683e3e1e32017f412f6c3741193eb33d03",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
