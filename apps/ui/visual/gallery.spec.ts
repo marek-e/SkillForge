@@ -32,6 +32,7 @@ const SECTIONS = [
   'menubar-nav-extra',
   'select-combobox-extra',
   'command-calendar-extra',
+  'nav-bits-extra',
 ] as const
 
 const BUTTON_VARIANTS = ['default', 'outline', 'secondary', 'ghost', 'destructive', 'link'] as const
@@ -689,6 +690,83 @@ test.describe('command and calendar interactions', () => {
         page,
         'cmdcal-calendar-nav-target',
         `state-cmdcal-calendar-keyboard-month-${theme}.png`
+      )
+    })
+  }
+})
+
+/**
+ * Avatar, breadcrumb and pagination interaction states (PR 18), appended as a
+ * new block so no existing test name or original moves.
+ *
+ * A breadcrumb link's `hover:text-foreground` and a pagination link's
+ * `focus-visible:` ring are the two states no static case can reach. The ring
+ * needs a *keyboard* focus: Chromium only matches `:focus-visible` on an anchor
+ * when the focus came from the keyboard, so each focus case steps back with
+ * `Shift+Tab` and returns with `Tab` rather than calling `focus()`.
+ */
+test.describe('navbits interaction states', () => {
+  for (const theme of THEMES) {
+    test(`navbits breadcrumb and pagination states ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'nav-bits-extra', { theme })
+
+      await page
+        .locator(
+          '[data-gallery-case="navbits-breadcrumb-hover-target"] [data-slot="breadcrumb-link"]'
+        )
+        .hover()
+      await expectCaseShot(
+        page,
+        'navbits-breadcrumb-hover-target',
+        `state-navbits-breadcrumb-hover-${theme}.png`
+      )
+
+      const breadcrumbLink = page.locator(
+        '[data-gallery-case="navbits-breadcrumb-focus-target"] [data-slot="breadcrumb-link"]'
+      )
+      await breadcrumbLink.focus()
+      await page.keyboard.press('Shift+Tab')
+      await page.keyboard.press('Tab')
+      await expectCaseShot(
+        page,
+        'navbits-breadcrumb-focus-target',
+        `state-navbits-breadcrumb-focus-${theme}.png`
+      )
+      await breadcrumbLink.blur()
+
+      await page
+        .locator(
+          '[data-gallery-case="navbits-pagination-hover-target"] [data-slot="pagination-link"]'
+        )
+        .hover()
+      await expectCaseShot(
+        page,
+        'navbits-pagination-hover-target',
+        `state-navbits-pagination-hover-${theme}.png`
+      )
+
+      const paginationLink = page.locator(
+        '[data-gallery-case="navbits-pagination-focus-target"] [data-slot="pagination-link"]'
+      )
+      await paginationLink.focus()
+      await page.keyboard.press('Shift+Tab')
+      await page.keyboard.press('Tab')
+      await expectCaseShot(
+        page,
+        'navbits-pagination-focus-target',
+        `state-navbits-pagination-focus-${theme}.png`
+      )
+      await paginationLink.blur()
+
+      // The previous/next links are the only pagination parts whose label is
+      // hidden below `sm`, so their hover is captured at both viewports too.
+      await page
+        .locator('[data-gallery-case="navbits-pagination-full"] [aria-label="Go to next page"]')
+        .hover()
+      await expectCaseShot(
+        page,
+        'navbits-pagination-full',
+        `state-navbits-pagination-next-hover-${theme}.png`
       )
     })
   }

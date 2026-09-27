@@ -17,6 +17,7 @@ import { FormsTogglesSection } from './forms-toggles'
 import { OverlaysExtraSection } from './overlays-extra'
 import { MenusExtraSection } from './menus-extra'
 import { MenubarNavExtraSection } from './menubar-nav-extra'
+import { NavBitsExtraSection } from './nav-bits-extra'
 import { OverlaysSection } from './overlays'
 import { OverlaysSheetDrawerSection } from './overlays-sheet-drawer'
 import { SelectComboboxExtraSection } from './select-combobox-extra'
@@ -112,5 +113,10 @@ export const GALLERY_SECTIONS: GallerySection[] = [
     id: 'command-calendar-extra',
     title: 'Command palette parts and calendar day states',
     Component: CommandCalendarExtraSection,
+  },
+  {
+    id: 'nav-bits-extra',
+    title: 'Avatar sizes, breadcrumb overflow and pagination states',
+    Component: NavBitsExtraSection,
   },
 ]
