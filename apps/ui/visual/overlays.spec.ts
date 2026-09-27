@@ -797,3 +797,104 @@ test.describe('menubar-nav open states', () => {
     })
   }
 })
+
+/**
+ * `select-combobox-extra` (PR 15).
+ *
+ * Both popups are portalled, so every case here is a full-page capture. They
+ * cover what the closed triggers cannot show: the item-aligned and the popper
+ * geometry, groups, labels, separators, a disabled item, the checked item's
+ * indicator, the scroll buttons, a clamped long option, and the combobox's
+ * filtered, empty, highlighted and multi-select states.
+ */
+test.describe('selcombo popups', () => {
+  const SECTION = 'select-combobox-extra'
+
+  async function openSelect(page: Page, caseName: string): Promise<void> {
+    const trigger = page.locator(`[data-gallery-case="${caseName}"] [data-slot="select-trigger"]`)
+    await trigger.scrollIntoViewIfNeeded()
+    await trigger.click()
+    await page.locator('[data-slot="select-content"]').first().waitFor({ state: 'visible' })
+    await settle(page)
+  }
+
+  async function openCombobox(page: Page, caseName: string): Promise<void> {
+    const input = page.locator(`[data-gallery-case="${caseName}"] input`).first()
+    await input.scrollIntoViewIfNeeded()
+    await input.click()
+    await page.locator('[data-slot="combobox-content"]').first().waitFor({ state: 'visible' })
+    await settle(page)
+  }
+
+  for (const theme of THEMES) {
+    test(`selcombo select groups open ${theme}`, async ({ page }) => {
+      await gotoGallery(page, SECTION, { theme })
+      await openSelect(page, 'selcombo-select-groups')
+      await expectShot(page, `selcombo-select-groups-${theme}.png`, { fullPage: true })
+
+      await page.keyboard.press('ArrowDown')
+      await settle(page)
+      await expectShot(page, `selcombo-select-groups-arrow-${theme}.png`, { fullPage: true })
+    })
+
+    test(`selcombo select popper open ${theme}`, async ({ page }) => {
+      await gotoGallery(page, SECTION, { theme })
+      await openSelect(page, 'selcombo-select-popper')
+      await expectShot(page, `selcombo-select-popper-${theme}.png`, { fullPage: true })
+    })
+
+    test(`selcombo select scroll open ${theme}`, async ({ page }) => {
+      await gotoGallery(page, SECTION, { theme })
+      await openSelect(page, 'selcombo-select-scroll')
+      await expectShot(page, `selcombo-select-scroll-${theme}.png`, { fullPage: true })
+    })
+
+    test(`selcombo select long open ${theme}`, async ({ page }) => {
+      await gotoGallery(page, SECTION, { theme })
+      await openSelect(page, 'selcombo-select-long')
+      await expectShot(page, `selcombo-select-long-${theme}.png`, { fullPage: true })
+    })
+
+    test(`selcombo combobox list open ${theme}`, async ({ page }) => {
+      await gotoGallery(page, SECTION, { theme })
+      await openCombobox(page, 'selcombo-combobox-list')
+      await expectShot(page, `selcombo-combobox-list-${theme}.png`, { fullPage: true })
+
+      await page.keyboard.press('ArrowDown')
+      await settle(page)
+      await expectShot(page, `selcombo-combobox-highlighted-${theme}.png`, { fullPage: true })
+    })
+
+    test(`selcombo combobox filtered ${theme}`, async ({ page }) => {
+      await gotoGallery(page, SECTION, { theme })
+      const input = page.locator('[data-gallery-case="selcombo-combobox-list"] input').first()
+      await input.scrollIntoViewIfNeeded()
+      await input.click()
+      await input.fill('co')
+      await page.locator('[data-slot="combobox-content"]').first().waitFor({ state: 'visible' })
+      await settle(page)
+      await expectShot(page, `selcombo-combobox-filtered-${theme}.png`, { fullPage: true })
+
+      await input.fill('zzzz')
+      await settle(page)
+      await expectShot(page, `selcombo-combobox-empty-${theme}.png`, { fullPage: true })
+    })
+
+    test(`selcombo combobox chips open ${theme}`, async ({ page }) => {
+      await gotoGallery(page, SECTION, { theme })
+      await openCombobox(page, 'selcombo-combobox-chips')
+      await expectShot(page, `selcombo-combobox-chips-open-${theme}.png`, { fullPage: true })
+    })
+
+    test(`selcombo combobox clear ${theme}`, async ({ page }) => {
+      await gotoGallery(page, SECTION, { theme })
+      const clear = page.locator(
+        '[data-gallery-case="selcombo-combobox-clear"] [data-slot="combobox-clear"]'
+      )
+      await clear.scrollIntoViewIfNeeded()
+      await clear.click()
+      await settle(page)
+      await expectShot(page, `selcombo-combobox-cleared-${theme}.png`, { fullPage: true })
+    })
+  }
+})

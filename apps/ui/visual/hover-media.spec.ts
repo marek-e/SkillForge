@@ -54,3 +54,26 @@ for (const group of NO_HOVER_CASES) {
     })
   }
 }
+
+/**
+ * `SelectTrigger`'s only hover rule is `dark:hover:bg-input/50` (PR 15), which
+ * is wrapped in `@media (hover: hover)` like every other Tailwind hover
+ * variant. The original is a dark-theme trigger with the plain
+ * `dark:bg-input/30` background under a pointer that cannot hover.
+ */
+for (const theme of THEMES) {
+  test(`no-hover pointer selcombo-select-trigger ${theme}`, async ({ page }) => {
+    await gotoGallery(page, 'select-combobox-extra', { theme })
+    await emulateNoHover(page)
+
+    const target = page.locator(
+      '[data-gallery-case="selcombo-select-hover-target"] [data-slot="select-trigger"]'
+    )
+    await target.hover()
+    await expectCaseShot(
+      page,
+      'selcombo-select-hover-target',
+      `no-hover-selcombo-select-trigger-${theme}.png`
+    )
+  })
+}

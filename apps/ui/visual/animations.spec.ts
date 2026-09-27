@@ -475,3 +475,34 @@ test.describe('menubar-nav frames', () => {
     })
   }
 })
+
+/**
+ * The select popup's enter animation (PR 15).
+ *
+ * `SelectContent` only animates in `position="popper"`: the item-aligned
+ * default carries `data-[align-trigger=true]:animate-none`, which wins over
+ * the `data-open:` enter rules. The popper case is therefore the one worth
+ * three frames — `duration-100` makes it the fastest overlay in the suite, so
+ * 100 ms is already its end state and 200 ms proves it stays there.
+ */
+test.describe('selcombo animation frames', () => {
+  for (const theme of THEMES) {
+    test(`animation selcombo select-open ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'select-combobox-extra', { theme })
+      await installAnimationFreeze(page)
+
+      await page
+        .locator('[data-gallery-case="selcombo-select-popper"] [data-slot="select-trigger"]')
+        .click()
+      await page.locator('[data-slot="select-content"]').first().waitFor({ state: 'attached' })
+
+      for (const frame of FRAMES) {
+        await freezeAnimationsAt(page, frame)
+        await expectShot(page, `animation-selcombo-select-open-${theme}-${frame}ms.png`, {
+          fullPage: true,
+          animations: 'allow',
+        })
+      }
+    })
+  }
+})

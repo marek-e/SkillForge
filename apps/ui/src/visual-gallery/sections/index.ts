@@ -18,6 +18,7 @@ import { MenusExtraSection } from './menus-extra'
 import { MenubarNavExtraSection } from './menubar-nav-extra'
 import { OverlaysSection } from './overlays'
 import { OverlaysSheetDrawerSection } from './overlays-sheet-drawer'
+import { SelectComboboxExtraSection } from './select-combobox-extra'
 import { SidebarPartsSection } from './sidebar-parts'
 import { TokensSection } from './tokens'
 import { TypographyExtraSection } from './typography-extra'
@@ -100,5 +101,10 @@ export const GALLERY_SECTIONS: GallerySection[] = [
     id: 'menubar-nav-extra',
     title: 'Menubar menus and navigation menu modes',
     Component: MenubarNavExtraSection,
+  },
+  {
+    id: 'select-combobox-extra',
+    title: 'Select triggers, popups, combobox inputs and chips',
+    Component: SelectComboboxExtraSection,
   },
 ]

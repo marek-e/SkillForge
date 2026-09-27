@@ -30,6 +30,7 @@ const SECTIONS = [
   'floating-extra',
   'menus-extra',
   'menubar-nav-extra',
+  'select-combobox-extra',
 ] as const
 
 const BUTTON_VARIANTS = ['default', 'outline', 'secondary', 'ghost', 'destructive', 'link'] as const
@@ -450,6 +451,71 @@ test.describe('interaction states', () => {
       await tagsInput.fill('git')
       await page.locator('[data-gallery-case="tags-input-empty"] ul').waitFor({ state: 'visible' })
       await expectShot(page, `state-tags-input-suggestions-${theme}.png`, { fullPage: true })
+    })
+  }
+})
+
+/**
+ * `select-combobox-extra` (PR 15). The select trigger's ring is composed from
+ * `focus-visible:ring-3` and `aria-invalid:ring-3`, two rules of equal
+ * specificity whose order decides the colour, and its only hover rule is
+ * `dark:hover:bg-input/50`. `ComboboxChips` paints the same ring through
+ * `focus-within:` and `has-aria-invalid:` instead.
+ */
+test.describe('selcombo trigger states', () => {
+  for (const theme of THEMES) {
+    test(`selcombo select and chips states ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'select-combobox-extra', { theme })
+
+      const hoverTarget = page.locator(
+        '[data-gallery-case="selcombo-select-hover-target"] [data-slot="select-trigger"]'
+      )
+      await hoverTarget.hover()
+      await expectCaseShot(
+        page,
+        'selcombo-select-hover-target',
+        `state-selcombo-select-hover-${theme}.png`
+      )
+
+      const focusTargets = [
+        'selcombo-select-focus-target',
+        'selcombo-select-invalid-focus-target',
+      ] as const
+
+      for (const caseName of focusTargets) {
+        const target = page.locator(
+          `[data-gallery-case="${caseName}"] [data-slot="select-trigger"]`
+        )
+        await target.focus()
+        await expectCaseShot(
+          page,
+          caseName,
+          `state-${caseName.replace(/-target$/, '')}-${theme}.png`
+        )
+        await target.blur()
+      }
+
+      const chipsInput = page.locator(
+        '[data-gallery-case="selcombo-combobox-chips-focus-target"] [data-slot="combobox-chip-input"]'
+      )
+      await chipsInput.focus()
+      await expectCaseShot(
+        page,
+        'selcombo-combobox-chips-focus-target',
+        `state-selcombo-combobox-chips-focus-${theme}.png`
+      )
+      await chipsInput.blur()
+
+      const invalidChips = page.locator(
+        '[data-gallery-case="selcombo-combobox-chips-invalid"] [data-slot="combobox-chip-input"]'
+      )
+      await invalidChips.focus()
+      await expectCaseShot(
+        page,
+        'selcombo-combobox-chips-invalid',
+        `state-selcombo-combobox-chips-invalid-focus-${theme}.png`
+      )
+      await invalidChips.blur()
     })
   }
 })
