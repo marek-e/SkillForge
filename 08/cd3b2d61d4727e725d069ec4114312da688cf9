@@ -1,0 +1,33 @@
+apps/ui/src/visual-gallery/sections/menubar-nav-extra.tsx
+  s_98c1f7bc58c094::t_a1778ade34216e 1-212
+apps/ui/src/components/ui/menubar.tsx
+  s_98c1f7bc58c094::t_cd4bddaa71f20d 2,5,9-502,506-507,531,534-535,539-540,548,554-555,563-564,573,581-582,588-590,592-595,598,606,614-616,621-622,626-629,641,648-650,655-656,659-662,674,680-681,686-687,695,698-699,703-704,710-712,716-717,729,736-738,743-744,748,755,758-759,763-764
+apps/ui/src/components/ui/navigation-menu.tsx
+  s_98c1f7bc58c094::t_cf5f3fd8d8b523 2,6,10-529,532,539-540,545-548,559,562-563,567-568,576,579-580,584-585,591-598,605,609-611,615-618,623-624,633,636-637,641-642,650,653-655,657,660-661,670,673-674,678-679,687,690-692,696-697,700
+apps/ui/src/visual-gallery/sections/index.ts
+  s_98c1f7bc58c094::t_8d0d462c249b0d 14,69-73
+apps/ui/visual/animations.spec.ts
+  s_98c1f7bc58c094::t_9a0a624ef32bd9 136-188
+apps/ui/visual/gallery.spec.ts
+  s_98c1f7bc58c094::t_7b58962b57c965 27
+apps/ui/visual/overlays.spec.ts
+  s_98c1f7bc58c094::t_8cb149bc2fcd80 241-312
+docs/stylex-migration/pr-14.md
+  s_98c1f7bc58c094::t_03d95d0c926701 1-120
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "08cd3b2d61d4727e725d069ec4114312da688cf9",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
