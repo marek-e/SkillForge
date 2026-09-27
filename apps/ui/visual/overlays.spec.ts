@@ -725,3 +725,75 @@ test.describe('menus-extra', () => {
     })
   }
 })
+
+/**
+ * Menubar and navigation-menu open states (PR 14).
+ *
+ * Appended as a new block rather than added to `OVERLAY_CASES`, so every name
+ * here is new and no frozen original moves. Each name carries `menubar-nav`,
+ * which is what selects this row's cases with `-g menubar-nav`.
+ *
+ * The navigation-menu panels settle through `waitForStable`: the viewport sizes
+ * itself from a `ResizeObserver` and publishes the result as
+ * `--radix-navigation-menu-viewport-{width,height}`, which the element then
+ * transitions to over its own 100ms.
+ */
+test.describe('menubar-nav open states', () => {
+  for (const theme of THEMES) {
+    test(`overlay menubar-nav bar-file-menu ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'menubar-nav-extra', { theme })
+      await page
+        .locator('[data-gallery-case="menubar-nav-bar-rich"] [data-slot="menubar-trigger"]')
+        .first()
+        .click()
+      await page.locator('[data-slot="menubar-content"]').waitFor({ state: 'visible' })
+      await settle(page)
+      await expectShot(page, `overlay-menubar-nav-bar-file-menu-${theme}.png`, { fullPage: true })
+    })
+
+    test(`overlay menubar-nav bar-submenu ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'menubar-nav-extra', { theme })
+      await page
+        .locator('[data-gallery-case="menubar-nav-bar-rich"] [data-slot="menubar-trigger"]')
+        .first()
+        .click()
+      await page.locator('[data-slot="menubar-content"]').waitFor({ state: 'visible' })
+      await page.locator('[data-slot="menubar-sub-trigger"]').hover()
+      await page.locator('[data-slot="menubar-sub-content"]').waitFor({ state: 'visible' })
+      await settle(page)
+      await expectShot(page, `overlay-menubar-nav-bar-submenu-${theme}.png`, { fullPage: true })
+    })
+
+    test(`overlay menubar-nav nav-viewport-panel ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'menubar-nav-extra', { theme })
+      await page
+        .locator(
+          '[data-gallery-case="menubar-nav-nav-viewport"] [data-slot="navigation-menu-trigger"]'
+        )
+        .first()
+        .click()
+      await page.locator('[data-slot="navigation-menu-viewport"]').waitFor({ state: 'visible' })
+      await waitForStable(page, '[data-slot="navigation-menu-viewport"]')
+      await settle(page)
+      await expectShot(page, `overlay-menubar-nav-nav-viewport-panel-${theme}.png`, {
+        fullPage: true,
+      })
+    })
+
+    test(`overlay menubar-nav nav-no-viewport-panel ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'menubar-nav-extra', { theme })
+      await page
+        .locator(
+          '[data-gallery-case="menubar-nav-nav-no-viewport"] [data-slot="navigation-menu-trigger"]'
+        )
+        .first()
+        .click()
+      await page.locator('[data-slot="navigation-menu-content"]').waitFor({ state: 'visible' })
+      await waitForStable(page, '[data-slot="navigation-menu-content"]')
+      await settle(page)
+      await expectShot(page, `overlay-menubar-nav-nav-no-viewport-panel-${theme}.png`, {
+        fullPage: true,
+      })
+    })
+  }
+})

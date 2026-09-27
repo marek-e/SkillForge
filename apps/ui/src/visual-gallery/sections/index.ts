@@ -15,6 +15,7 @@ import { FormsSection } from './forms'
 import { FormsTogglesSection } from './forms-toggles'
 import { OverlaysExtraSection } from './overlays-extra'
 import { MenusExtraSection } from './menus-extra'
+import { MenubarNavExtraSection } from './menubar-nav-extra'
 import { OverlaysSection } from './overlays'
 import { OverlaysSheetDrawerSection } from './overlays-sheet-drawer'
 import { SidebarPartsSection } from './sidebar-parts'
@@ -94,5 +95,10 @@ export const GALLERY_SECTIONS: GallerySection[] = [
     id: 'menus-extra',
     title: 'Menu items, submenus and placement',
     Component: MenusExtraSection,
+  },
+  {
+    id: 'menubar-nav-extra',
+    title: 'Menubar menus and navigation menu modes',
+    Component: MenubarNavExtraSection,
   },
 ]

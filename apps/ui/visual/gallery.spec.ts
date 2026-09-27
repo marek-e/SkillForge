@@ -29,6 +29,7 @@ const SECTIONS = [
   'overlays-sheet-drawer',
   'floating-extra',
   'menus-extra',
+  'menubar-nav-extra',
 ] as const
 
 const BUTTON_VARIANTS = ['default', 'outline', 'secondary', 'ghost', 'destructive', 'link'] as const

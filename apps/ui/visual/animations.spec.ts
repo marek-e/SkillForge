@@ -422,3 +422,56 @@ test.describe('menu submenu and context menu frames', () => {
     })
   }
 })
+
+/**
+ * Menubar and navigation-menu enter frames (PR 14).
+ *
+ * The menubar content composes `enter` from `data-open:fade-in-0`,
+ * `data-open:zoom-in-95` and a per-side `data-[side=*]:slide-in-from-*-2`, over
+ * the 100ms `duration-100` puts on it. The navigation menu's first open has no
+ * `data-motion` on the content, so what animates is the shared viewport, with
+ * `data-open:zoom-in-90` and no fade — these frames are what pins that.
+ */
+test.describe('menubar-nav frames', () => {
+  for (const theme of THEMES) {
+    test(`animation menubar-nav menubar-open ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'menubar-nav-extra', { theme })
+      await installAnimationFreeze(page)
+
+      await page
+        .locator('[data-gallery-case="menubar-nav-bar-rich"] [data-slot="menubar-trigger"]')
+        .first()
+        .click()
+      await page.locator('[data-slot="menubar-content"]').waitFor({ state: 'attached' })
+
+      for (const frame of FRAMES) {
+        await freezeAnimationsAt(page, frame)
+        await expectShot(page, `animation-menubar-nav-menubar-open-${theme}-${frame}ms.png`, {
+          fullPage: true,
+          animations: 'allow',
+        })
+      }
+    })
+
+    test(`animation menubar-nav nav-content-open ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'menubar-nav-extra', { theme })
+      await installAnimationFreeze(page)
+
+      await page
+        .locator(
+          '[data-gallery-case="menubar-nav-nav-viewport"] [data-slot="navigation-menu-trigger"]'
+        )
+        .first()
+        .click()
+      await page.locator('[data-slot="navigation-menu-viewport"]').waitFor({ state: 'attached' })
+
+      for (const frame of FRAMES) {
+        await freezeAnimationsAt(page, frame)
+        await expectShot(page, `animation-menubar-nav-nav-content-open-${theme}-${frame}ms.png`, {
+          fullPage: true,
+          animations: 'allow',
+        })
+      }
+    })
+  }
+})
