@@ -1,0 +1,31 @@
+apps/ui/src/visual-gallery/sections/nav-bits-extra.tsx
+  s_98c1f7bc58c094::t_ec78d67326bdd3 1-371
+apps/ui/src/components/ui/avatar.tsx
+  s_98c1f7bc58c094::t_f50845fb7c6328 2,5,8-212,215,221-222,227-228,234-240,244-245,253,256-257,261-262,268-270,274-275,281-283,287-288,294-296,300-301
+apps/ui/src/components/ui/breadcrumb.tsx
+  s_98c1f7bc58c094::t_477ef83e9f43d7 2,5,9-95,100-102,106-107,113-115,119-120,129,135,140-141,147-149,156-157,169,177-180,186-187,191
+apps/ui/src/components/ui/pagination.tsx
+  s_98c1f7bc58c094::t_df93585e2822a0 2,8-82,88-89,95-97,101-102,117-120,139-140,145,149,159-160,165,168,174-177,182-183,187
+apps/ui/src/visual-gallery/sections/index.ts
+  s_98c1f7bc58c094::t_9e701f3d98f8f8 18,99-103
+apps/ui/visual/gallery.spec.ts
+  s_98c1f7bc58c094::t_b7bd6266cdab95 32,456-532
+docs/stylex-migration/pr-18.md
+  s_98c1f7bc58c094::t_bbf4177b0121ab 1-132
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "d15df66aea7acdded6f38ff88f72bc46d9592bff",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
