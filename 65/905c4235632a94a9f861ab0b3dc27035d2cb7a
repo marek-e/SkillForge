@@ -1,0 +1,21 @@
+apps/ui/visual/frozen-originals.sh
+  s_98c1f7bc58c094::t_3e474b7527930b 1-30
+docs/stylex-migration/row-brief.md
+  s_98c1f7bc58c094::t_bd3c347ef6f81d 1-71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "65905c4235632a94a9f861ab0b3dc27035d2cb7a",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
