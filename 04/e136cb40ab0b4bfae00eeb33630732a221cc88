@@ -1,0 +1,31 @@
+docs/stylex-migration/conventions.md
+  s_98c1f7bc58c094::t_15f480492727fc 48-51
+  s_98c1f7bc58c094::t_c40b035ff5fec1 510-518,520-527
+  s_98c1f7bc58c094::t_239fbb723d8317 143
+  s_98c1f7bc58c094::t_e225ac73a35f16 677-681
+  s_98c1f7bc58c094::t_8a2b68213183a5 308-311
+  s_98c1f7bc58c094::t_08399a8107ba9a 225-228
+  s_98c1f7bc58c094::t_f02b7e625cb439 627-646
+  s_98c1f7bc58c094::t_2003fa0fe3cd30 450-473
+  s_98c1f7bc58c094::t_64686ba6b8beb7 122-125,127-131
+  s_98c1f7bc58c094::t_7abf86db8580ee 272-279,281
+  s_98c1f7bc58c094::t_a626ebc494cfc4 696-705
+  s_98c1f7bc58c094::t_da4b391a505d11 4-5
+  s_98c1f7bc58c094::t_87e33fb35deca8 126,135-142,144-179,280,519
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "04e136cb40ab0b4bfae00eeb33630732a221cc88",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
