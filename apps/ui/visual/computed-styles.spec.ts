@@ -1605,3 +1605,172 @@ for (const theme of THEMES) {
     )
   })
 }
+
+/**
+ * Menu parts (PR 13).
+ *
+ * `DropdownMenuContent` and `ContextMenuContent` render into a portal, so they
+ * are outside every `[data-gallery-case]` box and the generic `collectCases`
+ * collector cannot key on one. This dump keys on the `data-slot` plus the
+ * item's own text instead, and adds what a pixel comparison of a menu is worst
+ * at proving: the composed `ring-1 + shadow-*` chain, the Radix-driven
+ * `transform-origin` and `max-height`, and the animation longhands.
+ *
+ * `animation-name` is deliberately absent: `stylex.keyframes` hashes the name,
+ * so it is the one value the migration is allowed to change
+ * (`conventions.md`, "Animations: the name is the one value that changes").
+ */
+const MENU_PROPERTIES = [
+  'display',
+  'position',
+  'width',
+  'min-width',
+  'max-height',
+  'height',
+  'margin',
+  'padding-top',
+  'padding-right',
+  'padding-bottom',
+  'padding-left',
+  'gap',
+  'align-items',
+  'justify-content',
+  'font-size',
+  'font-weight',
+  'line-height',
+  'letter-spacing',
+  'color',
+  'background-color',
+  'border-width',
+  'border-style',
+  'border-color',
+  'border-radius',
+  'box-shadow',
+  'outline-style',
+  'outline-width',
+  'outline-color',
+  'outline-offset',
+  'opacity',
+  'z-index',
+  'overflow-x',
+  'overflow-y',
+  'cursor',
+  'pointer-events',
+  'user-select',
+  'right',
+  'transform-origin',
+  'animation-duration',
+  'animation-timing-function',
+  'animation-delay',
+  'animation-iteration-count',
+  'animation-direction',
+  'animation-fill-mode',
+  'animation-play-state',
+  'transition-property',
+  'transition-duration',
+]
+
+const MENU_SELECTOR = [
+  'dropdown-menu-content',
+  'dropdown-menu-item',
+  'dropdown-menu-checkbox-item',
+  'dropdown-menu-checkbox-item-indicator',
+  'dropdown-menu-radio-item',
+  'dropdown-menu-radio-item-indicator',
+  'dropdown-menu-label',
+  'dropdown-menu-separator',
+  'dropdown-menu-shortcut',
+  'dropdown-menu-sub-trigger',
+  'dropdown-menu-sub-content',
+  'context-menu-content',
+  'context-menu-item',
+  'context-menu-checkbox-item',
+  'context-menu-radio-item',
+  'context-menu-label',
+  'context-menu-separator',
+  'context-menu-shortcut',
+  'context-menu-sub-trigger',
+  'context-menu-sub-content',
+]
+  .map((slot) => `[data-slot="${slot}"]`)
+  .join(', ')
+
+async function collectMenuParts(page: Page): Promise<string> {
+  const report = await page.evaluate(
+    ({ selector, properties }) => {
+      const round = (value: number) => Math.round(value * 100) / 100
+      return [...document.querySelectorAll(selector)].map((element) => {
+        const rect = element.getBoundingClientRect()
+        const computed = getComputedStyle(element)
+        const styles: Record<string, string> = {}
+        for (const property of properties) {
+          styles[property] = computed.getPropertyValue(property)
+        }
+        return {
+          slot: element.getAttribute('data-slot'),
+          label: (element.textContent ?? '').trim().slice(0, 24),
+          variant: element.getAttribute('data-variant'),
+          inset: element.getAttribute('data-inset'),
+          state: element.getAttribute('data-state'),
+          side: element.getAttribute('data-side'),
+          disabled: element.hasAttribute('data-disabled'),
+          highlighted: element.hasAttribute('data-highlighted'),
+          box: { width: round(rect.width), height: round(rect.height) },
+          styles,
+        }
+      })
+    },
+    { selector: MENU_SELECTOR, properties: MENU_PROPERTIES }
+  )
+
+  return `${JSON.stringify(report, null, 2)}\n`
+}
+
+/** Menus animate on open; the dump is taken at the settled frame. */
+async function freezeMenu(page: Page): Promise<void> {
+  await freezeAnimationsAt(page, 1_000)
+}
+
+for (const theme of THEMES) {
+  test(`computed styles dropdown menu ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/menus-extra', {
+      theme,
+      waitFor: '[data-gallery-section="menus-extra"]',
+    })
+    await page.locator('[data-gallery-case="menu-dropdown-rich"] button').click()
+    await page.locator('[data-slot="dropdown-menu-content"]').waitFor({ state: 'visible' })
+    await page.locator('[data-slot="dropdown-menu-sub-trigger"]').hover()
+    await page.locator('[data-slot="dropdown-menu-sub-content"]').waitFor({ state: 'visible' })
+    await freezeMenu(page)
+    await expectTextSnapshot(await collectMenuParts(page), `computed-dropdown-menu-${theme}.json`)
+  })
+
+  test(`computed styles dropdown menu inset ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/menus-extra', {
+      theme,
+      waitFor: '[data-gallery-section="menus-extra"]',
+    })
+    await page.locator('[data-gallery-case="menu-dropdown-inset"] button').click()
+    await page.locator('[data-slot="dropdown-menu-content"]').waitFor({ state: 'visible' })
+    await freezeMenu(page)
+    await expectTextSnapshot(
+      await collectMenuParts(page),
+      `computed-dropdown-menu-inset-${theme}.json`
+    )
+  })
+
+  test(`computed styles context menu ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/menus-extra', {
+      theme,
+      waitFor: '[data-gallery-section="menus-extra"]',
+    })
+    await page
+      .locator('[data-gallery-case="menu-context-rich"] [data-slot="context-menu-trigger"]')
+      .click({ button: 'right' })
+    await page.locator('[data-slot="context-menu-content"]').waitFor({ state: 'visible' })
+    await page.locator('[data-slot="context-menu-sub-trigger"]').hover()
+    await page.locator('[data-slot="context-menu-sub-content"]').waitFor({ state: 'visible' })
+    await freezeMenu(page)
+    await expectTextSnapshot(await collectMenuParts(page), `computed-context-menu-${theme}.json`)
+  })
+}

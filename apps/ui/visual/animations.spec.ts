@@ -317,3 +317,108 @@ test.describe('floating exit frames', () => {
     })
   }
 })
+
+/**
+ * Menu enter animations (PR 13).
+ *
+ * The existing `dropdown-menu-open` case above stays exactly as it is; these
+ * add the offsets it cannot reach. The menu enter animation composes one
+ * keyframe set out of an opacity step, a 95% scale and a per-`data-[side]`
+ * translate, so a menu that opens downwards and one that opens upwards run
+ * *different* keyframes;
+ * `duration-100` shortens both to 100ms, which is why 200ms is the settled
+ * frame. `DropdownMenuSubContent` and `ContextMenuContent` carry their own
+ * radius, shadow and min-width, so each is captured on its own curve.
+ */
+const MENU_ANIMATION_CASES = [
+  {
+    id: 'menus-extra-dropdown-open',
+    trigger: '[data-gallery-case="menu-dropdown-rich"] button',
+    content: '[data-slot="dropdown-menu-content"]',
+  },
+  {
+    id: 'menus-extra-dropdown-side-top-open',
+    trigger: '[data-gallery-case="menu-dropdown-side-top"] button',
+    content: '[data-slot="dropdown-menu-content"]',
+  },
+] as const
+
+for (const animation of MENU_ANIMATION_CASES) {
+  for (const theme of THEMES) {
+    test(`animation ${animation.id} ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'menus-extra', { theme })
+      await installAnimationFreeze(page)
+
+      await page.locator(animation.trigger).first().click()
+      await page.locator(animation.content).first().waitFor({ state: 'attached' })
+
+      for (const frame of FRAMES) {
+        await freezeAnimationsAt(page, frame)
+        await expectShot(page, `animation-${animation.id}-${theme}-${frame}ms.png`, {
+          fullPage: true,
+          animations: 'allow',
+        })
+      }
+    })
+  }
+}
+
+test.describe('menu submenu and context menu frames', () => {
+  for (const theme of THEMES) {
+    /**
+     * The freeze is installed **after** the parent menu has finished its own
+     * enter animation, which the other cases do not need to do.
+     *
+     * A submenu is positioned by Floating UI against the sub-trigger's measured
+     * rect, and that rect is inside the parent content's enter-scale
+     * transform. Freezing the parent mid-animation therefore anchors the
+     * submenu ~4px to the left, and whether the parent's paused animation had
+     * settled by the time the shot was taken decided the layout of the whole
+     * frame: the case failed roughly one run in three against its own
+     * originals, on the untouched Tailwind tree. Letting the parent settle
+     * first leaves exactly one animation on the page — the sub-content's, the
+     * one being measured — which is the shape every stable case in this file
+     * has.
+     */
+    test(`dropdown submenu open ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'menus-extra', { theme })
+
+      await page.locator('[data-gallery-case="menu-dropdown-rich"] button').click()
+      const content = page.locator('[data-slot="dropdown-menu-content"]')
+      await content.waitFor({ state: 'visible' })
+      await content.evaluate((element) =>
+        Promise.all(element.getAnimations().map((animation) => animation.finished))
+      )
+
+      await installAnimationFreeze(page)
+      await page.locator('[data-slot="dropdown-menu-sub-trigger"]').hover()
+      await page.locator('[data-slot="dropdown-menu-sub-content"]').waitFor({ state: 'attached' })
+
+      for (const frame of FRAMES) {
+        await freezeAnimationsAt(page, frame)
+        await expectShot(page, `animation-menus-extra-submenu-open-${theme}-${frame}ms.png`, {
+          fullPage: true,
+          animations: 'allow',
+        })
+      }
+    })
+
+    test(`context menu open ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'menus-extra', { theme })
+      await installAnimationFreeze(page)
+
+      await page
+        .locator('[data-gallery-case="menu-context-rich"] [data-slot="context-menu-trigger"]')
+        .click({ button: 'right' })
+      await page.locator('[data-slot="context-menu-content"]').waitFor({ state: 'attached' })
+
+      for (const frame of FRAMES) {
+        await freezeAnimationsAt(page, frame)
+        await expectShot(page, `animation-menus-extra-context-open-${theme}-${frame}ms.png`, {
+          fullPage: true,
+          animations: 'allow',
+        })
+      }
+    })
+  }
+})

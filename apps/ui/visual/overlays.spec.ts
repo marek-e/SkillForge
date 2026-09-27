@@ -552,3 +552,176 @@ test.describe('floating keyboard', () => {
     })
   }
 })
+
+/**
+ * `menus-extra` (PR 13).
+ *
+ * `DropdownMenuContent` and `ContextMenuContent` live in a portal, so the
+ * `menus-extra` gallery section only holds closed triggers and every open
+ * state is captured here, full page. The states pinned are the ones the
+ * `overlays` section never reaches: a focused item of each kind (Radix focuses
+ * an item on pointer move, which is what paints `focus:bg-accent`), a focused
+ * `destructive` item, `data-inset` items, an open submenu, all four
+ * `data-[side]` placements — each one a different enter-animation offset — and
+ * a context menu opened against the bottom edge of the viewport, where Radix
+ * flips the side and recomputes the transform origin.
+ */
+test.describe('menus-extra', () => {
+  const DROPDOWN_CONTENT = '[data-slot="dropdown-menu-content"]'
+  const DROPDOWN_SUB_CONTENT = '[data-slot="dropdown-menu-sub-content"]'
+  const CONTEXT_CONTENT = '[data-slot="context-menu-content"]'
+  const CONTEXT_SUB_CONTENT = '[data-slot="context-menu-sub-content"]'
+
+  /**
+   * Scrolls the gallery's own scroll container until an element sits just above
+   * the bottom edge of the viewport, so the collision case is anchored the same
+   * way on every run. The layout nests two `<main>` elements; the inner, last
+   * one scrolls (see `helpers.ts`).
+   */
+  async function parkAtViewportBottom(page: Page, selector: string): Promise<void> {
+    await page.evaluate((sel) => {
+      const element = document.querySelector(sel)
+      const mains = document.querySelectorAll('main')
+      const scroller = mains[mains.length - 1]
+      if (!element || !scroller) return
+      scroller.scrollTop += element.getBoundingClientRect().bottom - (window.innerHeight - 8)
+    }, selector)
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => resolve(null))))
+  }
+
+  for (const theme of THEMES) {
+    test(`dropdown rich menu ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'menus-extra', { theme })
+
+      await page.locator('[data-gallery-case="menu-dropdown-rich"] button').click()
+      await page.locator(DROPDOWN_CONTENT).waitFor({ state: 'visible' })
+      await settle(page)
+      await expectShot(page, `menus-extra-dropdown-rich-open-${theme}.png`, { fullPage: true })
+
+      await page.keyboard.press('ArrowDown')
+      await settle(page)
+      await expectShot(page, `menus-extra-dropdown-rich-first-focus-${theme}.png`, {
+        fullPage: true,
+      })
+
+      await page
+        .locator(
+          '[data-slot="dropdown-menu-item"][data-variant="destructive"]:not([data-disabled])'
+        )
+        .first()
+        .hover()
+      await settle(page)
+      await expectShot(page, `menus-extra-dropdown-rich-destructive-focus-${theme}.png`, {
+        fullPage: true,
+      })
+
+      await page.locator('[data-slot="dropdown-menu-checkbox-item"]').first().hover()
+      await settle(page)
+      await expectShot(page, `menus-extra-dropdown-rich-checkbox-focus-${theme}.png`, {
+        fullPage: true,
+      })
+
+      await page.locator('[data-slot="dropdown-menu-sub-trigger"]').hover()
+      await page.locator(DROPDOWN_SUB_CONTENT).waitFor({ state: 'visible' })
+      await settle(page)
+      await expectShot(page, `menus-extra-dropdown-rich-submenu-${theme}.png`, { fullPage: true })
+
+      await page.keyboard.press('ArrowRight')
+      await settle(page)
+      await expectShot(page, `menus-extra-dropdown-rich-submenu-focus-${theme}.png`, {
+        fullPage: true,
+      })
+    })
+
+    test(`dropdown keyboard open ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'menus-extra', { theme })
+
+      await page.locator('[data-gallery-case="menu-dropdown-rich"] button').focus()
+      await page.keyboard.press('Enter')
+      await page.locator(DROPDOWN_CONTENT).waitFor({ state: 'visible' })
+      await settle(page)
+      await expectShot(page, `menus-extra-dropdown-keyboard-open-${theme}.png`, { fullPage: true })
+    })
+
+    test(`dropdown inset menu ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'menus-extra', { theme })
+
+      await page.locator('[data-gallery-case="menu-dropdown-inset"] button').click()
+      await page.locator(DROPDOWN_CONTENT).waitFor({ state: 'visible' })
+      await settle(page)
+      await expectShot(page, `menus-extra-dropdown-inset-open-${theme}.png`, { fullPage: true })
+
+      await page.locator('[data-slot="dropdown-menu-sub-trigger"]').hover()
+      await page.locator(DROPDOWN_SUB_CONTENT).waitFor({ state: 'visible' })
+      await settle(page)
+      await expectShot(page, `menus-extra-dropdown-inset-submenu-${theme}.png`, { fullPage: true })
+    })
+
+    for (const side of ['top', 'right', 'bottom', 'left'] as const) {
+      test(`dropdown side ${side} ${theme}`, async ({ page }) => {
+        await gotoGallery(page, 'menus-extra', { theme })
+
+        await page.locator(`[data-gallery-case="menu-dropdown-side-${side}"] button`).click()
+        await page.locator(DROPDOWN_CONTENT).waitFor({ state: 'visible' })
+        await settle(page)
+        await expectShot(page, `menus-extra-dropdown-side-${side}-${theme}.png`, { fullPage: true })
+      })
+    }
+
+    test(`context menu rich ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'menus-extra', { theme })
+
+      await page
+        .locator('[data-gallery-case="menu-context-rich"] [data-slot="context-menu-trigger"]')
+        .click({ button: 'right' })
+      await page.locator(CONTEXT_CONTENT).waitFor({ state: 'visible' })
+      await settle(page)
+      await expectShot(page, `menus-extra-context-rich-open-${theme}.png`, { fullPage: true })
+
+      await page.keyboard.press('ArrowDown')
+      await settle(page)
+      await expectShot(page, `menus-extra-context-rich-first-focus-${theme}.png`, {
+        fullPage: true,
+      })
+
+      await page
+        .locator('[data-slot="context-menu-item"][data-variant="destructive"]:not([data-disabled])')
+        .first()
+        .hover()
+      await settle(page)
+      await expectShot(page, `menus-extra-context-rich-destructive-focus-${theme}.png`, {
+        fullPage: true,
+      })
+
+      await page.locator('[data-slot="context-menu-sub-trigger"]').hover()
+      await page.locator(CONTEXT_SUB_CONTENT).waitFor({ state: 'visible' })
+      await settle(page)
+      await expectShot(page, `menus-extra-context-rich-submenu-${theme}.png`, { fullPage: true })
+    })
+
+    test(`context menu viewport edge ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'menus-extra', { theme })
+
+      const trigger = page.locator(
+        '[data-gallery-case="menu-context-edge"] [data-slot="context-menu-trigger"]'
+      )
+      await trigger.scrollIntoViewIfNeeded()
+      await parkAtViewportBottom(
+        page,
+        '[data-gallery-case="menu-context-edge"] [data-slot="context-menu-trigger"]'
+      )
+
+      const box = await trigger.boundingBox()
+      if (!box) throw new Error('context menu collision trigger has no box')
+      await page.mouse.click(box.x + box.width - 4, box.y + box.height - 4, { button: 'right' })
+      await page.locator(CONTEXT_CONTENT).waitFor({ state: 'visible' })
+      await settle(page)
+      await expectShot(page, `menus-extra-context-edge-open-${theme}.png`, { fullPage: true })
+
+      await page.locator('[data-slot="context-menu-sub-trigger"]').hover()
+      await page.locator(CONTEXT_SUB_CONTENT).waitFor({ state: 'visible' })
+      await settle(page)
+      await expectShot(page, `menus-extra-context-edge-submenu-${theme}.png`, { fullPage: true })
+    })
+  }
+})

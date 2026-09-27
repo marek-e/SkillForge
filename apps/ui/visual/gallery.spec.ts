@@ -28,6 +28,7 @@ const SECTIONS = [
   'tokens',
   'overlays-sheet-drawer',
   'floating-extra',
+  'menus-extra',
 ] as const
 
 const BUTTON_VARIANTS = ['default', 'outline', 'secondary', 'ghost', 'destructive', 'link'] as const

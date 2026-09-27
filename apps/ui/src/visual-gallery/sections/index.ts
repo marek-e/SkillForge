@@ -14,6 +14,7 @@ import { FormsExtraSection } from './forms-extra'
 import { FormsSection } from './forms'
 import { FormsTogglesSection } from './forms-toggles'
 import { OverlaysExtraSection } from './overlays-extra'
+import { MenusExtraSection } from './menus-extra'
 import { OverlaysSection } from './overlays'
 import { OverlaysSheetDrawerSection } from './overlays-sheet-drawer'
 import { SidebarPartsSection } from './sidebar-parts'
@@ -88,5 +89,10 @@ export const GALLERY_SECTIONS: GallerySection[] = [
     id: 'floating-extra',
     title: 'Popover, tooltip and hover-card sides, collisions and keyboard',
     Component: FloatingExtraSection,
+  },
+  {
+    id: 'menus-extra',
+    title: 'Menu items, submenus and placement',
+    Component: MenusExtraSection,
   },
 ]
