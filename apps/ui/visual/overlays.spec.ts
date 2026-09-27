@@ -898,3 +898,59 @@ test.describe('selcombo popups', () => {
     })
   }
 })
+
+/**
+ * `CommandDialog` (PR 16).
+ *
+ * The palette renders into the dialog portal, so no element screenshot of the
+ * `command-calendar-extra` section ever holds it. It is also the one caller in
+ * the codebase that overrides half of `DialogContent`'s `translate` pair, and
+ * the only place where `CommandItem`'s `in-data-[slot=dialog-content]:rounded-lg!`
+ * applies — both of which only exist while the dialog is open.
+ */
+/**
+ * The palette lives in the dialog portal, and the section behind it renders
+ * four more of them, so every locator inside these two tests is scoped to the
+ * open panel.
+ */
+const DIALOG = '[data-slot="dialog-content"]'
+
+test.describe('command-calendar-extra overlays', () => {
+  for (const theme of THEMES) {
+    test(`cmdcal command dialog open ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'command-calendar-extra', { theme })
+
+      await page.locator('[data-gallery-case="cmdcal-command-dialog-trigger"] button').click()
+      await page.locator('[data-slot="dialog-content"]').waitFor({ state: 'visible' })
+      await settle(page)
+      await expectShot(page, `cmdcal-command-dialog-open-${theme}.png`, { fullPage: true })
+
+      await page.keyboard.press('ArrowDown')
+      await settle(page)
+      await expectShot(page, `cmdcal-command-dialog-arrow-down-${theme}.png`, { fullPage: true })
+
+      await page.locator(`${DIALOG} [data-slot="command-input"]`).fill('summ')
+      await settle(page)
+      await expectShot(page, `cmdcal-command-dialog-filtered-${theme}.png`, { fullPage: true })
+
+      await page.locator(`${DIALOG} [data-slot="command-input"]`).fill('zzzz')
+      await settle(page)
+      await expectShot(page, `cmdcal-command-dialog-empty-${theme}.png`, { fullPage: true })
+    })
+
+    test(`cmdcal command dialog item hover ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'command-calendar-extra', { theme })
+
+      await page.locator('[data-gallery-case="cmdcal-command-dialog-trigger"] button').click()
+      await page.locator('[data-slot="dialog-content"]').waitFor({ state: 'visible' })
+      await settle(page)
+
+      // Only an enabled item can be hovered: a disabled one carries
+      // `pointer-events: none`, so it is never an actionable target. Its
+      // dimmed state is in every other shot of this panel.
+      await page.locator(`${DIALOG} [data-slot="command-item"]`).nth(1).hover()
+      await settle(page)
+      await expectShot(page, `cmdcal-command-dialog-item-hover-${theme}.png`, { fullPage: true })
+    })
+  }
+})

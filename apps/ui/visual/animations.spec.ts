@@ -506,3 +506,30 @@ test.describe('selcombo animation frames', () => {
     })
   }
 })
+
+/**
+ * `CommandDialog`'s enter frames (PR 16).
+ *
+ * The panel is a `DialogContent` with a caller `className`, so this pins the
+ * same zoom/fade curve as `animation dialog-open` while the overrides
+ * (`top-1/3`, `translate-y-0`, `p-0`) are in force.
+ */
+test.describe('command dialog frames', () => {
+  for (const theme of THEMES) {
+    test(`animation cmdcal-command-dialog-open ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'command-calendar-extra', { theme })
+      await installAnimationFreeze(page)
+
+      await page.locator('[data-gallery-case="cmdcal-command-dialog-trigger"] button').click()
+      await page.locator('[data-slot="dialog-content"]').waitFor({ state: 'attached' })
+
+      for (const frame of FRAMES) {
+        await freezeAnimationsAt(page, frame)
+        await expectShot(page, `animation-cmdcal-command-dialog-open-${theme}-${frame}ms.png`, {
+          fullPage: true,
+          animations: 'allow',
+        })
+      }
+    })
+  }
+})

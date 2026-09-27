@@ -31,6 +31,7 @@ const SECTIONS = [
   'menus-extra',
   'menubar-nav-extra',
   'select-combobox-extra',
+  'command-calendar-extra',
 ] as const
 
 const BUTTON_VARIANTS = ['default', 'outline', 'secondary', 'ghost', 'destructive', 'link'] as const
@@ -516,6 +517,179 @@ test.describe('selcombo trigger states', () => {
         `state-selcombo-combobox-chips-invalid-focus-${theme}.png`
       )
       await invalidChips.blur()
+    })
+  }
+})
+
+/**
+ * `command-calendar-extra` (PR 16).
+ *
+ * The states of `command.tsx` and `calendar.tsx` that only a pointer or the
+ * keyboard reaches. Three of them exist because a property is written twice on
+ * one element and the winner is decided by cascade order rather than by
+ * intent:
+ *
+ * - a hovered **selected** day. `Button`'s `ghost` variant paints
+ *   `hover:bg-muted` / `hover:text-foreground` while `CalendarDayButton` paints
+ *   `data-[selected-single=true]:bg-primary`, and in dark mode a third rule
+ *   (`dark:hover:text-foreground`) outranks the second. All three combinations
+ *   are captured, in both themes, because nothing else in the suite pins them;
+ * - a hovered **range middle** day, where the cell's own `bg-muted` and the
+ *   button's `data-[range-middle=true]:bg-muted` agree and the ghost hover
+ *   must not change that;
+ * - a **keyboard-focused** day. `react-day-picker` puts `data-focused="true"`
+ *   on the *cell*, and the button's ring is written through
+ *   `group-data-[focused=true]/day:` rather than through its own
+ *   `:focus-visible`.
+ *
+ * The month navigation cases exercise the two buttons `buttonVariants` still
+ * styles, by pointer and by keyboard, and the command case is cmdk's own
+ * keyboard selection moving `data-selected` between items.
+ */
+test.describe('command and calendar interactions', () => {
+  for (const theme of THEMES) {
+    test(`cmdcal command keyboard selection ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'command-calendar-extra', { theme })
+
+      const input = page.locator('[data-gallery-case="cmdcal-command-full"] input')
+      await input.focus()
+      await settle(page)
+      await expectCaseShot(page, 'cmdcal-command-full', `state-cmdcal-command-focus-${theme}.png`)
+
+      await page.keyboard.press('ArrowDown')
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'cmdcal-command-full',
+        `state-cmdcal-command-arrow-down-${theme}.png`
+      )
+
+      await input.fill('summ')
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'cmdcal-command-full',
+        `state-cmdcal-command-filtered-${theme}.png`
+      )
+
+      await input.fill('zzzz')
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'cmdcal-command-full',
+        `state-cmdcal-command-no-results-${theme}.png`
+      )
+
+      await page
+        .locator('[data-gallery-case="cmdcal-command-checked"] [data-slot="command-item"]')
+        .nth(1)
+        .hover()
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'cmdcal-command-checked',
+        `state-cmdcal-command-item-hover-${theme}.png`
+      )
+    })
+
+    test(`cmdcal calendar day states ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'command-calendar-extra', { theme })
+
+      const plainDay = page
+        .locator('[data-gallery-case="cmdcal-calendar-nav-target"] button[data-day]')
+        .nth(10)
+      await plainDay.hover()
+      await expectCaseShot(
+        page,
+        'cmdcal-calendar-nav-target',
+        `state-cmdcal-calendar-day-hover-${theme}.png`
+      )
+
+      const selectedDay = page.locator(
+        '[data-gallery-case="cmdcal-calendar-in-card"] button[data-selected-single="true"]'
+      )
+      await selectedDay.hover()
+      await expectCaseShot(
+        page,
+        'cmdcal-calendar-in-card',
+        `state-cmdcal-calendar-selected-hover-${theme}.png`
+      )
+
+      const middleDay = page
+        .locator(
+          '[data-gallery-case="cmdcal-calendar-range-weeks"] button[data-range-middle="true"]'
+        )
+        .nth(2)
+      await middleDay.hover()
+      await expectCaseShot(
+        page,
+        'cmdcal-calendar-range-weeks',
+        `state-cmdcal-calendar-range-middle-hover-${theme}.png`
+      )
+
+      const startDay = page.locator(
+        '[data-gallery-case="cmdcal-calendar-range-weeks"] button[data-range-start="true"]'
+      )
+      await startDay.hover()
+      await expectCaseShot(
+        page,
+        'cmdcal-calendar-range-weeks',
+        `state-cmdcal-calendar-range-start-hover-${theme}.png`
+      )
+
+      // `data-focused="true"` lands on the *cell*, and only after a keyboard
+      // move: the effect in `CalendarDayButton` then pulls focus to the button.
+      const firstDay = page
+        .locator('[data-gallery-case="cmdcal-calendar-nav-target"] button[data-day]')
+        .first()
+      await firstDay.focus()
+      await page.keyboard.press('ArrowRight')
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'cmdcal-calendar-nav-target',
+        `state-cmdcal-calendar-day-keyboard-focus-${theme}.png`
+      )
+    })
+
+    test(`cmdcal calendar month navigation ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'command-calendar-extra', { theme })
+
+      const target = '[data-gallery-case="cmdcal-calendar-nav-target"]'
+      const previous = page.locator(`${target} [data-slot="calendar"] .rdp-button_previous`)
+      const next = page.locator(`${target} [data-slot="calendar"] .rdp-button_next`)
+
+      await previous.hover()
+      await expectCaseShot(
+        page,
+        'cmdcal-calendar-nav-target',
+        `state-cmdcal-calendar-nav-hover-${theme}.png`
+      )
+
+      await next.focus()
+      await expectCaseShot(
+        page,
+        'cmdcal-calendar-nav-target',
+        `state-cmdcal-calendar-nav-focus-${theme}.png`
+      )
+
+      await next.click()
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'cmdcal-calendar-nav-target',
+        `state-cmdcal-calendar-next-month-${theme}.png`
+      )
+
+      await previous.focus()
+      await page.keyboard.press('Enter')
+      await page.keyboard.press('Enter')
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'cmdcal-calendar-nav-target',
+        `state-cmdcal-calendar-keyboard-month-${theme}.png`
+      )
     })
   }
 })

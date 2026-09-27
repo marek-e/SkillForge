@@ -3,6 +3,7 @@ import { AppDialogsSection } from './app-dialogs'
 import { AppSection } from './app'
 import { ButtonsExtraSection } from './buttons-extra'
 import { ButtonsSection } from './buttons'
+import { CommandCalendarExtraSection } from './command-calendar-extra'
 import { CanarySection } from './canary'
 import { DataDisplayExtraSection } from './data-display-extra'
 import { DataDisplaySection } from './data-display'
@@ -106,5 +107,10 @@ export const GALLERY_SECTIONS: GallerySection[] = [
     id: 'select-combobox-extra',
     title: 'Select triggers, popups, combobox inputs and chips',
     Component: SelectComboboxExtraSection,
+  },
+  {
+    id: 'command-calendar-extra',
+    title: 'Command palette parts and calendar day states',
+    Component: CommandCalendarExtraSection,
   },
 ]
