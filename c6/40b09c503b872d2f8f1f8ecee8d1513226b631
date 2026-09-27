@@ -1,0 +1,19 @@
+docs/stylex-migration/row-brief.md
+  s_98c1f7bc58c094::t_761f96f593e1f4 8,24,32,50,54,67,69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c640b09c503b872d2f8f1f8ecee8d1513226b631",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
