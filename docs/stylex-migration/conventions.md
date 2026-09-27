@@ -1,7 +1,8 @@
 # StyleX migration conventions
 
 Shared rules for every migration PR. Read `docs/stylex-migration-plan.md` first; this file
-records the decisions taken so each PR does not re-derive them. Findings below were verified
+records the decisions taken so each PR does not re-derive them. The per-row worktree protocol
+lives in [`row-brief.md`](row-brief.md). Findings below were verified
 against `@stylexjs/babel-plugin` / `@stylexjs/unplugin` 0.19.1.
 
 ## Toolchain
@@ -44,6 +45,10 @@ _Wired up and verified in [PR 01](pr-01.md)._
   (`twMerge`) behaviour. Unlayered global rules (`.drag`, the `.electron-app` offsets) still beat
   everything; they live in `src/styles/global.css` and are migrated with the components that
   own them (`.drag`/`.no-drag` in PR 20, the `.electron-app` sidebar offsets in PR 17).
+- **An unlayered third-party stylesheet outranks Tailwind and StyleX equally.** vaul injects its
+  own drawer-overlay rules outside any layer, so its `0.5s`/`cubic-bezier(0.32, 0.72, 0, 1)` beat
+  `animate-in` before the migration and the StyleX longhands after it — the translation is inert
+  either way. Verify a library-driven element stays inert rather than assuming it (PR 11).
 - StyleX CSS is collected **at transform time**, not from the final module graph: rules from a
   module the bundler later tree-shakes still ship in the CSS asset. `visual:check-gallery` only
   proves that gallery _code_ is absent from the bundle, never that its CSS is.
@@ -114,53 +119,64 @@ const styles = stylex.create({
   rule no element renders **and** an `--ease-out` entry in the `:root` token block. Accept it,
   measure that it changes no pixel, and say so in the PR notes — the alternative is either losing
   the value or losing the coverage.
+- **Keep every surviving Tailwind class in a named `const`.** The scanner reads comments as well
+  as code, so a comment merely naming `text-sm` for a class the migration just removed re-emits
+  the utility anyway (PR 10).
+- **A comment may only name the utility the source actually had, variant prefix included.** A
+  _bare_ utility named in a comment for a class the file only ever used behind a variant prefix
+  emits a rule that never existed. Copy the full original class into the comment, never a
+  paraphrase of it (PR 11).
+- **A comment may not name a `--*` theme variable either.** Writing `--animate-in` while
+  explaining an `animation` shorthand added two lines to the built `@theme` block; reword around
+  it instead (PR 13).
 
 ## Selector mapping (all verified to compile)
 
-| Tailwind                                   | StyleX key inside a property value object                                                                                                                        |
-| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `hover:x`                                  | `'@media (hover: hover)': { default: null, ':hover': … }` — see "`hover:` **is** wrapped" below                                                                  |
-| `[a]:hover:x` (arbitrary variant)          | `':is(a)'` inside the same media query; `[a]:` compiles to `&:is(a)`                                                                                             |
-| `[&>a:hover]:x` (arbitrary **selector**)   | `':is(*)>a:hover'` — no media query; the wrapper comes from the `hover:` _variant_, not from the `:hover` pseudo-class                                           |
-| `focus-visible:` / `disabled:` / `active:` | `':focus-visible'`, `':disabled'`, `':active'`                                                                                                                   |
-| `dark:x`                                   | `':is(.dark *)'` (same shape/specificity as `@custom-variant dark (&:is(.dark *))`)                                                                              |
-| `data-[state=open]:x`                      | `'[data-state="open"]'`                                                                                                                                          |
-| `aria-invalid:x` / `aria-expanded:x`       | `':is([aria-invalid="true"])'` / `':is([aria-expanded="true"])'`                                                                                                 |
-| `has-data-[icon=inline-end]:x`             | `':has([data-icon="inline-end"])'`                                                                                                                               |
-| `has-[>svg]:x`                             | `':has(>svg)'`                                                                                                                                                   |
-| `in-data-[slot=button-group]:x`            | `':is([data-slot="button-group"] *)'`                                                                                                                            |
-| `group-data-[x=y]/name:`                   | `':is(.group\\/name[data-x="y"] *)'` while the group class exists; switch to `[data-slot=…]` when the group owner migrates                                       |
-| `peer-*:`                                  | `':is(.peer:checked ~ *)'` etc. (`:is()` accepts complex selectors)                                                                                              |
-| `[&_svg]:x` (descendant)                   | `':is(*) svg'` → compiles to `.cls:is(*) svg { … }`                                                                                                              |
-| `[&>svg]:x` (child)                        | `':is(*)>svg'`                                                                                                                                                   |
-| `[&_svg:not([class*='size-'])]:size-4`     | `':is(*) svg:not([class*="size-"])'`                                                                                                                             |
-| `*:x`                                      | `':is(*)>*'`                                                                                                                                                     |
-| `sm:` `md:` `lg:`                          | `'@media (width >= 40rem)'`, `'@media (width >= 48rem)'`, `'@media (width >= 64rem)'`                                                                            |
-| `motion-reduce:`                           | `'@media (prefers-reduced-motion: reduce)'`                                                                                                                      |
-| `bg-primary/80`                            | `color-mix(in oklab, var(--primary) 80%, transparent)`                                                                                                           |
-| `ring-3 ring-ring/50`                      | `boxShadow: '0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent)'` (append existing `shadow-*` value after it, in the same order Tailwind composes them) |
-| `animate-in fade-in-0 zoom-in-95` etc.     | `stylex.keyframes` + exact durations/easings copied from `tw-animate-css`                                                                                        |
-| `size-4`                                   | `width: '1rem', height: '1rem'`                                                                                                                                  |
-| `placeholder:x`                            | `'::placeholder'` (a top-level key in the style object)                                                                                                          |
-| `file:x`                                   | `'::file-selector-button'` — compiles, and lands in the 8000/9000 priority range (see below)                                                                     |
-| `last:x` / `nth-last-2:x`                  | `':last-child'` / `':nth-last-child(2)'`                                                                                                                         |
-| `[[data-variant=legend]+&]:x`              | `':is([data-variant="legend"]+*)'` — a preceding-sibling prefix has to go inside `:is()`, because a StyleX key is appended to the class                          |
-| `[.border-b]:x`                            | `':is(.border-b)'`                                                                                                                                               |
-| `has-disabled:x`                           | `':has(:disabled)'`                                                                                                                                              |
-| `has-data-checked:x`                       | `':has(:where([data-state="checked"]), :where([data-checked]:not([data-checked="false"])))'` — a `shadcn/tailwind.css` custom variant; read it off the built CSS |
-| `*:data-[slot=x]:y`                        | `':is(*)>[data-slot="x"]'`                                                                                                                                       |
-| `has-[>[data-align=x]]:[&>input]:y`        | `':has(>[data-align="x"])>input'`                                                                                                                                |
-| `group-has-data-horizontal/field:x`        | `':is(.group\\/field:has([data-orientation="horizontal"]) *)'`                                                                                                   |
-| `@container/name`                          | `containerType: 'inline-size', containerName: 'name'`                                                                                                            |
-| `@md/name:x`                               | `'@container name (min-width: 28rem)'` — compiles; worth +300 priority and a doubled class selector                                                              |
-| `[&>tr]:last:x`                            | `':is(*)>tr:last-child'` — the `last:` variant applies first, then the arbitrary selector                                                                        |
-| `data-horizontal:` / `data-vertical:`      | `':is([data-orientation="horizontal"])'` / `':is([data-orientation="vertical"])'` — `shadcn/tailwind.css` custom variants (`&:where(…)`)                         |
-| `data-active:x`                            | `':is([data-state="active"])'` — the same custom-variant family; Radix never writes the `data-active` arm                                                        |
-| `not-last:x`                               | `':not(:last-child)'`                                                                                                                                            |
-| `aria-[orientation=vertical]:x`            | `':is([aria-orientation="vertical"])'` — an arbitrary variant, so a plain attribute selector on the element itself                                               |
-| `**:data-[slot=x]:y`                       | `':is(*) [data-slot="x"]'`, or the declaration moved onto the element when the file renders it                                                                   |
-| `[&[attr]>div]:x`                          | `':is([attr])>div'` on the parent                                                                                                                                |
-| `after:x` / `before:x`                     | a `'::after'` / `'::before'` **top-level key**, with `content: '""'` — see "`after:` always writes `content`" below                                              |
+| Tailwind                                   | StyleX key inside a property value object                                                                                                                                                                                                |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `hover:x`                                  | `'@media (hover: hover)': { default: null, ':hover': … }` — see "`hover:` **is** wrapped" below                                                                                                                                          |
+| `[a]:hover:x` (arbitrary variant)          | `':is(a)'` inside the same media query; `[a]:` compiles to `&:is(a)`                                                                                                                                                                     |
+| `[&>a:hover]:x` (arbitrary **selector**)   | `':is(*)>a:hover'` — no media query; the wrapper comes from the `hover:` _variant_, not from the `:hover` pseudo-class                                                                                                                   |
+| `focus-visible:` / `disabled:` / `active:` | `':focus-visible'`, `':disabled'`, `':active'`                                                                                                                                                                                           |
+| `dark:x`                                   | `':is(.dark *)'` (same shape/specificity as `@custom-variant dark (&:is(.dark *))`)                                                                                                                                                      |
+| `data-[state=open]:x`                      | `'[data-state="open"]'`                                                                                                                                                                                                                  |
+| `data-open:x` / `data-closed:x`            | `':is(:where([data-state="open"]), :where([data-open]:not([data-open="false"])))'` — `switch.tsx`/`checkbox.tsx` (PR 06) instead use the un-`:where()`'d `':is([data-state="checked"], …)'`, one specificity class higher (PR 11, PR 12) |
+| `aria-invalid:x` / `aria-expanded:x`       | `':is([aria-invalid="true"])'` / `':is([aria-expanded="true"])'`                                                                                                                                                                         |
+| `has-data-[icon=inline-end]:x`             | `':has([data-icon="inline-end"])'`                                                                                                                                                                                                       |
+| `has-[>svg]:x`                             | `':has(>svg)'`                                                                                                                                                                                                                           |
+| `in-data-[slot=button-group]:x`            | `':is([data-slot="button-group"] *)'`                                                                                                                                                                                                    |
+| `group-data-[x=y]/name:`                   | `':is(.group\\/name[data-x="y"] *)'` while the group class exists; switch to `[data-slot=…]` when the group owner migrates                                                                                                               |
+| `peer-*:`                                  | `':is(.peer:checked ~ *)'` etc. (`:is()` accepts complex selectors)                                                                                                                                                                      |
+| `[&_svg]:x` (descendant)                   | `':is(*) svg'` → compiles to `.cls:is(*) svg { … }`                                                                                                                                                                                      |
+| `[&>svg]:x` (child)                        | `':is(*)>svg'`                                                                                                                                                                                                                           |
+| `[&_svg:not([class*='size-'])]:size-4`     | `':is(*) svg:not([class*="size-"])'`                                                                                                                                                                                                     |
+| `*:x`                                      | `':is(*)>*'`                                                                                                                                                                                                                             |
+| `sm:` `md:` `lg:`                          | `'@media (width >= 40rem)'`, `'@media (width >= 48rem)'`, `'@media (width >= 64rem)'`                                                                                                                                                    |
+| `motion-reduce:`                           | `'@media (prefers-reduced-motion: reduce)'`                                                                                                                                                                                              |
+| `bg-primary/80`                            | `color-mix(in oklab, var(--primary) 80%, transparent)`                                                                                                                                                                                   |
+| `ring-3 ring-ring/50`                      | `boxShadow: '0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent)'` (append existing `shadow-*` value after it, in the same order Tailwind composes them)                                                                         |
+| `animate-in fade-in-0 zoom-in-95` etc.     | `stylex.keyframes` + exact durations/easings copied from `tw-animate-css`                                                                                                                                                                |
+| `size-4`                                   | `width: '1rem', height: '1rem'`                                                                                                                                                                                                          |
+| `placeholder:x`                            | `'::placeholder'` (a top-level key in the style object)                                                                                                                                                                                  |
+| `file:x`                                   | `'::file-selector-button'` — compiles, and lands in the 8000/9000 priority range (see below)                                                                                                                                             |
+| `last:x` / `nth-last-2:x`                  | `':last-child'` / `':nth-last-child(2)'`                                                                                                                                                                                                 |
+| `[[data-variant=legend]+&]:x`              | `':is([data-variant="legend"]+*)'` — a preceding-sibling prefix has to go inside `:is()`, because a StyleX key is appended to the class                                                                                                  |
+| `[.border-b]:x`                            | `':is(.border-b)'`                                                                                                                                                                                                                       |
+| `has-disabled:x`                           | `':has(:disabled)'`                                                                                                                                                                                                                      |
+| `has-data-checked:x`                       | `':has(:where([data-state="checked"]), :where([data-checked]:not([data-checked="false"])))'` — a `shadcn/tailwind.css` custom variant; read it off the built CSS                                                                         |
+| `*:data-[slot=x]:y`                        | `':is(*)>[data-slot="x"]'`                                                                                                                                                                                                               |
+| `has-[>[data-align=x]]:[&>input]:y`        | `':has(>[data-align="x"])>input'`                                                                                                                                                                                                        |
+| `group-has-data-horizontal/field:x`        | `':is(.group\\/field:has([data-orientation="horizontal"]) *)'`                                                                                                                                                                           |
+| `@container/name`                          | `containerType: 'inline-size', containerName: 'name'`                                                                                                                                                                                    |
+| `@md/name:x`                               | `'@container name (min-width: 28rem)'` — compiles; worth +300 priority and a doubled class selector                                                                                                                                      |
+| `[&>tr]:last:x`                            | `':is(*)>tr:last-child'` — the `last:` variant applies first, then the arbitrary selector                                                                                                                                                |
+| `data-horizontal:` / `data-vertical:`      | `':is([data-orientation="horizontal"])'` / `':is([data-orientation="vertical"])'` — `shadcn/tailwind.css` custom variants (`&:where(…)`)                                                                                                 |
+| `data-active:x`                            | `':is([data-state="active"])'` — the same custom-variant family; Radix never writes the `data-active` arm                                                                                                                                |
+| `not-last:x`                               | `':not(:last-child)'`                                                                                                                                                                                                                    |
+| `aria-[orientation=vertical]:x`            | `':is([aria-orientation="vertical"])'` — an arbitrary variant, so a plain attribute selector on the element itself                                                                                                                       |
+| `**:data-[slot=x]:y`                       | `':is(*) [data-slot="x"]'`, or the declaration moved onto the element when the file renders it                                                                                                                                           |
+| `[&[attr]>div]:x`                          | `':is([attr])>div'` on the parent                                                                                                                                                                                                        |
+| `after:x` / `before:x`                     | a `'::after'` / `'::before'` **top-level key**, with `content: '""'` — see "`after:` always writes `content`" below                                                                                                                      |
 
 Nested conditions are allowed (`':is(.dark *)': { default: …, '@media (hover: hover)': { ':hover': … } }`);
 `default` is mandatory at every level. Descendant keys are a compiler pass-through hack: keep
@@ -206,6 +222,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   list the remaining callers in the PR notes.
 - Runtime values (widths, transforms, CSS vars) that are inline styles today stay inline styles
   (StyleX dynamic styles are fine: `stylex.create({ w: (w: string) => ({ width: w }) })`).
+- A caller can overwrite `data-slot`: a component that spreads `...props` after setting its own
+  `data-slot` has no fixed hook once a caller passes its own — `sidebar.tsx` passes
+  `data-slot="sidebar"` after `SheetContent` set `data-slot="sheet-content"`, so the mobile sheet
+  matches none of the selectors written against the other slot (PR 11).
 
 ## Value traps
 
@@ -249,6 +269,16 @@ lightningcss folds it to five decimals and moves the addon's _own_ line box off 
 different font size and no line height of its own, the paired `text-*` **stays a Tailwind class**.
 Check the call sites before converting a `text-*` on a container.
 
+**Exception to the exception:** `text-base`'s ratio is `calc(1.5 / 1)`, which folds to exactly
+`1.5` — the five-decimal rounding the length rule exists to avoid cannot happen there, so
+`text-base` is the one paired line-height allowed to stay a ratio and keep its inheritable
+behaviour (PR 11).
+
+**A third shape of the descendant exception:** not a descendant the component renders itself, but
+a whole other component a caller drops inside it. `calendar.tsx`'s `text-[0.8rem]` weekday cells
+inherit their line height from the `PopoverContent` a caller puts them in — check what a
+component's callers render _inside_ it, not only what it renders itself (PR 12).
+
 _PR 09 hit it four times_ — `TabsTrigger`, `TabsContent`, `AccordionTrigger` and the accordion
 body — and its **first probe missed it**. A `Button size="sm"` inside those containers inherits the
 line height and changes nothing a screenshot can see, because a button has a fixed height. The
@@ -274,6 +304,10 @@ the same reason. StyleX emits both forms unchanged.
 The corollary: converting a `px-*` to `paddingLeft`/`paddingRight` also makes the component's own
 rule beat a caller's `px-*` utility, which the cascade layer would otherwise let win. Same trap,
 seen from the caller's side.
+
+The same split applies to negative margins: `-mx-4` compiles to `margin-inline` and `-mb-4` to
+`margin-bottom` — keep Tailwind's own choice per utility here too, and give a wrapped child's box
+adjustment to the component's `sx` prop rather than a second class list (PR 10).
 
 ### `twMerge` used to delete the base declaration; StyleX only overrides it
 
@@ -413,6 +447,30 @@ and fills the unused slots with `0 0 #0000`. Writing the no-op slots out keeps t
   '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent), 0 0 #0000',
 ```
 
+### Shadow colours, and a literal `color-mix()` gets folded
+
+_Found in [PR 10](pr-10.md) and [PR 11](pr-11.md)._
+
+Write a shadow colour the way Tailwind writes it: `rgb(0 0 0 / 0.1)`, never the hex-alpha form
+`#0000001a`. Chromium serialises the hex alpha as `0.102` (26/255) and lightningcss does not
+minify the percentage form back to hex, so the two survive into the built asset as visibly
+different strings even though they compute to the same colour (PR 11).
+
+A literal `color-mix()` is folded at build time too: `bg-black/10` written with a literal `#000`
+becomes `#0000001a` / `lab(0% 0 0 / .1)`, where Tailwind's own `color-mix(in oklab, …)` reports
+`oklab(0 0 0 / 0.1)`. Every pixel still matches, but a computed-style dump does not — keep a
+`var()` inside the `color-mix()` whenever the computed string itself must match (PR 10).
+
+### `outline-hidden` needs longhands, not the shorthand
+
+_Found in [PR 12](pr-12.md)._
+
+`outline-hidden`'s `@media (forced-colors: active)` branch is `outline: 2px solid transparent` — a
+shorthand — but a StyleX condition attaches to one property at a time. Write it as four
+conditional longhands instead of the shorthand. (A snapshot's `outline-width: 3px` /
+`outline-color: oklab(0.708 0 0 / 0.5)` seen outside that condition comes from an unrelated global
+rule, not from the component.)
+
 ### `after:` always writes `content`, and where it writes it decides whether the pseudo exists
 
 _Found in [PR 09](pr-09.md)._
@@ -448,6 +506,24 @@ nothing: `data-active:bg-background` is `.x:where([data-state="active"])`, i.e. 
 ordinary `group-data-[…]:` rule next to it is (0,2,0). In `tabs.tsx` that means a trigger inside a
 `line` list is transparent **whether it is active or not** — the active rule never gets a turn.
 Read the specificity, not the variant name.
+
+### Specificity is not nesting depth
+
+_Found in [PR 10](pr-10.md) and [PR 13](pr-13.md)._
+
+Tailwind resolves competing rules of otherwise-equal weight by selector **specificity**; StyleX
+resolves them by the priority table above, which is really **nesting depth** of the condition. The
+two orders coincide often enough to hide the difference, but not always:
+
+- **`overflow` vs `overflow-y`.** Tailwind lets the longhand win when both are unconditional
+  utilities, because it is emitted later; StyleX ranks the shorthand's priority _below_ the
+  longhand's regardless of source order. Where the two properties compete under a condition (e.g.
+  a `data-*:overflow-hidden` beside a plain `overflow-y`), write the conditional rule on the
+  longhand it actually contests, not the shorthand (PR 13).
+- **`dark:` nested inside an attribute key** (e.g. `data-[variant=x]:dark:y`) outranks a bare
+  `dark:` on the same property, because the attribute selector's priority (5000) sits above the
+  nested `:is(.dark *)` condition's (2040 + nesting) — read the priority table, not the variant
+  names, to see which one wins (PR 13).
 
 ## A rule that styles a foreign element stays Tailwind
 
@@ -548,6 +624,26 @@ An infinite animation also makes any computed-style dump non-deterministic — a
 `opacity` is wherever the compositor clock was. Freeze the page at 0 ms before collecting, in the
 test and in a live probe alike.
 
+**One `stylex.keyframes` per enter-modifier combination.** `tw-animate-css` parameterises a
+single `enter` (and `exit`) keyframes block through `--tw-enter-*`/`--tw-exit-*` custom properties
+that each `fade-*`/`zoom-*`/`slide-in-from-*` utility sets one of; a StyleX keyframes body is
+fixed, so every reachable combination needs its own block, with the resolved
+translate/scale/blur values substituted and the untouched axes/slots spelled out at their initial
+value (e.g. `scale3d(1, 1, 1)`, `rotate(0)`, `blur(0)` — `filter: blur(0)` is not `filter: none`).
+Put the resulting `animationName` behind a two-level condition — state (`data-open:`/
+`data-closed:`) outside, `data-side` inside. Identical bodies dedupe by content hash across files
+and across components, so sibling components sharing an animation cost nothing extra
+(PR 10, PR 12, PR 13).
+
+**`duration-N` sets two things.** It writes both `--tw-duration` (which the `animation` shorthand
+reads) and `transition-duration` directly. A component that combines `animate-in` with a
+`duration-*` utility needs both `animationDuration` **and** `transitionDuration` in StyleX; missing
+one only shows up in a computed-style snapshot (PR 12).
+
+**lightningcss rewrites `blur(0)` to `blur()`** inside a keyframes body. Both are valid — the
+Filter Effects grammar is `blur( <length>? )` with a `0` default — but expect the built CSS to
+differ textually from what was authored; `rotate(0)` is kept as written (PR 12).
+
 ## Gallery cases are append-only per section
 
 `gallery.spec.ts` captures one **full-page** screenshot per section on top of the per-case
@@ -578,6 +674,11 @@ its original by a one-pixel shift of the entire image. PR 05 had to recapture th
 states of `forms-extra` for exactly that reason. The symptom is a diff image where the whole border
 lights up; the cause is upstream of the case, not in it.
 
+Give a new gallery section and every one of its new tests one distinctive token in their names
+(e.g. `menus-extra`, `floating`). It lets `-g <token>` select exactly the new tests, which the
+"capture originals on the clean base first" step needs in a worktree where nothing else may be
+checked out (PR 12).
+
 ## Verification per PR
 
 1. `pnpm typecheck && pnpm lint && pnpm format && pnpm knip`
@@ -592,3 +693,13 @@ lights up; the cause is upstream of the case, not in it.
 5. Write `docs/stylex-migration/pr-XX.md` with touched files, cases, baseline commit `ee0f797`,
    Chromium build, pre-existing defects noticed (never fixed), commands and observations.
 6. One commit per PR; conventional commit message; no AI attribution trailers.
+
+Operational notes:
+
+- Run `visual:check-originals` immediately after a full suite run, not later (PR 13).
+- A dev server left listening on 4320 is silently reused by Playwright's `reuseExistingServer`;
+  stop it before a `VISUAL_BUILD=1` (production) run, or the suite tests dev code against a
+  production URL (PR 10).
+- Animation-frame and `route * error` cases are load-sensitive — a 0 ms frame or a TanStack
+  backoff wait can fail under machine load. Rerun the failing case in isolation; never touch an
+  original to make it pass (PR 10, PR 11).
