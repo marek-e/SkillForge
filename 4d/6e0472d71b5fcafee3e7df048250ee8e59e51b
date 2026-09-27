@@ -1,0 +1,42 @@
+apps/ui/src/visual-gallery/sections/command-calendar-extra.tsx
+  s_98c1f7bc58c094::t_84c43591df31f8 1-233
+  s_98c1f7bc58c094::t_e9ae42fe41d7f8 234-237
+docs/stylex-migration/pr-16.md
+  s_98c1f7bc58c094::t_e4728912656fce 1-193
+apps/ui/src/components/ui/command.tsx
+  s_98c1f7bc58c094::t_19243ec8570c75 2,5,17-262,266-267,288,293,304,307,309-310,313-314,318,325-330,334-335,343,346,350-351,359,362,366-367,375,378,382-383,391,395,399-400,404,409-410,414-415
+apps/ui/src/visual-gallery/sections/index.ts
+  s_98c1f7bc58c094::t_f780f852e01b0e 6,99-103
+apps/ui/visual/animations.spec.ts
+  s_98c1f7bc58c094::t_23623f3a3b9c16 425-451
+apps/ui/visual/gallery.spec.ts
+  s_98c1f7bc58c094::t_6a504f8e173e76 32,456-628
+apps/ui/visual/overlays.spec.ts
+  s_98c1f7bc58c094::t_a9ceb99cc04e3d 728-783
+apps/ui/src/components/ui/calendar.tsx
+  s_6f486101b9656b::t_0ab08c51f3f709 2,5,10-389,409-410,422-425,428,433,437,440-443,445,447-451,454-460,462,464-465,472-473,478-479,482-487,489,553-554
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "4d6e0472d71b5fcafee3e7df048250ee8e59e51b",
+  "prompts": {},
+  "sessions": {
+    "s_6f486101b9656b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a85ecb5f65b0e57be",
+        "model": "unknown"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    },
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
