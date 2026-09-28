@@ -1,0 +1,61 @@
+apps/ui/visual/overlays.spec.ts
+  s_98c1f7bc58c094::t_2fd71df7f214a3 771-782
+  s_98c1f7bc58c094::t_2ebb27b158f843 1-10,736-770,783-847
+apps/ui/src/visual-gallery/sections/carousel-toaster-extra.tsx
+  s_98c1f7bc58c094::t_0ecf2c9850dd5a 1-316
+  s_98c1f7bc58c094::t_065fafd5b9a65f 317-327
+apps/ui/src/components/ui/carousel.tsx
+  s_98c1f7bc58c094::t_b18a2b8bc637cf 2,42-152,159,216-217,233-234,246,248-251,254,256-257,264,266-269,276-277,283-292,295,307-312,318,325,337-342,348
+apps/ui/src/components/ui/toaster.tsx
+  s_98c1f7bc58c094::t_9cdb531bee9705 1,4-49,51-53,59-60,62-65
+docs/stylex-migration/pr-19.md
+  s_98c1f7bc58c094::t_f700d654cbd946 143-146,151-152
+  s_98c1f7bc58c094::t_ff3e4103741db6 206
+  s_98c1f7bc58c094::t_d37a9f4c11511d 17,25-28,30,36,38,49-58,65,69-72,89-95,97,99,103-106,108-111,117,119,123-124,147,153-157,166-168,181,183-186,201,203,207-208
+  s_98c1f7bc58c094::t_82794c117b415e 8,10-12,23-24,41,60-61,78-81,101-102,112-116,120-122,125-129,133-136,175,194-196
+  s_98c1f7bc58c094::t_abca5e216820c1 22,29,66-68,73-77,96,98,100,107,137-138,158,171-174,187-188,197-200,202,204-205
+  s_98c1f7bc58c094::t_f31f3d67ef0fac 148-150
+  s_98c1f7bc58c094::t_c9e6ffb80f68b9 118,130
+  s_98c1f7bc58c094::t_3c49187b3614b4 176
+  s_98c1f7bc58c094::t_0366bffaf1d5dd 1-7,13-16,18-21,31-35,37,40,42-48,59,62-64,82-88,131-132,139-142,159-165,169-170,177-180,182,189-193
+  s_98c1f7bc58c094::t_a84424bda49b22 9
+  s_98c1f7bc58c094::t_ec3a5f74e2a347 39
+apps/ui/src/visual-gallery/sections/index.ts
+  s_98c1f7bc58c094::t_8b937cc3c6cd3d 6,99-103
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-cartoast-carousel-dark.json
+  s_98c1f7bc58c094::t_644f8faba64842 1-263
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-cartoast-carousel-light.json
+  s_98c1f7bc58c094::t_263bcda07441c3 1-263
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-cartoast-toast-dark.json
+  s_98c1f7bc58c094::t_d5b959076d1cc4 1-50
+apps/ui/visual/__originals__/desktop/computed-styles.spec.ts/computed-cartoast-toast-light.json
+  s_98c1f7bc58c094::t_b14231a0512ee0 1-50
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-cartoast-carousel-dark.json
+  s_98c1f7bc58c094::t_edaa94d4a67d98 1-263
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-cartoast-carousel-light.json
+  s_98c1f7bc58c094::t_2a1bbe4f0e7656 1-263
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-cartoast-toast-dark.json
+  s_98c1f7bc58c094::t_ece7c58e81feed 1-50
+apps/ui/visual/__originals__/mobile/computed-styles.spec.ts/computed-cartoast-toast-light.json
+  s_98c1f7bc58c094::t_b6b0c17162847d 1-50
+apps/ui/visual/computed-styles.spec.ts
+  s_98c1f7bc58c094::t_1f827cbea1d0e3 1777-1950
+apps/ui/visual/gallery.spec.ts
+  s_98c1f7bc58c094::t_8c8d427b04cd79 32,456-547
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "d30ea61fd7fa45405bb9f053a7d954c7bdff7f54",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
