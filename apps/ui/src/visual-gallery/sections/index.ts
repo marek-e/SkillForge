@@ -24,6 +24,7 @@ import { SelectComboboxExtraSection } from './select-combobox-extra'
 import { SidebarPartsSection } from './sidebar-parts'
 import { TokensSection } from './tokens'
 import { TypographyExtraSection } from './typography-extra'
+import { ToolsFiltersExtraSection } from './tools-filters-extra'
 import { TypographySection } from './typography'
 
 export interface GallerySection {
@@ -118,5 +119,10 @@ export const GALLERY_SECTIONS: GallerySection[] = [
     id: 'nav-bits-extra',
     title: 'Avatar sizes, breadcrumb overflow and pagination states',
     Component: NavBitsExtraSection,
+  },
+  {
+    id: 'tools-filters-extra',
+    title: 'Tool card data branches and skill-library filter states',
+    Component: ToolsFiltersExtraSection,
   },
 ]

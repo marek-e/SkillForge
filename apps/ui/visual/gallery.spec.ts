@@ -33,6 +33,7 @@ const SECTIONS = [
   'select-combobox-extra',
   'command-calendar-extra',
   'nav-bits-extra',
+  'tools-filters-extra',
 ] as const
 
 const BUTTON_VARIANTS = ['default', 'outline', 'secondary', 'ghost', 'destructive', 'link'] as const
@@ -767,6 +768,102 @@ test.describe('navbits interaction states', () => {
         page,
         'navbits-pagination-full',
         `state-navbits-pagination-next-hover-${theme}.png`
+      )
+    })
+  }
+})
+
+/**
+ * Tool card and skill-library filter interaction states (PR 22), appended as a
+ * new block so no existing test name or original moves.
+ *
+ * Four states no static case can reach: the compact card's hover lift, the
+ * overflow-menu button's hover, a focused search field, and an expanded
+ * accordion body inside `ToolCard`. The last group drives the one filter bar
+ * that owns its state, so selecting a tool, selecting a tag and moving the
+ * display-view switch are captured the way a user produces them.
+ */
+test.describe('toolsx interaction states', () => {
+  for (const theme of THEMES) {
+    test(`toolsx card and filter states ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'tools-filters-extra', { theme })
+
+      await page.locator('[data-gallery-case="toolsx-compact-hover-target"] [role="link"]').hover()
+      await expectCaseShot(
+        page,
+        'toolsx-compact-hover-target',
+        `state-toolsx-card-hover-${theme}.png`
+      )
+
+      await page
+        .locator(
+          '[data-gallery-case="toolsx-compact-menu-target"] [data-slot="dropdown-menu-trigger"]'
+        )
+        .hover()
+      await expectCaseShot(
+        page,
+        'toolsx-compact-menu-target',
+        `state-toolsx-card-menu-hover-${theme}.png`
+      )
+
+      const search = page.locator('[data-gallery-case="toolsx-filter-bar-focus-target"] input')
+      await search.focus()
+      await expectCaseShot(
+        page,
+        'toolsx-filter-bar-focus-target',
+        `state-toolsx-filter-focus-${theme}.png`
+      )
+      await search.blur()
+
+      await page
+        .locator(
+          '[data-gallery-case="toolsx-tool-card-accordion-target"] [data-slot="accordion-trigger"]'
+        )
+        .first()
+        .click()
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'toolsx-tool-card-accordion-target',
+        `state-toolsx-accordion-open-${theme}.png`
+      )
+    })
+
+    test(`toolsx filter selection and view switch ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'tools-filters-extra', { theme })
+
+      const bar = page.locator('[data-gallery-case="toolsx-filter-bar-stateful"]')
+
+      await bar.getByRole('button', { name: 'Cursor' }).click()
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'toolsx-filter-bar-stateful',
+        `state-toolsx-tool-selected-${theme}.png`
+      )
+
+      await bar.getByRole('button', { name: '#git' }).click()
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'toolsx-filter-bar-stateful',
+        `state-toolsx-tag-selected-${theme}.png`
+      )
+
+      await bar.getByRole('button', { name: 'Grid view' }).click()
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'toolsx-filter-bar-stateful',
+        `state-toolsx-view-grid-${theme}.png`
+      )
+
+      await bar.getByRole('button', { name: 'List view' }).click()
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'toolsx-filter-bar-stateful',
+        `state-toolsx-view-list-${theme}.png`
       )
     })
   }
