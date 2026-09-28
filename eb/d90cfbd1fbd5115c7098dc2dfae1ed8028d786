@@ -1,0 +1,33 @@
+apps/ui/src/visual-gallery/sections/tools-filters-extra.tsx
+  s_98c1f7bc58c094::t_c7222f58437a48 1-232
+apps/ui/src/components/ToolCardCompact.tsx
+  s_98c1f7bc58c094::t_ea00b266c28465 1,13,16-172,188-192,207,209-210,214,217,221-222
+  s_98c1f7bc58c094::t_5e316397042330 236,241-243
+apps/ui/src/components/ToolCard.tsx
+  s_98c1f7bc58c094::t_cc8193b37fe497 55-61
+  s_98c1f7bc58c094::t_5f91b5a2efbc01 1,8-54,62-98,127-128,152,154,158-161,165,167-168,173-174,178,190,192,196-198,200,204,208-209
+docs/stylex-migration/pr-22.md
+  s_98c1f7bc58c094::t_b61d5eb9d02e95 1-131
+apps/ui/src/components/skill-library/SkillLibraryFilterBar.tsx
+  s_98c1f7bc58c094::t_1237466e9cbf49 2,14-84,128-129,147,153,162,173,182,192
+apps/ui/src/visual-gallery/sections/index.ts
+  s_98c1f7bc58c094::t_f57616b2e66412 27,123-127
+apps/ui/visual/gallery.spec.ts
+  s_98c1f7bc58c094::t_ba60384eeb957e 36,775-870
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "ebd90cfbd1fbd5115c7098dc2dfae1ed8028d786",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
