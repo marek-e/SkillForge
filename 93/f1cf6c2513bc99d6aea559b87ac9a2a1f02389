@@ -1,0 +1,54 @@
+docs/stylex-migration/pr-26.md
+  s_98c1f7bc58c094::t_af1c7cebee2bdb 48-49
+  s_98c1f7bc58c094::t_bdd5be60ad0aa3 46-47
+  s_98c1f7bc58c094::t_02a1c9360ac767 109-110
+  s_98c1f7bc58c094::t_cd5636c4fd2a4b 114-117
+  s_98c1f7bc58c094::t_ab92d0bce22dc2 119-120
+  s_98c1f7bc58c094::t_8089ad779098f9 10-13
+  s_98c1f7bc58c094::t_67c28c99fa5a71 64-65,75-78
+  s_98c1f7bc58c094::t_c8285bfe3e526a 83-85
+  s_98c1f7bc58c094::t_7b8643d32d6bff 1-7,14,16-17,22,28,32-37,45,50-52,58-61,79-82,89,96-97,99,101-104,111-113
+  s_98c1f7bc58c094::t_2e5467024e128c 106-107
+  s_98c1f7bc58c094::t_5a747c11316743 90-95
+  s_98c1f7bc58c094::t_4edf23be9f21c7 53-57
+  s_98c1f7bc58c094::t_bb9fad0b15cddf 18-19
+  s_98c1f7bc58c094::t_8652c09ccb8e85 66-71
+  s_98c1f7bc58c094::t_60980a45cac9fa 15,23-27,38-40,108,118
+  s_98c1f7bc58c094::t_2caed4b5357821 29-31
+  s_98c1f7bc58c094::t_e153ee41c33081 88
+  s_98c1f7bc58c094::t_1dae3eabdb609b 41
+  s_98c1f7bc58c094::t_9b7dff3903bc7a 21
+  s_98c1f7bc58c094::t_7a87be7f5f9ff1 8-9
+  s_98c1f7bc58c094::t_6e517460689f43 72-74
+  s_98c1f7bc58c094::t_3c8b4ff5ebfe5e 86-87
+  s_98c1f7bc58c094::t_c3f96aa19288b9 20
+  s_98c1f7bc58c094::t_1daf2754e3d07d 62-63
+  s_98c1f7bc58c094::t_f66728fab3d3da 98,100
+  s_98c1f7bc58c094::t_6f82c4c93d596d 105
+  s_98c1f7bc58c094::t_9d15c9f83e5f0d 42-44
+apps/ui/src/routes/tool-detail.tsx
+  s_98c1f7bc58c094::t_1f8fb13e877c76 103-105
+  s_98c1f7bc58c094::t_758750b902b1a8 127-129,133
+  s_98c1f7bc58c094::t_8e48b7a3457c51 1,11,16-65
+  s_98c1f7bc58c094::t_aac53eca13119b 121-125
+  s_98c1f7bc58c094::t_3721bb4e464079 66
+apps/ui/src/routes/tools.tsx
+  s_98c1f7bc58c094::t_29aa22503fe65e 1,11-70,97
+  s_98c1f7bc58c094::t_57bdc272287ad9 98,102,110,112,116,118
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "93f1cf6c2513bc99d6aea559b87ac9a2a1f02389",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
