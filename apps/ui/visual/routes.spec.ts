@@ -1,6 +1,6 @@
 import { test } from '@playwright/test'
 import type { DataMode } from './api-mock'
-import { expectRouteShots, expectShot, gotoRoute, settle, THEMES } from './helpers'
+import { expectRouteShots, expectShot, gotoRoute, preparePage, settle, THEMES } from './helpers'
 
 interface RouteCase {
   id: string
@@ -228,6 +228,70 @@ test.describe('routesskill skill detail states', () => {
       await page.setViewportSize({ width: 320, height: 900 })
       await gotoRoute(page, '/skill-library/skill-alpha', { theme })
       await expectRouteShots(page, `routesskill-skill-detail-narrow-${theme}`)
+    })
+  }
+})
+
+/**
+ * The two states of `/projects/$projectId` the route fixtures cannot reach (PR 30).
+ *
+ * `routes.spec.ts` already freezes the route in populated / empty / loading /
+ * error, and PR 24 froze the overview card's long path and all three project
+ * dialogs as `projectsx` gallery and overlay cases, so the only styling this
+ * route owns that nothing captures is:
+ *
+ * 1. the **skills** skeleton stack. It renders when the project has resolved
+ *    but `useProjectSkills` has not, and `loading` mode hangs every endpoint,
+ *    so the earlier `isPending` branch wins there and this one never shows. A
+ *    second `page.route` registered after the fixture mock — Playwright runs the
+ *    most recently added matching handler first — hangs only the skills request.
+ *    It also freezes the refresh button disabled with its spinning icon.
+ * 2. the four header action buttons on hover. Three of them keep their palette
+ *    colours as Tailwind classes and the fourth passes the same `sx` the table's
+ *    delete action uses, so this is where a wrong `@media (hover: hover)`
+ *    wrapper, a dropped `ghost` arm, or a `group/button` class that stopped
+ *    reaching the star would show on a real page.
+ *
+ * `routesproject` selects exactly these tests.
+ */
+const PROJECT_SKILLS_ENDPOINT =
+  /^https?:\/\/(localhost|127\.0\.0\.1):4321\/api\/projects\/[^/]+\/skills(\?|$)/
+
+const HEADER_ACTIONS = ['favorite', 'rename', 'delete', 'refresh']
+
+test.describe('routesproject route states', () => {
+  for (const theme of THEMES) {
+    test(`routesproject skills pending ${theme}`, async ({ page }) => {
+      await preparePage(page, { theme })
+      await page.route(PROJECT_SKILLS_ENDPOINT, () => {
+        // Deliberately never settled, exactly as `loading` mode does.
+      })
+      await page.goto('/projects/project-alpha', { waitUntil: 'commit' })
+      const main = page.locator('main').last()
+      // The heading proves the project query resolved; the skeleton proves the
+      // skills query has not. `networkidle` is unusable while a request hangs.
+      await main.locator('h1').waitFor({ state: 'visible' })
+      await main.locator('[data-slot="skeleton"]').first().waitFor({ state: 'visible' })
+      await page.evaluate(() => document.fonts.ready)
+      await page.evaluate(
+        () => new Promise((resolve) => requestAnimationFrame(() => resolve(null)))
+      )
+      await expectRouteShots(page, `routesproject-skills-pending-${theme}`)
+    })
+
+    test(`routesproject header action hover ${theme}`, async ({ page }) => {
+      await gotoRoute(page, '/projects/project-alpha', { theme })
+      const buttons = page
+        .locator('main')
+        .last()
+        .locator('h1')
+        .locator('xpath=..')
+        .locator('[data-size="icon-xs"]')
+      for (const [index, action] of HEADER_ACTIONS.entries()) {
+        const button = buttons.nth(index)
+        await button.hover()
+        await expectShot(button, `routesproject-action-${action}-hover-${theme}.png`)
+      }
     })
   }
 })
