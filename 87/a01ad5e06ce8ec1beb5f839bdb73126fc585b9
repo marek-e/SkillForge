@@ -1,0 +1,39 @@
+apps/ui/src/visual-gallery/sections/skills-extra.tsx
+  s_98c1f7bc58c094::t_861d0d513e2ac3 1-194
+docs/stylex-migration/pr-23.md
+  s_98c1f7bc58c094::t_912b296a765e9c 1-7,11,16-17,21,23-25,38-42,45-46,54-55,60-64,74-77,86-89,109
+  s_98c1f7bc58c094::t_822331859f4055 8-10,12-15,18-20,22,26-37,43-44,47-53,56-59,65-73,90-107,111-120
+  s_98c1f7bc58c094::t_18e634ee9d1419 78-85,108,110
+apps/ui/src/components/skills/CreateSkillDialog.tsx
+  s_98c1f7bc58c094::t_62114ada88ef24 2,5,28-59,113,117-118,128,138,146,148,151,160
+apps/ui/src/components/skills/DeleteSkillDialog.tsx
+  s_98c1f7bc58c094::t_f28488ed2d1a72 1,13-19,39-40
+apps/ui/src/components/skills/SkillCard.tsx
+  s_98c1f7bc58c094::t_82958d3e7a914e 1,4,7-129,149,151-153,157-159,166-170,173
+apps/ui/src/components/skills/SkillDetailResourceFiles.tsx
+  s_98c1f7bc58c094::t_1ce33ab2e1b1e9 2,4-5,10-97,120,134,136,145,147-148,151,155
+apps/ui/src/components/skills/TagsInput.tsx
+  s_98c1f7bc58c094::t_2b65756d8069fa 2,5-146,225-226,228,236,239,266,270,281
+apps/ui/src/visual-gallery/sections/index.ts
+  s_98c1f7bc58c094::t_e76aa0d9888b80 25,129-133
+apps/ui/visual/gallery.spec.ts
+  s_98c1f7bc58c094::t_db0346cedfff2b 37,872-984
+apps/ui/visual/overlays.spec.ts
+  s_98c1f7bc58c094::t_9398fb31a476e0 957-1001
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "87a01ad5e06ce8ec1beb5f839bdb73126fc585b9",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
