@@ -954,3 +954,48 @@ test.describe('command-calendar-extra overlays', () => {
     })
   }
 })
+
+/**
+ * The two `CreateSkillDialog` states no existing original reaches (PR 23).
+ *
+ * `app-dialog-create-skill-*` already freezes the empty form, so what is left
+ * is a filled one — a tag row inside the dialog's grid, added with the keyboard
+ * — and the mutation error paragraph, which only renders after a submit has
+ * failed. The failure comes from the `error` fixture mode, which 500s every
+ * endpoint.
+ *
+ * The error case is an **element** shot of the dialog content rather than a
+ * full page: `useCreateSkill` also raises a toast on failure, and that toast
+ * dismisses itself on a timer the capture would race.
+ */
+test.describe('skillsx dialogs', () => {
+  for (const theme of THEMES) {
+    test(`skillsx create dialog filled ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'app-dialogs', { theme })
+      await page.locator('[data-gallery-case="open-create-skill"] button').click()
+      await page.locator('[data-slot="dialog-content"]').waitFor({ state: 'visible' })
+
+      await page.locator('#skill-name').fill('draft-release-notes')
+      await page.locator('#skill-description').fill('Drafts release notes from a changelog.')
+      const tags = page.locator('#skill-tags')
+      await tags.fill('release')
+      await tags.press('Enter')
+      await tags.fill('changelog')
+      await tags.press('Enter')
+      await settle(page)
+      await expectShot(page, `skillsx-create-dialog-filled-${theme}.png`, { fullPage: true })
+    })
+
+    test(`skillsx create dialog error ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'app-dialogs', { theme, data: 'error' })
+      await page.locator('[data-gallery-case="open-create-skill"] button').click()
+      await page.locator('[data-slot="dialog-content"]').waitFor({ state: 'visible' })
+
+      await page.locator('#skill-name').fill('draft-release-notes')
+      await page.getByRole('button', { name: 'Create skill' }).click()
+      const content = page.locator('[data-slot="dialog-content"]')
+      await content.getByText('Fixture runtime is unavailable.').waitFor({ state: 'visible' })
+      await expectShot(content, `skillsx-create-dialog-error-${theme}.png`)
+    })
+  }
+})

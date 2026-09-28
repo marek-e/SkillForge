@@ -22,6 +22,7 @@ import { OverlaysSection } from './overlays'
 import { OverlaysSheetDrawerSection } from './overlays-sheet-drawer'
 import { SelectComboboxExtraSection } from './select-combobox-extra'
 import { SidebarPartsSection } from './sidebar-parts'
+import { SkillsExtraSection } from './skills-extra'
 import { TokensSection } from './tokens'
 import { TypographyExtraSection } from './typography-extra'
 import { ToolsFiltersExtraSection } from './tools-filters-extra'
@@ -124,5 +125,10 @@ export const GALLERY_SECTIONS: GallerySection[] = [
     id: 'tools-filters-extra',
     title: 'Tool card data branches and skill-library filter states',
     Component: ToolsFiltersExtraSection,
+  },
+  {
+    id: 'skills-extra',
+    title: 'Skill card modes, tag rows and resource file lists',
+    Component: SkillsExtraSection,
   },
 ]

@@ -34,6 +34,7 @@ const SECTIONS = [
   'command-calendar-extra',
   'nav-bits-extra',
   'tools-filters-extra',
+  'skills-extra',
 ] as const
 
 const BUTTON_VARIANTS = ['default', 'outline', 'secondary', 'ghost', 'destructive', 'link'] as const
@@ -864,6 +865,119 @@ test.describe('toolsx interaction states', () => {
         page,
         'toolsx-filter-bar-stateful',
         `state-toolsx-view-list-${theme}.png`
+      )
+    })
+  }
+})
+
+/**
+ * `skills-extra` (PR 23), appended as a new block so no existing test name or
+ * original moves.
+ *
+ * The pointer and keyboard states no static case reaches: the two card hover
+ * rules (a ring composed through `Card`'s own `ring-1` in grid mode, a
+ * background in list mode), the tags box's `focus-within` ring, the remove
+ * button's hover colour, a removed tag, a suggestion hovered with the pointer
+ * while the caret stays in the input, a tag added with Enter, and a resource
+ * row hovered and then selected.
+ *
+ * Order matters: every state that changes a case's height comes last, and the
+ * one full-page shot is taken before any of them. The suggestion list is
+ * absolutely positioned and falls outside its case's box, which is why that one
+ * is a page capture.
+ */
+test.describe('skillsx interaction states', () => {
+  for (const theme of THEMES) {
+    test(`skillsx card tag and file states ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'skills-extra', { theme })
+
+      await page
+        .locator('[data-gallery-case="skillsx-card-grid-hover-target"] [data-slot="card"]')
+        .hover()
+      await expectCaseShot(
+        page,
+        'skillsx-card-grid-hover-target',
+        `state-skillsx-card-grid-hover-${theme}.png`
+      )
+
+      await page.locator('[data-gallery-case="skillsx-card-list-hover-target"] > div').hover()
+      await expectCaseShot(
+        page,
+        'skillsx-card-list-hover-target',
+        `state-skillsx-card-list-hover-${theme}.png`
+      )
+
+      const focusInput = page.locator('[data-gallery-case="skillsx-tags-focus-target"] input')
+      await focusInput.focus()
+      await expectCaseShot(
+        page,
+        'skillsx-tags-focus-target',
+        `state-skillsx-tags-focus-${theme}.png`
+      )
+      await focusInput.blur()
+
+      await page
+        .locator('[data-gallery-case="skillsx-tags-remove-target"] [aria-label="Remove tag git"]')
+        .hover()
+      await expectCaseShot(
+        page,
+        'skillsx-tags-remove-target',
+        `state-skillsx-tag-remove-hover-${theme}.png`
+      )
+
+      const fileRow = page.locator('[data-gallery-case="skillsx-files-long-names"] button').first()
+      await fileRow.hover()
+      await expectCaseShot(
+        page,
+        'skillsx-files-long-names',
+        `state-skillsx-file-hover-${theme}.png`
+      )
+
+      // The suggestion list only exists while the input has a matching value,
+      // and hovering a suggestion leaves the caret in the input, so Enter below
+      // still adds what was typed rather than what is hovered.
+      const keyboardInput = page.locator('[data-gallery-case="skillsx-tags-keyboard-target"] input')
+      await keyboardInput.focus()
+      await keyboardInput.fill('refactor')
+      await page
+        .locator('[data-gallery-case="skillsx-tags-keyboard-target"] ul')
+        .waitFor({ state: 'visible' })
+      await page
+        .locator('[data-gallery-case="skillsx-tags-keyboard-target"] ul button')
+        .first()
+        .hover()
+      await expectShot(page, `state-skillsx-tag-suggestion-hover-${theme}.png`, { fullPage: true })
+
+      await keyboardInput.press('Enter')
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'skillsx-tags-keyboard-target',
+        `state-skillsx-tag-added-${theme}.png`
+      )
+
+      await page
+        .locator('[data-gallery-case="skillsx-tags-remove-target"] [aria-label="Remove tag git"]')
+        .click()
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'skillsx-tags-remove-target',
+        `state-skillsx-tag-removed-${theme}.png`
+      )
+
+      const selectRow = page
+        .locator('[data-gallery-case="skillsx-files-select-target"] button')
+        .first()
+      await selectRow.click()
+      await page
+        .locator('[data-gallery-case="skillsx-files-select-target"] textarea')
+        .waitFor({ state: 'visible' })
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'skillsx-files-select-target',
+        `state-skillsx-file-selected-${theme}.png`
       )
     })
   }
