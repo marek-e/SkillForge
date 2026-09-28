@@ -177,3 +177,57 @@ test.describe('routesprojects filtered', () => {
     })
   }
 })
+
+/**
+ * Skill-detail states the fixture matrix cannot reach (PR 28).
+ *
+ * `route skill-detail {populated,empty,loading,error}` already covers every
+ * branch of this route's own JSX — the tool badge, the skill-directory block,
+ * the instructions block, the "no file" paragraph and the three skeletons — so
+ * these three cases only add what the matrix structurally cannot show:
+ *
+ * - **editing**: the form after a change, which is the only state where the
+ *   footer's save button is enabled, and with a resource file expanded, which
+ *   is the only state where the page's `space-y-6` stack has to hold a second
+ *   editor between the sections it renders itself.
+ * - **long content**: `skill-delta` has a name that overflows the header input,
+ *   a body far taller than the instructions textarea and a resource file with a
+ *   long name, so the stack scrolls instead of fitting one screen.
+ * - **narrow badges**: the badge row is `flex-wrap`, and it does not wrap at
+ *   either project width — the three items measure ~280px against 358px of
+ *   content box at 390px. 320px is the narrowest width the app ships for and
+ *   the only one that puts the row on two lines.
+ *
+ * `routesskill` selects exactly these tests.
+ */
+test.describe('routesskill skill detail states', () => {
+  for (const theme of THEMES) {
+    test(`routesskill skill detail editing ${theme}`, async ({ page }) => {
+      await gotoRoute(page, '/skill-library/skill-alpha', { theme })
+      const main = page.locator('main').last()
+      await main.locator('[data-slot="input"]').first().fill('summarize-pull-request-v2')
+      await main.locator('button', { hasText: 'reference.md' }).click()
+      // The resource editor fetches its content, so the textarea exists before
+      // it has anything in it.
+      await page.waitForFunction(() => {
+        const areas = document.querySelectorAll('main textarea')
+        const last = areas[areas.length - 1] as HTMLTextAreaElement | undefined
+        return !!last && last.value.length > 0
+      })
+      await main.locator('[data-slot="input"]').nth(1).fill('An edited description.')
+      await settle(page)
+      await expectRouteShots(page, `routesskill-skill-detail-editing-${theme}`)
+    })
+
+    test(`routesskill skill detail long content ${theme}`, async ({ page }) => {
+      await gotoRoute(page, '/skill-library/skill-delta', { theme })
+      await expectRouteShots(page, `routesskill-skill-detail-long-${theme}`)
+    })
+
+    test(`routesskill skill detail narrow badges ${theme}`, async ({ page }) => {
+      await page.setViewportSize({ width: 320, height: 900 })
+      await gotoRoute(page, '/skill-library/skill-alpha', { theme })
+      await expectRouteShots(page, `routesskill-skill-detail-narrow-${theme}`)
+    })
+  }
+})
