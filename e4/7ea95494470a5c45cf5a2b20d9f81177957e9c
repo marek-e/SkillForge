@@ -1,0 +1,25 @@
+docs/stylex-migration/pr-30.md
+  s_98c1f7bc58c094::t_1ec13af8210928 1-6,9-13,18,20-23,45-48,53,55,57-58,61-68,71-73,80,95-106,120
+  s_98c1f7bc58c094::t_05135b6726afee 7-8,14-17,19,24-44,49-52,54,56,60,69-70,74-79,88-94,108-119
+  s_98c1f7bc58c094::t_c60f7dad22175d 59,81-87,107
+apps/ui/src/routes/project-detail.tsx
+  s_98c1f7bc58c094::t_23166487592623 3,28,32-198,277-279,286,288,290,292,297-298,303,309,315,320,326,333,337-339,373-376
+apps/ui/visual/routes.spec.ts
+  s_98c1f7bc58c094::t_61dddf59b18dec 3,159-222
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "e47ea95494470a5c45cf5a2b20d9f81177957e9c",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
