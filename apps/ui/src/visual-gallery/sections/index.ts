@@ -4,6 +4,7 @@ import { AppSection } from './app'
 import { ButtonsExtraSection } from './buttons-extra'
 import { ButtonsSection } from './buttons'
 import { CommandCalendarExtraSection } from './command-calendar-extra'
+import { CarouselToasterExtraSection } from './carousel-toaster-extra'
 import { CanarySection } from './canary'
 import { DataDisplayExtraSection } from './data-display-extra'
 import { DataDisplaySection } from './data-display'
@@ -136,5 +137,10 @@ export const GALLERY_SECTIONS: GallerySection[] = [
     id: 'projects-extra',
     title: 'Projects table, filters, overview card and skills section',
     Component: ProjectsExtraSection,
+  },
+  {
+    id: 'carousel-toaster-extra',
+    title: 'Carousel positions, gutters and toaster states',
+    Component: CarouselToasterExtraSection,
   },
 ]

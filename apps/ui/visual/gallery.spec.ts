@@ -36,6 +36,7 @@ const SECTIONS = [
   'tools-filters-extra',
   'skills-extra',
   'projects-extra',
+  'carousel-toaster-extra',
 ] as const
 
 const BUTTON_VARIANTS = ['default', 'outline', 'secondary', 'ghost', 'destructive', 'link'] as const
@@ -1168,6 +1169,98 @@ test.describe('projectsx interaction states', () => {
         'projectsx-skills-section-view-target',
         `state-projectsx-save-all-hover-${theme}.png`
       )
+    })
+  }
+})
+
+/**
+ * `carousel-toaster-extra` (PR 19).
+ *
+ * Every case shot in the section above is the carousel at its first slide,
+ * which is the one position that needs no interaction — and the one where
+ * Previous is disabled. The middle and last positions, and therefore the
+ * disabled Next at the end, only exist after Embla has scrolled, so they are
+ * driven here. Embla animates with JavaScript, which `animations: 'disabled'`
+ * cannot fast-forward, so each capture waits for the first item's box and
+ * transform to stop changing (the same treatment `disclosure interactions`
+ * gives `carousel-default`).
+ *
+ * Focus is captured on both controls, and Previous is only focusable once the
+ * carousel has left its first slide: a disabled button takes no focus.
+ */
+test.describe('cartoast carousel', () => {
+  const settleCarousel = async (page: Page, caseName: string) => {
+    await waitForStable(page, `[data-gallery-case="${caseName}"] [data-slot="carousel-item"]`)
+    await settle(page)
+  }
+
+  for (const theme of THEMES) {
+    test(`cartoast carousel horizontal steps ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'carousel-toaster-extra', { theme })
+      const caseName = 'cartoast-carousel-steps'
+      const next = page.locator(`[data-gallery-case="${caseName}"] [data-slot="carousel-next"]`)
+
+      await next.click()
+      await settleCarousel(page, caseName)
+      await expectCaseShot(page, caseName, `state-cartoast-carousel-middle-${theme}.png`)
+
+      await next.click()
+      await settleCarousel(page, caseName)
+      await expectCaseShot(page, caseName, `state-cartoast-carousel-last-${theme}.png`)
+    })
+
+    test(`cartoast carousel half steps ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'carousel-toaster-extra', { theme })
+      const caseName = 'cartoast-carousel-half'
+
+      await page.locator(`[data-gallery-case="${caseName}"] [data-slot="carousel-next"]`).click()
+      await settleCarousel(page, caseName)
+      await expectCaseShot(page, caseName, `state-cartoast-carousel-half-next-${theme}.png`)
+    })
+
+    test(`cartoast carousel vertical steps ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'carousel-toaster-extra', { theme })
+      const caseName = 'cartoast-carousel-vertical-steps'
+      const next = page.locator(`[data-gallery-case="${caseName}"] [data-slot="carousel-next"]`)
+
+      await next.click()
+      await settleCarousel(page, caseName)
+      await expectCaseShot(page, caseName, `state-cartoast-carousel-vertical-middle-${theme}.png`)
+
+      await next.click()
+      await settleCarousel(page, caseName)
+      await expectCaseShot(page, caseName, `state-cartoast-carousel-vertical-last-${theme}.png`)
+    })
+
+    test(`cartoast carousel control focus ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'carousel-toaster-extra', { theme })
+      const caseName = 'cartoast-carousel-focus-target'
+      const previous = page.locator(
+        `[data-gallery-case="${caseName}"] [data-slot="carousel-previous"]`
+      )
+      const next = page.locator(`[data-gallery-case="${caseName}"] [data-slot="carousel-next"]`)
+
+      await next.focus()
+      await expectCaseShot(page, caseName, `state-cartoast-carousel-next-focus-${theme}.png`)
+      await next.blur()
+
+      await next.click()
+      await settleCarousel(page, caseName)
+      await previous.focus()
+      await expectCaseShot(page, caseName, `state-cartoast-carousel-previous-focus-${theme}.png`)
+      await previous.blur()
+    })
+
+    test(`cartoast carousel keyboard ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'carousel-toaster-extra', { theme })
+      const caseName = 'cartoast-carousel-steps'
+
+      // The root handles ArrowLeft/ArrowRight in a capture-phase listener, so
+      // a focused control moves the carousel rather than the button.
+      await page.locator(`[data-gallery-case="${caseName}"] [data-slot="carousel-next"]`).focus()
+      await page.keyboard.press('ArrowRight')
+      await settleCarousel(page, caseName)
+      await expectCaseShot(page, caseName, `state-cartoast-carousel-arrow-right-${theme}.png`)
     })
   }
 })

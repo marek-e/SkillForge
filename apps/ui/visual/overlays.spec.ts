@@ -1,5 +1,13 @@
-import { test, type Page } from '@playwright/test'
-import { expectShot, gotoGallery, gotoRoute, settle, THEMES, waitForStable } from './helpers'
+import { expect, test, type Page } from '@playwright/test'
+import {
+  expectShot,
+  gotoGallery,
+  gotoRoute,
+  settle,
+  THEMES,
+  waitForAnimationsToFinish,
+  waitForStable,
+} from './helpers'
 
 type OpenBy = 'click' | 'hover' | 'contextmenu'
 
@@ -1067,6 +1075,118 @@ test.describe('projectsx dialog focus states', () => {
       await field.fill('Renamed Project')
       await settle(page)
       await expectShot(page, `projectsx-dialog-rename-enabled-${theme}.png`, { fullPage: true })
+    })
+  }
+})
+
+/**
+ * `carousel-toaster-extra` toasts (PR 19).
+ *
+ * `<Toaster />` is mounted next to the router in `App.tsx`, so it is present on
+ * every gallery section; each toast renders into a fixed `[data-sileo-viewport]`
+ * of its own, outside the case element. The captures are therefore full page,
+ * like every other portalled overlay in this file.
+ *
+ * Sileo animates with `motion` springs — JavaScript, not CSS — so
+ * `animations: 'disabled'` cannot fast-forward them and every case waits for
+ * the toast's box and transform to stop changing first. The gallery triggers
+ * pin Sileo's three wall-clock timers (see the section file); nothing here
+ * depends on when the capture happens.
+ */
+test.describe('cartoast toaster', () => {
+  const TOAST = '[data-sileo-toast]'
+
+  const showToast = async (page: Page, caseName: string) => {
+    await page.locator(`[data-gallery-case="${caseName}"] button`).click()
+    // Sileo expands a hovered toast, and the `bottom-center` case puts one
+    // right under the pointer that just clicked its trigger. Parking the mouse
+    // in the corner keeps every case on the timeline its options pin.
+    await page.mouse.move(0, 0)
+    await page.locator(TOAST).waitFor({ state: 'visible' })
+    await waitForStable(page, TOAST)
+    // The toast's outer box settles well before the two rects inside it do.
+    // Sileo draws the header as a pill and the body as a second rounded rect
+    // and merges them with an SVG gooey filter, and the pill's own spring is
+    // what decides the notch where the two meet — invisible to a wait on the
+    // toast, and the reason a `bottom-center` toast differed from its original
+    // on one mobile run in four.
+    await waitForStable(page, '[data-sileo-pill]')
+    // ...and the badge is sprung independently of the pill it sits in.
+    await waitForStable(page, '[data-sileo-badge]')
+    // The last thing to settle is the one element none of the three above can
+    // stand in for. Sileo merges the pill and the body with an SVG gooey
+    // filter, drawn into `[data-sileo-canvas]`, and that canvas is sized from
+    // its own spring: it passes through 85.5 → 88.9 → 90.15 and lands on 90
+    // about 400ms after the toast appears, *after* the toast, the pill and the
+    // badge have all stopped. A capture taken in between gets a 92px canvas,
+    // which moves the filter's sampling grid and re-antialiases every edge
+    // inside the filtered group — including the badge's icon, which is exactly
+    // where the `bottom-center` case differed from its original by ~20 pixels
+    // of at most 6/255. The difference is invisible to a wait on any part the
+    // filter draws, because none of them moves; only the surface does.
+    await waitForStable(page, '[data-sileo-canvas]')
+    await waitForAnimationsToFinish(page)
+    await settle(page)
+  }
+
+  for (const theme of THEMES) {
+    test(`cartoast toaster single ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'carousel-toaster-extra', { theme })
+      await showToast(page, 'cartoast-toast-single-trigger')
+      await expectShot(page, `cartoast-toaster-single-${theme}.png`, { fullPage: true })
+    })
+
+    // Three `toast.*` calls in a row do not stack into three elements: Sileo
+    // keeps one toast on screen and morphs its header and body through to the
+    // last one. The settled result is the third toast, which is what this
+    // pins — together with the fact that there is exactly one.
+    test(`cartoast toaster stack ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'carousel-toaster-extra', { theme })
+      await showToast(page, 'cartoast-toast-stack-trigger')
+      await expect(page.locator(TOAST)).toHaveCount(1)
+      await expectShot(page, `cartoast-toaster-stack-${theme}.png`, { fullPage: true })
+    })
+
+    test(`cartoast toaster pill ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'carousel-toaster-extra', { theme })
+      await showToast(page, 'cartoast-toast-pill-trigger')
+      await expectShot(page, `cartoast-toaster-pill-${theme}.png`, { fullPage: true })
+    })
+
+    for (const variant of ['success', 'error', 'warning', 'info', 'action'] as const) {
+      test(`cartoast toaster ${variant} ${theme}`, async ({ page }) => {
+        await gotoGallery(page, 'carousel-toaster-extra', { theme })
+        await showToast(page, `cartoast-toast-${variant}-trigger`)
+        await expectShot(page, `cartoast-toaster-${variant}-${theme}.png`, { fullPage: true })
+      })
+    }
+
+    test(`cartoast toaster placement ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'carousel-toaster-extra', { theme })
+      await showToast(page, 'cartoast-toast-placement-trigger')
+      await expectShot(page, `cartoast-toaster-placement-${theme}.png`, { fullPage: true })
+    })
+
+    test(`cartoast toaster button focus ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'carousel-toaster-extra', { theme })
+      await showToast(page, 'cartoast-toast-button-trigger')
+      await expectShot(page, `cartoast-toaster-button-${theme}.png`, { fullPage: true })
+
+      await page.locator('[data-sileo-button]').focus()
+      await settle(page)
+      await expectShot(page, `cartoast-toaster-button-focus-${theme}.png`, { fullPage: true })
+    })
+
+    // Sileo renders no close control and ignores a click on the toast body, so
+    // the action button calling `toast.dismiss(id)` is the only way out.
+    test(`cartoast toaster dismiss ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'carousel-toaster-extra', { theme })
+      await showToast(page, 'cartoast-toast-button-trigger')
+
+      await page.locator('[data-sileo-button]').click()
+      await page.locator(TOAST).waitFor({ state: 'detached' })
+      await settle(page)
+      await expectShot(page, `cartoast-toaster-dismissed-${theme}.png`, { fullPage: true })
     })
   }
 })

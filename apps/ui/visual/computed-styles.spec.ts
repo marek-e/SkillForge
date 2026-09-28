@@ -1774,3 +1774,177 @@ for (const theme of THEMES) {
     await expectTextSnapshot(await collectMenuParts(page), `computed-context-menu-${theme}.json`)
   })
 }
+
+/**
+ * Carousel and toaster computed values (PR 19).
+ *
+ * Three of this row's declarations are invisible to a pixel comparison:
+ * `touch-manipulation` renders nothing at all, `rounded-full` resolves to a
+ * radius far larger than the box, and the control offsets are composed from a
+ * `top`/`left` pair plus a `translate` that a screenshot only shows the sum of.
+ * The toast parts are here for the opposite reason: Sileo injects its own
+ * stylesheet *unlayered*, so its `[data-sileo-title]` and `[data-sileo-description]`
+ * rules outrank both a Tailwind utility and a StyleX class, and this dump is
+ * what proves the migration did not change which side wins.
+ */
+const CAROUSEL_PROPERTIES = [
+  'margin-left',
+  'margin-top',
+  'padding-left',
+  'padding-top',
+  'min-width',
+  'flex-shrink',
+  'flex-grow',
+  'flex-basis',
+  'flex-direction',
+  'top',
+  'right',
+  'bottom',
+  'left',
+  'width',
+  'height',
+  'border-radius',
+  'translate',
+  'rotate',
+  'touch-action',
+]
+
+const TOAST_PROPERTIES = ['font-size', 'line-height', 'font-weight', 'color', 'fill']
+
+interface CollectedPart {
+  id: string
+  selector: string
+  properties: string[]
+  /**
+   * Sileo's pill and body rects are still being moved by a spring after the
+   * transitions have finished, so their bounds are deliberately not recorded.
+   */
+  bounds?: boolean
+}
+
+async function collectParts(page: Page, parts: CollectedPart[]): Promise<string> {
+  const report = await page.evaluate((entries) => {
+    const round = (value: number) => Math.round(value * 100) / 100
+    return entries.map(({ id, selector, properties, bounds }) => {
+      const element = document.querySelector(selector)
+      if (!element) return { id, missing: true }
+      const computed = getComputedStyle(element)
+      const styles: Record<string, string> = {}
+      for (const property of properties) styles[property] = computed.getPropertyValue(property)
+      const rect = element.getBoundingClientRect()
+      return {
+        id,
+        disabled: (element as HTMLButtonElement).disabled ?? null,
+        box: bounds === false ? null : { width: round(rect.width), height: round(rect.height) },
+        styles,
+      }
+    })
+  }, parts)
+
+  return `${JSON.stringify(report, null, 2)}\n`
+}
+
+const CAROUSEL_CASE = '[data-gallery-case="cartoast-carousel-steps"]'
+const CAROUSEL_VERTICAL_CASE = '[data-gallery-case="cartoast-carousel-vertical-steps"]'
+
+const CAROUSEL_PARTS: CollectedPart[] = [
+  {
+    id: 'carousel-root',
+    selector: `${CAROUSEL_CASE} [data-slot="carousel"]`,
+    properties: CAROUSEL_PROPERTIES,
+  },
+  {
+    id: 'carousel-content-track',
+    selector: `${CAROUSEL_CASE} [data-slot="carousel-content"] > div`,
+    properties: CAROUSEL_PROPERTIES,
+  },
+  {
+    id: 'carousel-item',
+    selector: `${CAROUSEL_CASE} [data-slot="carousel-item"]`,
+    properties: CAROUSEL_PROPERTIES,
+  },
+  {
+    id: 'carousel-previous',
+    selector: `${CAROUSEL_CASE} [data-slot="carousel-previous"]`,
+    properties: CAROUSEL_PROPERTIES,
+  },
+  {
+    id: 'carousel-next',
+    selector: `${CAROUSEL_CASE} [data-slot="carousel-next"]`,
+    properties: CAROUSEL_PROPERTIES,
+  },
+  {
+    id: 'carousel-vertical-track',
+    selector: `${CAROUSEL_VERTICAL_CASE} [data-slot="carousel-content"] > div`,
+    properties: CAROUSEL_PROPERTIES,
+  },
+  {
+    id: 'carousel-vertical-item',
+    selector: `${CAROUSEL_VERTICAL_CASE} [data-slot="carousel-item"]`,
+    properties: CAROUSEL_PROPERTIES,
+  },
+  {
+    id: 'carousel-vertical-previous',
+    selector: `${CAROUSEL_VERTICAL_CASE} [data-slot="carousel-previous"]`,
+    properties: CAROUSEL_PROPERTIES,
+  },
+  {
+    id: 'carousel-vertical-next',
+    selector: `${CAROUSEL_VERTICAL_CASE} [data-slot="carousel-next"]`,
+    properties: CAROUSEL_PROPERTIES,
+  },
+]
+
+const TOAST_PARTS: CollectedPart[] = [
+  {
+    id: 'toast-title',
+    selector: '[data-sileo-title]',
+    properties: TOAST_PROPERTIES,
+    bounds: false,
+  },
+  {
+    id: 'toast-description',
+    selector: '[data-sileo-description]',
+    properties: TOAST_PROPERTIES,
+    bounds: false,
+  },
+  {
+    id: 'toast-body-fill',
+    selector: '[data-sileo-body]',
+    properties: TOAST_PROPERTIES,
+    bounds: false,
+  },
+  {
+    id: 'toast-pill-fill',
+    selector: '[data-sileo-pill]',
+    properties: TOAST_PROPERTIES,
+    bounds: false,
+  },
+]
+
+for (const theme of THEMES) {
+  test(`computed styles cartoast carousel ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/carousel-toaster-extra', {
+      theme,
+      waitFor: '[data-gallery-section="carousel-toaster-extra"]',
+    })
+    await expectTextSnapshot(
+      await collectParts(page, CAROUSEL_PARTS),
+      `computed-cartoast-carousel-${theme}.json`
+    )
+  })
+
+  test(`computed styles cartoast toast ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/carousel-toaster-extra', {
+      theme,
+      waitFor: '[data-gallery-section="carousel-toaster-extra"]',
+    })
+    await page.locator('[data-gallery-case="cartoast-toast-single-trigger"] button').click()
+    await page.locator('[data-sileo-description]').waitFor({ state: 'visible' })
+    await waitForAnimationsToFinish(page)
+    await expectTextSnapshot(
+      await collectParts(page, TOAST_PARTS),
+      `computed-cartoast-toast-${theme}.json`
+    )
+  })
+}
