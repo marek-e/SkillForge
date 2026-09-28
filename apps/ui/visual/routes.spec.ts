@@ -131,3 +131,28 @@ test.describe('route interactions', () => {
     })
   }
 })
+
+/**
+ * The skill-library grid between its two breakpoints (PR 27).
+ *
+ * The route's grid container is the one route-local element with a state
+ * neither project reaches: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3` is one
+ * column at 390px and three at 1440px, so the two-column band between 40rem and
+ * 64rem is never captured — and it is exactly where a wrong order between the
+ * two migrated media queries would hide. A gallery case cannot reach it either,
+ * because these are viewport media queries and a gallery section is sized by the
+ * same viewport, so the case lives here with its own width. `routeslib` selects
+ * exactly these tests.
+ */
+test.describe('routeslib grid breakpoint', () => {
+  for (const theme of THEMES) {
+    test(`routeslib skill library grid two column ${theme}`, async ({ page }) => {
+      await page.setViewportSize({ width: 800, height: 900 })
+      await gotoRoute(page, '/skill-library', {
+        theme,
+        storage: { 'skillforge:defaultSkillView': 'grid' },
+      })
+      await expectRouteShots(page, `routeslib-skill-library-grid-2col-${theme}`)
+    })
+  }
+})
