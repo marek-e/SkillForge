@@ -1,0 +1,23 @@
+apps/ui/src/routes/projects.tsx
+  s_98c1f7bc58c094::t_7caa76eae60a1d 3,26-114,191-193,197,211,213,220,233,242
+apps/ui/visual/routes.spec.ts
+  s_98c1f7bc58c094::t_6002e548381fc5 134,160-179
+docs/stylex-migration/pr-29.md
+  s_98c1f7bc58c094::t_07a0b0140bed77 1-120
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "36fec7b7a7ab1c443ed6c927dd6af2b2fbc80717",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
