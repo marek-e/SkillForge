@@ -35,6 +35,7 @@ const SECTIONS = [
   'nav-bits-extra',
   'tools-filters-extra',
   'skills-extra',
+  'projects-extra',
 ] as const
 
 const BUTTON_VARIANTS = ['default', 'outline', 'secondary', 'ghost', 'destructive', 'link'] as const
@@ -978,6 +979,194 @@ test.describe('skillsx interaction states', () => {
         page,
         'skillsx-files-select-target',
         `state-skillsx-file-selected-${theme}.png`
+      )
+    })
+  }
+})
+
+/**
+ * Projects table, filter bar and skills-section interaction states (PR 24),
+ * appended as a new block so no existing test name or original moves.
+ *
+ * The states a static case cannot reach: a hovered table row, a hovered and a
+ * keyboard-focused favourite star, a sort applied by clicking a header, a
+ * focused search field, each filter button selected in turn, and the skills
+ * section switched to its grid view (its view mode is component state, not a
+ * prop).
+ */
+test.describe('projectsx interaction states', () => {
+  for (const theme of THEMES) {
+    test(`projectsx table row and action states ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'projects-extra', { theme })
+
+      const table = '[data-gallery-case="projectsx-table-stateful"]'
+
+      await page.locator(`${table} tbody tr`).nth(1).hover()
+      await expectCaseShot(
+        page,
+        'projectsx-table-stateful',
+        `state-projectsx-row-hover-${theme}.png`
+      )
+
+      const star = page.locator(`${table} tbody tr`).first().locator('button').first()
+      await star.hover()
+      await expectCaseShot(
+        page,
+        'projectsx-table-stateful',
+        `state-projectsx-star-hover-${theme}.png`
+      )
+
+      const unstarred = page.locator(`${table} tbody tr`).nth(1).locator('button').first()
+      await unstarred.hover()
+      await expectCaseShot(
+        page,
+        'projectsx-table-stateful',
+        `state-projectsx-star-empty-hover-${theme}.png`
+      )
+
+      await unstarred.click()
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'projectsx-table-stateful',
+        `state-projectsx-star-toggled-${theme}.png`
+      )
+
+      const del = page.locator(`${table} tbody tr`).first().locator('button').last()
+      await del.hover()
+      await expectCaseShot(
+        page,
+        'projectsx-table-stateful',
+        `state-projectsx-delete-hover-${theme}.png`
+      )
+
+      await del.focus()
+      await expectCaseShot(
+        page,
+        'projectsx-table-stateful',
+        `state-projectsx-delete-focus-${theme}.png`
+      )
+      await del.blur()
+    })
+
+    test(`projectsx table sorting ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'projects-extra', { theme })
+
+      const table = '[data-gallery-case="projectsx-table-stateful"]'
+      const nameHeader = page.locator(`${table} thead button`).first()
+
+      await nameHeader.hover()
+      await expectCaseShot(
+        page,
+        'projectsx-table-stateful',
+        `state-projectsx-sort-header-hover-${theme}.png`
+      )
+
+      await nameHeader.click()
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'projectsx-table-stateful',
+        `state-projectsx-sorted-name-asc-${theme}.png`
+      )
+
+      await nameHeader.click()
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'projectsx-table-stateful',
+        `state-projectsx-sorted-name-desc-${theme}.png`
+      )
+
+      const pathHeader = page.locator(`${table} thead button`).nth(1)
+      await pathHeader.click()
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'projectsx-table-stateful',
+        `state-projectsx-sorted-path-asc-${theme}.png`
+      )
+    })
+
+    test(`projectsx filter bar states ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'projects-extra', { theme })
+
+      const bar = '[data-gallery-case="projectsx-filter-bar-stateful"]'
+      const input = page.locator(`${bar} [data-slot="input-group-control"]`)
+
+      await input.focus()
+      await expectCaseShot(
+        page,
+        'projectsx-filter-bar-stateful',
+        `state-projectsx-search-focus-${theme}.png`
+      )
+
+      await input.fill('alpha')
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'projectsx-filter-bar-stateful',
+        `state-projectsx-search-filled-${theme}.png`
+      )
+
+      await page.locator(`${bar} [data-slot="input-group-addon"] button`).click()
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'projectsx-filter-bar-stateful',
+        `state-projectsx-search-cleared-${theme}.png`
+      )
+
+      const tools = page.locator(`${bar} [data-slot="button"]`)
+      const toolCount = await tools.count()
+      for (let index = 0; index < toolCount; index += 1) {
+        await tools.nth(index).click()
+        await settle(page)
+        await expectCaseShot(
+          page,
+          'projectsx-filter-bar-stateful',
+          `state-projectsx-tool-${index}-selected-${theme}.png`
+        )
+      }
+
+      await tools.first().hover()
+      await expectCaseShot(
+        page,
+        'projectsx-filter-bar-stateful',
+        `state-projectsx-tool-hover-${theme}.png`
+      )
+    })
+
+    test(`projectsx skills section view modes ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'projects-extra', { theme })
+
+      const section = '[data-gallery-case="projectsx-skills-section-view-target"]'
+      // `DisplayViewSwitch` renders a bare `div[role="group"]` with two plain
+      // buttons; it has no `data-slot` of its own.
+      const switches = page.locator(`${section} [role="group"] button`)
+
+      await switches.last().click()
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'projectsx-skills-section-view-target',
+        `state-projectsx-skills-grid-${theme}.png`
+      )
+
+      await switches.first().click()
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'projectsx-skills-section-view-target',
+        `state-projectsx-skills-list-${theme}.png`
+      )
+
+      const saveAll = page.locator(`${section} [data-slot="button"]`).first()
+      await saveAll.hover()
+      await expectCaseShot(
+        page,
+        'projectsx-skills-section-view-target',
+        `state-projectsx-save-all-hover-${theme}.png`
       )
     })
   }

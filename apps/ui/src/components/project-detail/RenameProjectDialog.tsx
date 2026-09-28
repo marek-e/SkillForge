@@ -1,3 +1,4 @@
+import * as stylex from '@stylexjs/stylex'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -9,6 +10,20 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+
+/**
+ * `space-y-2`, a child rule (`:where(& > :not(:last-child))`) that emits both
+ * block margins, the start one at zero (`tailwind-values.md` §7). The children
+ * are the `Label` and the `Input`, neither of which declares a block margin.
+ */
+const styles = stylex.create({
+  field: {
+    ':is(*)>:not(:last-child)': {
+      marginBlockStart: '0rem',
+      marginBlockEnd: '0.5rem',
+    },
+  },
+})
 
 interface RenameProjectDialogProps {
   open: boolean
@@ -34,7 +49,7 @@ export function RenameProjectDialog({
           <DialogTitle>Rename project</DialogTitle>
           <DialogDescription>Update the project name shown in your workspace.</DialogDescription>
         </DialogHeader>
-        <div className="space-y-2">
+        <div {...stylex.props(styles.field)}>
           <Label htmlFor="rename-input">Project name</Label>
           <Input
             id="rename-input"

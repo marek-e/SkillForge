@@ -999,3 +999,74 @@ test.describe('skillsx dialogs', () => {
     })
   }
 })
+
+/**
+ * Project dialog states the `app-dialogs` section does not reach (PR 24),
+ * appended as a new block so no existing test name or original moves.
+ *
+ * `rename-project-empty` is the rename dialog's validation state: `Save` is
+ * disabled while the name is blank. `add-project-long-error` pairs the error
+ * paragraph with a pending submit button and a message long enough to wrap.
+ */
+const PROJECTSX_DIALOGS = [
+  'projectsx-add-project-long-error',
+  'projectsx-rename-project-empty',
+  'projectsx-delete-project-long-name',
+  'projectsx-delete-project-pending',
+]
+
+for (const dialog of PROJECTSX_DIALOGS) {
+  for (const theme of THEMES) {
+    test(`projectsx dialog ${dialog} ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'projects-extra', { theme })
+      await page.locator(`[data-gallery-case="open-${dialog}"] button`).click()
+      await page.locator('[data-slot="dialog-content"]').waitFor({ state: 'visible' })
+      await settle(page)
+      await expectShot(page, `projectsx-dialog-${dialog}-${theme}.png`, { fullPage: true })
+    })
+  }
+}
+
+test.describe('projectsx dialog focus states', () => {
+  for (const theme of THEMES) {
+    test(`projectsx add project field states ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'projects-extra', { theme })
+      await page
+        .locator('[data-gallery-case="open-projectsx-add-project-long-error"] button')
+        .click()
+      await page.locator('[data-slot="dialog-content"]').waitFor({ state: 'visible' })
+      await settle(page)
+
+      const field = page.locator(`${DIALOG} #project-path`)
+      await field.focus()
+      await settle(page)
+      await expectShot(page, `projectsx-dialog-add-project-input-focus-${theme}.png`, {
+        fullPage: true,
+      })
+
+      await field.fill('/Users/fixture/projects/new-one')
+      await settle(page)
+      await expectShot(page, `projectsx-dialog-add-project-input-filled-${theme}.png`, {
+        fullPage: true,
+      })
+    })
+
+    test(`projectsx rename validation ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'projects-extra', { theme })
+      await page.locator('[data-gallery-case="open-projectsx-rename-project-empty"] button').click()
+      await page.locator('[data-slot="dialog-content"]').waitFor({ state: 'visible' })
+      await settle(page)
+
+      const field = page.locator(`${DIALOG} #rename-input`)
+      await field.focus()
+      await settle(page)
+      await expectShot(page, `projectsx-dialog-rename-input-focus-${theme}.png`, {
+        fullPage: true,
+      })
+
+      await field.fill('Renamed Project')
+      await settle(page)
+      await expectShot(page, `projectsx-dialog-rename-enabled-${theme}.png`, { fullPage: true })
+    })
+  }
+})

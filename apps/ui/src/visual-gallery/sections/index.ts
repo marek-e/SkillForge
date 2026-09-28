@@ -18,6 +18,7 @@ import { OverlaysExtraSection } from './overlays-extra'
 import { MenusExtraSection } from './menus-extra'
 import { MenubarNavExtraSection } from './menubar-nav-extra'
 import { NavBitsExtraSection } from './nav-bits-extra'
+import { ProjectsExtraSection } from './projects-extra'
 import { OverlaysSection } from './overlays'
 import { OverlaysSheetDrawerSection } from './overlays-sheet-drawer'
 import { SelectComboboxExtraSection } from './select-combobox-extra'
@@ -130,5 +131,10 @@ export const GALLERY_SECTIONS: GallerySection[] = [
     id: 'skills-extra',
     title: 'Skill card modes, tag rows and resource file lists',
     Component: SkillsExtraSection,
+  },
+  {
+    id: 'projects-extra',
+    title: 'Projects table, filters, overview card and skills section',
+    Component: ProjectsExtraSection,
   },
 ]

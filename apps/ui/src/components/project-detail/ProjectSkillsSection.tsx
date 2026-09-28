@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import * as stylex from '@stylexjs/stylex'
 import { Link } from '@tanstack/react-router'
 import type { DetectedTool, Skill, SkillItem } from '@skillforge/core'
 import {
@@ -18,6 +19,101 @@ import { DisplayViewSwitch } from '@/components/ui/display-view-switch'
 import { Label } from '@/components/ui/label'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { SkillCard } from '@/components/skills/SkillCard'
+import { colors } from '@/styles/tokens.stylex'
+
+const styles = stylex.create({
+  // `space-y-2`, a child rule (`:where(& > :not(:last-child))`) that emits both
+  // block margins, the start one at zero (`tailwind-values.md` §7). Both
+  // children - the header row and the list - are rendered here.
+  section: {
+    ':is(*)>:not(:last-child)': {
+      marginBlockStart: '0rem',
+      marginBlockEnd: '0.5rem',
+    },
+  },
+  // `flex items-center gap-2`
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+  },
+  // `ml-auto flex items-center gap-2`
+  headerActions: {
+    marginLeft: 'auto',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+  },
+  // `flex items-center gap-0.5 shrink-0`
+  rowActions: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.125rem',
+    flexShrink: 0,
+  },
+  // `text-sm text-muted-foreground`; the paired line height is written as the
+  // length it resolves to and the paragraph holds nothing but text.
+  emptyText: {
+    fontSize: '0.875rem',
+    lineHeight: '1.25rem',
+    color: colors.mutedForeground,
+  },
+  // `grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4`
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: {
+      default: 'repeat(1, minmax(0, 1fr))',
+      '@media (width >= 40rem)': 'repeat(2, minmax(0, 1fr))',
+      '@media (width >= 64rem)': 'repeat(3, minmax(0, 1fr))',
+      '@media (width >= 80rem)': 'repeat(4, minmax(0, 1fr))',
+    },
+    gap: '0.75rem',
+  },
+  // `size-3` on the tool logo. The logo is an `<img>` inside a `Badge`, whose
+  // only icon rule is `[&>svg]:size-3!` - an `img` never matches it - so this
+  // size is uncontested.
+  toolLogo: {
+    width: '0.75rem',
+    height: '0.75rem',
+  },
+  // `dark:invert`. Tailwind's `invert` sets `--tw-invert: invert(100%)` inside
+  // a `filter` chain whose other slots are empty (`tailwind-values.md` §8).
+  toolLogoInverted: {
+    filter: { default: null, ':is(.dark *)': 'invert(100%)' },
+  },
+})
+
+/** The grid branch's styles, resolved once. */
+const gridProps = stylex.props(styles.grid)
+
+/**
+ * Overrides that stay Tailwind class strings (all removed in PR 32).
+ *
+ * - `divide-y divide-border` styles the **children** of the list wrapper, and
+ *   those children are `SkillCard`s - a component this row does not own and
+ *   which is still Tailwind (PR 23). A StyleX rule sits in a `priorityN` layer
+ *   and would lose to any border utility that component grows, where the
+ *   utility it replaces would have won on specificity
+ *   (`conventions.md`, "A rule that styles a foreign element stays Tailwind").
+ * - `Badge` takes no `sx` prop, so `className` is the only channel into it.
+ * - `size-3` / `size-3.5` on the action icons: they sit inside `icon-xs` and
+ *   default `Button`s, whose `[&_svg:not([class*='size-'])]:size-N` reads the
+ *   child's `class` **attribute text**, not its computed size (`button.tsx`,
+ *   PR 04). A StyleX hash would stop matching and the button would then own
+ *   their width and height.
+ * - `text-green-500` and `text-muted-foreground` ride along in those same icon
+ *   strings. `green-500` is a Tailwind **palette** colour: `text-green-500`
+ *   compiles to `color: var(--color-green-500)`, a generated custom property a
+ *   StyleX rule may not reference, and the literal alternative is folded by
+ *   lightningcss into a different computed string (PR 22).
+ */
+const LIST_CLASSES = 'divide-y divide-border'
+const COUNT_BADGE_CLASSES = 'text-xs'
+const TOOL_BADGE_CLASSES = 'text-xs gap-1 px-1.5 py-0'
+const SAVE_ALL_ICON_CLASS = 'size-3'
+const ICON_COPIED_CLASSES = 'size-3.5 text-green-500'
+const ICON_SAVED_CLASSES = 'size-3.5 text-green-500'
+const ICON_MUTED_CLASSES = 'size-3.5 text-muted-foreground'
 
 interface SkillRow {
   skill: SkillItem
@@ -97,15 +193,15 @@ export function ProjectSkillsSection({
     const isCopied = copiedPath === skill.filePath
 
     return (
-      <div className="flex items-center gap-0.5 shrink-0">
+      <div {...stylex.props(styles.rowActions)}>
         {single && (
           <Tooltip delayDuration={700}>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon-xs" onClick={() => handleCopy(skill)}>
                 {isCopied ? (
-                  <CheckIcon className="size-3.5 text-green-500" />
+                  <CheckIcon className={ICON_COPIED_CLASSES} />
                 ) : (
-                  <ClipboardCopyIcon className="size-3.5 text-muted-foreground" />
+                  <ClipboardCopyIcon className={ICON_MUTED_CLASSES} />
                 )}
               </Button>
             </TooltipTrigger>
@@ -117,7 +213,7 @@ export function ProjectSkillsSection({
           <Tooltip delayDuration={700}>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon-xs" onClick={() => handleOpenInEditor(skill)}>
-                <ExternalLinkIcon className="size-3.5 text-muted-foreground" />
+                <ExternalLinkIcon className={ICON_MUTED_CLASSES} />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
@@ -131,7 +227,7 @@ export function ProjectSkillsSection({
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon-xs" asChild>
                 <Link to="/skill-library/$skillId" params={{ skillId: savedId }}>
-                  <BookmarkCheck className="size-3.5 text-green-500" />
+                  <BookmarkCheck className={ICON_SAVED_CLASSES} />
                 </Link>
               </Button>
             </TooltipTrigger>
@@ -146,7 +242,7 @@ export function ProjectSkillsSection({
                 disabled={isSaving}
                 onClick={() => onSave(skill, toolName)}
               >
-                <BookmarkPlusIcon className="size-3.5 text-muted-foreground" />
+                <BookmarkPlusIcon className={ICON_MUTED_CLASSES} />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Save to library</TooltipContent>
@@ -157,15 +253,15 @@ export function ProjectSkillsSection({
   }
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2">
+    <div {...stylex.props(styles.section)}>
+      <div {...stylex.props(styles.header)}>
         <Label>Skills</Label>
         {rows.length > 0 && (
-          <Badge variant="secondary" className="text-xs">
+          <Badge variant="secondary" className={COUNT_BADGE_CLASSES}>
             {rows.length}
           </Badge>
         )}
-        <div className="ml-auto flex items-center gap-2">
+        <div {...stylex.props(styles.headerActions)}>
           {unsavedRows.length > 0 && (
             <Button
               variant="outline"
@@ -176,7 +272,7 @@ export function ProjectSkillsSection({
                 }
               }}
             >
-              <BookmarkPlusIcon className="size-3" />
+              <BookmarkPlusIcon className={SAVE_ALL_ICON_CLASS} />
               Save all
             </Button>
           )}
@@ -185,15 +281,9 @@ export function ProjectSkillsSection({
       </div>
 
       {rows.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No skills found in this project</p>
+        <p {...stylex.props(styles.emptyText)}>No skills found in this project</p>
       ) : (
-        <div
-          className={
-            viewMode === 'grid'
-              ? 'grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-              : 'divide-y divide-border'
-          }
-        >
+        <div className={viewMode === 'grid' ? gridProps.className : LIST_CLASSES}>
           {rows.map(({ skill, toolName }) => {
             const config = getToolConfig(toolName)
             return (
@@ -203,11 +293,11 @@ export function ProjectSkillsSection({
                 name={skill.name}
                 description={skill.description}
                 badges={
-                  <Badge variant="outline" className="text-xs gap-1 px-1.5 py-0">
+                  <Badge variant="outline" className={TOOL_BADGE_CLASSES}>
                     <img
                       src={config.logo}
                       alt={config.displayName}
-                      className={`size-3 ${config.invert ? 'dark:invert' : ''}`}
+                      {...stylex.props(styles.toolLogo, config.invert && styles.toolLogoInverted)}
                     />
                     {config.displayName}
                   </Badge>
