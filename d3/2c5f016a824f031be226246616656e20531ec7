@@ -1,0 +1,29 @@
+apps/ui/visual/overlays.spec.ts
+  s_98c1f7bc58c094::t_bbc22e5be4e2e2 4,820-823,827-866
+docs/stylex-migration/pr-19.md
+  s_91b2a8af60b325::t_aa93f9db66a127 209-217
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "d32c5f016a824f031be226246616656e20531ec7",
+  "prompts": {},
+  "sessions": {
+    "s_91b2a8af60b325": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a6a6f620160d84fec",
+        "model": "unknown"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    },
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
