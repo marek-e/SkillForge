@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import {
   expectShot,
+  expectTextSnapshot,
   gotoGallery,
   gotoRoute,
   settle,
@@ -1161,10 +1162,53 @@ test.describe('cartoast toaster', () => {
       })
     }
 
+    // Geometry, not pixels: the placement toast carries Sileo's badge, a
+    // translucent element over a Gaussian-blurred SVG, which Chromium does not
+    // rasterise reproducibly even under the pinned launch flags (PR 19 notes).
+    // Its position and box are what the case is about, and those are stable.
     test(`cartoast toaster placement ${theme}`, async ({ page }) => {
       await gotoGallery(page, 'carousel-toaster-extra', { theme })
       await showToast(page, 'cartoast-toast-placement-trigger')
-      await expectShot(page, `cartoast-toaster-placement-${theme}.png`, { fullPage: true })
+      const report = await page
+        .locator(TOAST)
+        .first()
+        .evaluate((el) => {
+          const rect = el.getBoundingClientRect()
+          const style = getComputedStyle(el)
+          const region =
+            el.closest('[data-sileo-region], [data-sileo-position]') ?? el.parentElement
+          const regionRect = region?.getBoundingClientRect()
+          const regionStyle = region ? getComputedStyle(region) : null
+          const round = (n: number) => Math.round(n * 100) / 100
+          return {
+            toast: {
+              x: round(rect.x),
+              y: round(rect.y),
+              width: round(rect.width),
+              height: round(rect.height),
+              position: style.position,
+              transform: style.transform,
+              backgroundColor: style.backgroundColor,
+              color: style.color,
+              borderRadius: style.borderRadius,
+            },
+            region: regionRect
+              ? {
+                  x: round(regionRect.x),
+                  y: round(regionRect.y),
+                  width: round(regionRect.width),
+                  height: round(regionRect.height),
+                  position: regionStyle?.position,
+                  inset: regionStyle?.inset,
+                }
+              : null,
+            viewport: { width: window.innerWidth, height: window.innerHeight },
+          }
+        })
+      await expectTextSnapshot(
+        `${JSON.stringify(report, null, 2)}\n`,
+        `cartoast-toaster-placement-${theme}.json`
+      )
     })
 
     test(`cartoast toaster button focus ${theme}`, async ({ page }) => {
