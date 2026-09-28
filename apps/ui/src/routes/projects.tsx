@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { createRoute, useNavigate } from '@tanstack/react-router'
+import * as stylex from '@stylexjs/stylex'
 import type { SortingState } from '@tanstack/react-table'
 import type { Project } from '@skillforge/core'
 import { FolderOpenIcon, PlusIcon } from 'lucide-react'
@@ -22,6 +23,95 @@ import { ProjectsTable } from '@/components/projects/ProjectsTable'
 import { ProjectsFilterBar } from '@/components/projects/ProjectsFilterBar'
 import { DeleteProjectDialog } from '@/components/projects/DeleteProjectDialog'
 import { AddProjectWebDialog } from '@/components/projects/AddProjectWebDialog'
+import { colors } from '@/styles/tokens.stylex'
+
+/**
+ * The one class list this route hands to a component it does not own, kept as
+ * Tailwind for now (PR 32 removes it).
+ *
+ * `Skeleton` is StyleX already but takes no `sx` prop, so a caller's size still
+ * arrives as a `className` its `cn` appends — which is also what keeps this
+ * override winning: `@layer utilities` sits above every `priorityN` layer, so a
+ * utility outranks a StyleX rule whatever the selector. Nothing here is
+ * redundant, either: `skeleton.tsx` declares `rounded-md` (`8px`) itself and
+ * `rounded-lg` (`10px`) is the caller overruling it, which only a utility can
+ * do from the outside.
+ */
+const SKELETON_CLASSES = 'h-12 w-full rounded-lg'
+
+const styles = stylex.create({
+  // `space-y-6`, over the header, the body branch and the two dialogs.
+  page: {
+    ':is(*)>:not(:last-child)': {
+      marginBlockStart: '0rem',
+      marginBlockEnd: '1.5rem',
+    },
+  },
+
+  // `flex items-start justify-between`
+  header: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+
+  // `space-y-2`, over `H1`, `Lead` and the count paragraph — all three elements
+  // this route renders, none with a block margin of its own.
+  headerText: {
+    ':is(*)>:not(:last-child)': {
+      marginBlockStart: '0rem',
+      marginBlockEnd: '0.5rem',
+    },
+  },
+
+  // `text-sm text-muted-foreground`; a paragraph of plain text with no
+  // descendant of its own, so the paired line height is written as the length
+  // it resolves to (`conventions.md`, "Paired line-heights").
+  mutedText: {
+    color: colors.mutedForeground,
+    fontSize: '0.875rem',
+    lineHeight: '1.25rem',
+  },
+
+  // `space-y-2`, over the three loading skeletons.
+  skeletons: {
+    ':is(*)>:not(:last-child)': {
+      marginBlockStart: '0rem',
+      marginBlockEnd: '0.5rem',
+    },
+  },
+
+  // `space-y-4`, over the filter bar and the table.
+  content: {
+    ':is(*)>:not(:last-child)': {
+      marginBlockStart: '0rem',
+      marginBlockEnd: '1rem',
+    },
+  },
+
+  // `py-8 text-center text-sm text-muted-foreground`, on the "no match"
+  // paragraph. `py-*` is logical in Tailwind, so it stays `paddingBlock`
+  // (`conventions.md`, "`py-*`/`px-*` are logical").
+  noMatchText: {
+    paddingBlock: '2rem',
+    textAlign: 'center',
+    color: colors.mutedForeground,
+    fontSize: '0.875rem',
+    lineHeight: '1.25rem',
+  },
+
+  // `size-10 text-muted-foreground`, on the icon this route puts inside
+  // `EmptyMedia`. The `[class*='size-']` contract does not reach it: the rule
+  // is `[&_svg:not([class*='size-'])]:size-4` and `empty.tsx` only applies it
+  // for `variant="icon"`, while this `EmptyMedia` takes the default variant,
+  // whose only child rules are `[&_svg]:pointer-events-none [&_svg]:shrink-0`.
+  // So no utility competes for width, height or colour once these are StyleX.
+  emptyIcon: {
+    width: '2.5rem',
+    height: '2.5rem',
+    color: colors.mutedForeground,
+  },
+})
 
 export const projectsRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -98,13 +188,13 @@ function ProjectsPage() {
   const isFiltered = searchQuery.trim().length > 0 || selectedTools.length > 0
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-start justify-between">
-        <div className="space-y-2">
+    <div {...stylex.props(styles.page)}>
+      <div {...stylex.props(styles.header)}>
+        <div {...stylex.props(styles.headerText)}>
           <H1>Projects</H1>
           <Lead>Manage your projects and their configurations.</Lead>
           {projects && (
-            <p className="text-sm text-muted-foreground">
+            <p {...stylex.props(styles.mutedText)}>
               {isFiltered
                 ? `${filteredProjects.length} of ${projects.length} project${projects.length !== 1 ? 's' : ''}`
                 : `${projects.length} project${projects.length !== 1 ? 's' : ''}`}
@@ -118,16 +208,16 @@ function ProjectsPage() {
       </div>
 
       {isLoading ? (
-        <div className="space-y-2">
+        <div {...stylex.props(styles.skeletons)}>
           {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="h-12 w-full rounded-lg" />
+            <Skeleton key={i} className={SKELETON_CLASSES} />
           ))}
         </div>
       ) : projects?.length === 0 ? (
         <Empty>
           <EmptyHeader>
             <EmptyMedia>
-              <FolderOpenIcon className="size-10 text-muted-foreground" />
+              <FolderOpenIcon {...stylex.props(styles.emptyIcon)} />
             </EmptyMedia>
             <EmptyTitle>No projects yet</EmptyTitle>
             <EmptyDescription>
@@ -140,7 +230,7 @@ function ProjectsPage() {
           </Button>
         </Empty>
       ) : (
-        <div className="space-y-4">
+        <div {...stylex.props(styles.content)}>
           <ProjectsFilterBar
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -149,9 +239,7 @@ function ProjectsPage() {
             onToolToggle={handleToolToggle}
           />
           {filteredProjects.length === 0 ? (
-            <p className="py-8 text-center text-sm text-muted-foreground">
-              No projects match your filters.
-            </p>
+            <p {...stylex.props(styles.noMatchText)}>No projects match your filters.</p>
           ) : (
             <ProjectsTable
               projects={filteredProjects}

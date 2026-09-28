@@ -156,3 +156,24 @@ test.describe('routeslib grid breakpoint', () => {
     })
   }
 })
+
+/**
+ * The one state of `/projects` no data fixture reaches (PR 29).
+ *
+ * `route projects {populated,empty,loading,error}` covers every branch the API
+ * decides. The filtered branch is decided by the route instead: typing a query
+ * that matches nothing swaps the table for a paragraph the route renders
+ * itself, and turns the count above it into its `N of M` form. Both are
+ * route-local elements, so only a typed query captures them.
+ */
+test.describe('routesprojects filtered', () => {
+  for (const theme of THEMES) {
+    test(`routesprojects no match ${theme}`, async ({ page }) => {
+      await gotoRoute(page, '/projects', { theme })
+      await page.getByPlaceholder('Search projects...').fill('no-such-project')
+      await page.getByText('No projects match your filters.').waitFor({ state: 'visible' })
+      await settle(page)
+      await expectRouteShots(page, `routesprojects-no-match-${theme}`)
+    })
+  }
+})
