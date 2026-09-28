@@ -1,0 +1,47 @@
+apps/ui/src/components/projects/ProjectsTable.tsx
+  s_98c1f7bc58c094::t_edb0f75f5e14d5 10,26-156,185
+  s_98c1f7bc58c094::t_3c6c394574192a 186,194,205,209,213,215,225,229,232,239,260,266,298
+docs/stylex-migration/pr-24.md
+  s_98c1f7bc58c094::t_f64a733d41caa2 1-10,15-24,35-37,47,53-58,72,75-77,91,110,118
+  s_98c1f7bc58c094::t_3aa76d98e83e71 14,38-41,48-51,73-74,79-82,93,96,113-115
+  s_98c1f7bc58c094::t_9bbb5b15b9de67 25-31,43-45,66-70,83-89,97-107
+  s_98c1f7bc58c094::t_1a8c2b7abc0abe 11-13,32-34,46,52,59-65,71,94-95,116-117
+  s_98c1f7bc58c094::t_2278a6225e6443 42,78,90,92,108-109,111-112
+apps/ui/src/visual-gallery/sections/projects-extra.tsx
+  s_98c1f7bc58c094::t_5fa7dd3643bfd3 1-390
+apps/ui/src/components/projects/AddProjectWebDialog.tsx
+  s_98c1f7bc58c094::t_36d513c91aed79 2,13-46,76-77,87
+apps/ui/src/components/project-detail/ProjectOverviewCard.tsx
+  s_98c1f7bc58c094::t_463abd7dedb41f 2,20-219,277-282,288,291-295,310,319,329-330,335-336,340-341,343,346,348,351,354,357,380,387-388,392-394,399
+  s_98c1f7bc58c094::t_bb8b5c265a1f89 404,412
+apps/ui/src/components/project-detail/ProjectSkillsSection.tsx
+  s_98c1f7bc58c094::t_377ebfd22a0e75 2,22-116,196,202,204,216,230,245,256-257,260,264,275,284,286,296,300
+apps/ui/src/components/project-detail/RenameProjectDialog.tsx
+  s_98c1f7bc58c094::t_4dc36025c79929 1,14-27,52
+apps/ui/src/components/projects/DeleteProjectDialog.tsx
+  s_98c1f7bc58c094::t_4cf4bece86628a 2,13-19,39-40
+apps/ui/src/components/projects/ProjectsFilterBar.tsx
+  s_98c1f7bc58c094::t_dc1e6289e721a5 2,12-76,110-111,129,135,144
+apps/ui/src/visual-gallery/sections/index.ts
+  s_98c1f7bc58c094::t_5b0568f7c3e495 21,135-139
+apps/ui/visual/gallery.spec.ts
+  s_98c1f7bc58c094::t_f65d059471cb49 38,777,987-1173
+apps/ui/visual/overlays.spec.ts
+  s_98c1f7bc58c094::t_4f8fcaf4ecfad7 957,1003-1072
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "19b15f51baf0cac5546043f436d6c44b48b4c186",
+  "prompts": {},
+  "sessions": {
+    "s_98c1f7bc58c094": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f12e8779-a14d-4dc6-8f59-50ae7666d92b",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Marek Elmayan <marek.elmayan@theodo.com>"
+    }
+  }
+}
