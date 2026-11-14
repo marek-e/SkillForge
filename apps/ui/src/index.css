@@ -1,5 +1,4 @@
-@layer base, priority1, priority2, priority3, priority4, priority5, priority6, priority7,
-  priority8, priority9, priority10;
+@layer base, priority1, priority2, priority3, priority4, priority5, priority6, priority7, priority8, priority9, priority10;
 
 @import './styles/reset.css';
 @import './styles/global.css';

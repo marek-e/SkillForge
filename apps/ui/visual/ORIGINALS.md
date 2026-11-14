@@ -29,7 +29,7 @@ They carry no platform suffix in their path, because the suite is defined to run
 | Locale / timezone   | `en-US` / `UTC`                                                                                                                       |
 | Fonts               | `@fontsource-variable/geist` 5.2.8, `@fontsource/medievalsharp` 5.2.8 (bundled, no network fonts)                                     |
 
-CI runs the suite on `macos-15` for this reason. A Linux runner rasterises text differently and would fail against these originals.
+CI runs the suite on the Apple silicon `macos-26` runner to match the recorded OS family and architecture. OS patch versions can still affect rasterisation. A Linux runner rasterises text differently and would fail against these originals.
 
 ## Rules
 

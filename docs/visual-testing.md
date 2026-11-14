@@ -103,4 +103,4 @@ Live Electron behaviour that no screenshot can prove — drag regions, native wi
 
 ## CI
 
-The `visual` job runs on `macos-15`, because the originals were captured on macOS and font rasterisation differs per OS. It installs the pinned Chromium, runs the suite, runs `visual:check-originals` (which fails on any `-actual`/`-diff` artifact and on any original no test claimed), runs `visual:check-gallery`, and uploads `visual/results` and the HTML report as artifacts on failure.
+The `visual` job runs on the Apple silicon `macos-26` runner, matching the macOS 26 / Darwin 25 family recorded for the originals. Font rasterisation can still differ across OS patch versions; CI must verify the frozen images without refreshing them. It installs the pinned Chromium, runs the suite, runs `visual:check-originals` (which fails on any `-actual`/`-diff` artifact and on any original no test claimed), runs `visual:check-gallery`, and uploads `visual/results` and the HTML report as artifacts on failure.

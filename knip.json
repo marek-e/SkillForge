@@ -13,7 +13,7 @@
     },
     "apps/electron": {
       "project": ["src/**/*.ts"],
-      "ignoreDependencies": ["better-sqlite3"]
+      "ignoreDependencies": ["better-sqlite3", "electron-builder-squirrel-windows"]
     },
     "packages/core": {
       "project": ["src/**/*.ts"]
