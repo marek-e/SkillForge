@@ -1,0 +1,25 @@
+{
+  "toast": {
+    "x": 545,
+    "y": 848,
+    "width": 350,
+    "height": 40,
+    "position": "relative",
+    "transform": "matrix(1, 0, 0, 1, 0, 0)",
+    "backgroundColor": "rgba(0, 0, 0, 0)",
+    "color": "oklch(0.145 0 0)",
+    "borderRadius": "0px"
+  },
+  "region": {
+    "x": 533,
+    "y": 836,
+    "width": 374,
+    "height": 64,
+    "position": "fixed",
+    "inset": "836px 346px 0px 720px"
+  },
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  }
+}

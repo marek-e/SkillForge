@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import * as stylex from '@stylexjs/stylex'
 import { Link } from '@tanstack/react-router'
 import type { DetectedTool, Skill, SkillItem } from '@skillforge/core'
 import {
@@ -18,6 +19,67 @@ import { DisplayViewSwitch } from '@/components/ui/display-view-switch'
 import { Label } from '@/components/ui/label'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { SkillCard } from '@/components/skills/SkillCard'
+import { colors, palette } from '@/styles/tokens.stylex'
+
+const styles = stylex.create({
+  // `space-y-2`, a child rule (`:where(& > :not(:last-child))`) that emits both
+  // block margins, the start one at zero (`tailwind-values.md` §7). Both
+  // children - the header row and the list - are rendered here.
+  section: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '0.5rem' },
+  },
+  // `flex items-center gap-2`
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+  },
+  // `ml-auto flex items-center gap-2`
+  headerActions: {
+    marginLeft: 'auto',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+  },
+  // `flex items-center gap-0.5 shrink-0`
+  rowActions: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.125rem',
+    flexShrink: 0,
+  },
+  // `text-sm text-muted-foreground`; the paired line height is written as the
+  // length it resolves to and the paragraph holds nothing but text.
+  emptyText: {
+    fontSize: '0.875rem',
+    lineHeight: '1.25rem',
+    color: colors.mutedForeground,
+  },
+  // `grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4`
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: {
+      default: 'repeat(1, minmax(0, 1fr))',
+      '@media (width >= 40rem)': 'repeat(2, minmax(0, 1fr))',
+      '@media (width >= 64rem)': 'repeat(3, minmax(0, 1fr))',
+      '@media (width >= 80rem)': 'repeat(4, minmax(0, 1fr))',
+    },
+    gap: '0.75rem',
+  },
+  // `size-3` on the tool logo. The logo is an `<img>` inside a `Badge`, whose
+  // only icon rule is `[&>svg]:size-3!` - an `img` never matches it - so this
+  // size is uncontested.
+  toolLogo: {
+    width: '0.75rem',
+    height: '0.75rem',
+  },
+  // `dark:invert`. Tailwind's `invert` sets `--tw-invert: invert(100%)` inside
+  // a `filter` chain whose other slots are empty (`tailwind-values.md` §8).
+  toolLogoInverted: {
+    filter: { default: null, ':is(.dark *)': 'invert(100%)' },
+  },
+})
 
 interface SkillRow {
   skill: SkillItem
@@ -97,15 +159,25 @@ export function ProjectSkillsSection({
     const isCopied = copiedPath === skill.filePath
 
     return (
-      <div className="flex items-center gap-0.5 shrink-0">
+      <div {...stylex.props(styles.rowActions)}>
         {single && (
           <Tooltip delayDuration={700}>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon-xs" onClick={() => handleCopy(skill)}>
                 {isCopied ? (
-                  <CheckIcon className="size-3.5 text-green-500" />
+                  <CheckIcon
+                    className={[
+                      'size-explicit',
+                      stylex.props(overrideStyles.ICON_COPIED_CLASSES).className,
+                    ].join(' ')}
+                  />
                 ) : (
-                  <ClipboardCopyIcon className="size-3.5 text-muted-foreground" />
+                  <ClipboardCopyIcon
+                    className={[
+                      'size-explicit',
+                      stylex.props(overrideStyles.ICON_MUTED_CLASSES).className,
+                    ].join(' ')}
+                  />
                 )}
               </Button>
             </TooltipTrigger>
@@ -117,7 +189,12 @@ export function ProjectSkillsSection({
           <Tooltip delayDuration={700}>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon-xs" onClick={() => handleOpenInEditor(skill)}>
-                <ExternalLinkIcon className="size-3.5 text-muted-foreground" />
+                <ExternalLinkIcon
+                  className={[
+                    'size-explicit',
+                    stylex.props(overrideStyles.ICON_MUTED_CLASSES).className,
+                  ].join(' ')}
+                />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
@@ -131,7 +208,12 @@ export function ProjectSkillsSection({
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon-xs" asChild>
                 <Link to="/skill-library/$skillId" params={{ skillId: savedId }}>
-                  <BookmarkCheck className="size-3.5 text-green-500" />
+                  <BookmarkCheck
+                    className={[
+                      'size-explicit',
+                      stylex.props(overrideStyles.ICON_SAVED_CLASSES).className,
+                    ].join(' ')}
+                  />
                 </Link>
               </Button>
             </TooltipTrigger>
@@ -146,7 +228,12 @@ export function ProjectSkillsSection({
                 disabled={isSaving}
                 onClick={() => onSave(skill, toolName)}
               >
-                <BookmarkPlusIcon className="size-3.5 text-muted-foreground" />
+                <BookmarkPlusIcon
+                  className={[
+                    'size-explicit',
+                    stylex.props(overrideStyles.ICON_MUTED_CLASSES).className,
+                  ].join(' ')}
+                />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Save to library</TooltipContent>
@@ -157,15 +244,15 @@ export function ProjectSkillsSection({
   }
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2">
+    <div {...stylex.props(styles.section)}>
+      <div {...stylex.props(styles.header)}>
         <Label>Skills</Label>
         {rows.length > 0 && (
-          <Badge variant="secondary" className="text-xs">
+          <Badge variant="secondary" sx={overrideStyles.COUNT_BADGE_CLASSES}>
             {rows.length}
           </Badge>
         )}
-        <div className="ml-auto flex items-center gap-2">
+        <div {...stylex.props(styles.headerActions)}>
           {unsavedRows.length > 0 && (
             <Button
               variant="outline"
@@ -176,7 +263,12 @@ export function ProjectSkillsSection({
                 }
               }}
             >
-              <BookmarkPlusIcon className="size-3" />
+              <BookmarkPlusIcon
+                className={[
+                  'size-explicit',
+                  stylex.props(overrideStyles.SAVE_ALL_ICON_CLASS).className,
+                ].join(' ')}
+              />
               Save all
             </Button>
           )}
@@ -185,15 +277,9 @@ export function ProjectSkillsSection({
       </div>
 
       {rows.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No skills found in this project</p>
+        <p {...stylex.props(styles.emptyText)}>No skills found in this project</p>
       ) : (
-        <div
-          className={
-            viewMode === 'grid'
-              ? 'grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-              : 'divide-y divide-border'
-          }
-        >
+        <div {...stylex.props(viewMode === 'grid' ? styles.grid : overrideStyles.LIST_CLASSES)}>
           {rows.map(({ skill, toolName }) => {
             const config = getToolConfig(toolName)
             return (
@@ -203,11 +289,11 @@ export function ProjectSkillsSection({
                 name={skill.name}
                 description={skill.description}
                 badges={
-                  <Badge variant="outline" className="text-xs gap-1 px-1.5 py-0">
+                  <Badge variant="outline" sx={overrideStyles.TOOL_BADGE_CLASSES}>
                     <img
                       src={config.logo}
                       alt={config.displayName}
-                      className={`size-3 ${config.invert ? 'dark:invert' : ''}`}
+                      {...stylex.props(styles.toolLogo, config.invert && styles.toolLogoInverted)}
                     />
                     {config.displayName}
                   </Badge>
@@ -221,3 +307,26 @@ export function ProjectSkillsSection({
     </div>
   )
 }
+
+const overrideStyles = stylex.create({
+  LIST_CLASSES: {
+    borderTopWidth: { default: null, ':is(*)>:not(:last-child)': '0px' },
+    borderBottomWidth: { default: null, ':is(*)>:not(:last-child)': '1px' },
+    borderBottomStyle: { default: null, ':is(*)>:not(:last-child)': 'solid' },
+    borderColor: { default: null, ':is(*)>:not(:last-child)': colors.border },
+  },
+  COUNT_BADGE_CLASSES: { fontSize: '0.75rem', lineHeight: '1rem' },
+  TOOL_BADGE_CLASSES: {
+    fontSize: '0.75rem',
+    lineHeight: '1rem',
+    gap: '0.25rem',
+    paddingLeft: '0.375rem',
+    paddingRight: '0.375rem',
+    paddingTop: '0rem',
+    paddingBottom: '0rem',
+  },
+  SAVE_ALL_ICON_CLASS: { width: '0.75rem', height: '0.75rem' },
+  ICON_COPIED_CLASSES: { width: '0.875rem', height: '0.875rem', color: palette.green500 },
+  ICON_SAVED_CLASSES: { width: '0.875rem', height: '0.875rem', color: palette.green500 },
+  ICON_MUTED_CLASSES: { width: '0.875rem', height: '0.875rem', color: colors.mutedForeground },
+})

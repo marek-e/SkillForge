@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import * as stylex from '@stylexjs/stylex'
 import { useNavigate } from '@tanstack/react-router'
 import type { SkillScope } from '@skillforge/core'
+import { colors } from '@/styles/tokens.stylex'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -22,6 +24,24 @@ import {
 } from '@/components/ui/select'
 import { useCreateSkill, useAvailableTags } from '@/hooks/use-skill-library'
 import { TagsInput } from './TagsInput'
+
+const styles = stylex.create({
+  // `text-muted-foreground text-xs`
+  hint: {
+    color: colors.mutedForeground,
+    // One line of plain text with no descendant of its own, so the paired line
+    // height is written as the length it resolves to.
+    fontSize: '0.75rem',
+    lineHeight: '1rem',
+  },
+
+  // `text-sm text-destructive`
+  error: {
+    color: colors.destructive,
+    fontSize: '0.875rem',
+    lineHeight: '1.25rem',
+  },
+})
 
 interface CreateSkillDialogProps {
   open: boolean
@@ -76,12 +96,12 @@ export function CreateSkillDialog({ open, onOpenChange }: CreateSkillDialogProps
       <DialogContent>
         <DialogHeader>
           <DialogTitle>New skill</DialogTitle>
-          <DialogDescription className="sr-only">
+          <DialogDescription sx={overrideStyles.DESCRIPTION_CLASSES} className="sr-only">
             Fill in a name, optional description, tags and scope to create a new skill.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
+        <form onSubmit={handleSubmit} {...stylex.props(overrideStyles.FORM_CLASSES)}>
+          <div {...stylex.props(overrideStyles.FIELD_CLASSES)}>
             <Label htmlFor="skill-name">Name</Label>
             <Input
               id="skill-name"
@@ -91,7 +111,7 @@ export function CreateSkillDialog({ open, onOpenChange }: CreateSkillDialogProps
               required
             />
           </div>
-          <div className="space-y-2">
+          <div {...stylex.props(overrideStyles.FIELD_CLASSES)}>
             <Label htmlFor="skill-description">Description</Label>
             <Textarea
               id="skill-description"
@@ -101,7 +121,7 @@ export function CreateSkillDialog({ open, onOpenChange }: CreateSkillDialogProps
               rows={3}
             />
           </div>
-          <div className="space-y-2">
+          <div {...stylex.props(overrideStyles.FIELD_CLASSES)}>
             <Label htmlFor="skill-tags">Tags</Label>
             <TagsInput
               id="skill-tags"
@@ -109,12 +129,16 @@ export function CreateSkillDialog({ open, onOpenChange }: CreateSkillDialogProps
               onChange={setTags}
               suggestions={availableTags}
             />
-            <p className="text-muted-foreground text-xs">Press Space or Enter to add a tag</p>
+            <p {...stylex.props(styles.hint)}>Press Space or Enter to add a tag</p>
           </div>
-          <div className="space-y-2">
+          <div {...stylex.props(overrideStyles.FIELD_CLASSES)}>
             <Label htmlFor="skill-scope">Scope</Label>
             <Select value={scope} onValueChange={(v) => setScope(v as SkillScope)}>
-              <SelectTrigger id="skill-scope" className="w-full">
+              <SelectTrigger
+                id="skill-scope"
+                sx={overrideStyles.SELECT_TRIGGER_CLASSES}
+                className="w-explicit"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -123,7 +147,7 @@ export function CreateSkillDialog({ open, onOpenChange }: CreateSkillDialogProps
               </SelectContent>
             </Select>
           </div>
-          {error && <p className="text-sm text-destructive">{error.message}</p>}
+          {error && <p {...stylex.props(styles.error)}>{error.message}</p>}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
               Cancel
@@ -137,3 +161,26 @@ export function CreateSkillDialog({ open, onOpenChange }: CreateSkillDialogProps
     </Dialog>
   )
 }
+
+const overrideStyles = stylex.create({
+  FORM_CLASSES: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '1rem' },
+  },
+  FIELD_CLASSES: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '0.5rem' },
+  },
+  DESCRIPTION_CLASSES: {
+    position: 'absolute',
+    width: '1px',
+    height: '1px',
+    padding: 0,
+    margin: '-1px',
+    overflow: 'hidden',
+    clip: 'rect(0, 0, 0, 0)',
+    whiteSpace: 'nowrap',
+    borderWidth: 0,
+  },
+  SELECT_TRIGGER_CLASSES: { width: '100%' },
+})

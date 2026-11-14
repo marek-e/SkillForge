@@ -1,3 +1,5 @@
+import * as stylex from '@stylexjs/stylex'
+import { fonts } from '@/styles/tokens.stylex'
 import { Link } from '@tanstack/react-router'
 // import { Button } from './button'
 
@@ -27,19 +29,41 @@ import {
 } from '@/components/ui/empty'
 import { HomeIcon, CompassIcon } from 'lucide-react'
 
+const styles = stylex.create({
+  title: { fontWeight: 900, fontFamily: fonts.serif, fontSize: '6rem', lineHeight: 1 },
+  description: { textWrap: 'nowrap' },
+  // `flex w-full items-center justify-center overflow-hidden h-full`
+  page: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden',
+  },
+  // `flex gap-2`
+  actions: {
+    display: 'flex',
+    gap: '0.5rem',
+  },
+})
+
 export function NotFound() {
+  const page = stylex.props(styles.page)
+  const actions = stylex.props(styles.actions)
+
   return (
-    <div className="flex w-full items-center justify-center overflow-hidden h-full">
+    <div className={page.className} style={page.style}>
       <Empty>
         <EmptyHeader>
-          <EmptyTitle className="font-black font-serif text-8xl">404</EmptyTitle>
-          <EmptyDescription className="text-nowrap">
+          <EmptyTitle sx={styles.title}>404</EmptyTitle>
+          <EmptyDescription sx={styles.description}>
             The page you're looking for might have been <br />
             moved or doesn't exist.
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <div className="flex gap-2">
+          <div className={actions.className} style={actions.style}>
             <Button asChild>
               <Link to="/">
                 <HomeIcon data-icon="inline-start" />

@@ -1,0 +1,1128 @@
+[
+  {
+    "case": "button-group-two",
+    "present": true,
+    "group": {
+      "display": "flex",
+      "flexDirection": "row",
+      "alignItems": "stretch",
+      "gap": "normal",
+      "width": "104.094px",
+      "orientation": null
+    },
+    "children": [
+      {
+        "index": 0,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 48.31,
+          "height": 32
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "48.3125px",
+          "height": "32px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "10px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "10px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "1px",
+          "border-color": "oklch(1 0 0 / 0.15)",
+          "background-color": "oklab(1 0 0 / 0.045)",
+          "margin": "0px",
+          "padding": "0px 10px"
+        }
+      },
+      {
+        "index": 1,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 55.78,
+          "height": 32
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "55.7812px",
+          "height": "32px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "10px",
+          "border-bottom-right-radius": "10px",
+          "border-bottom-left-radius": "0px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "0px",
+          "border-color": "oklch(1 0 0 / 0.15)",
+          "background-color": "oklab(1 0 0 / 0.045)",
+          "margin": "0px",
+          "padding": "0px 10px"
+        }
+      }
+    ]
+  },
+  {
+    "case": "button-group-text-last",
+    "present": true,
+    "group": {
+      "display": "flex",
+      "flexDirection": "row",
+      "alignItems": "stretch",
+      "gap": "normal",
+      "width": "117.922px",
+      "orientation": null
+    },
+    "children": [
+      {
+        "index": 0,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 65.72,
+          "height": 32
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "65.7188px",
+          "height": "32px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "10px",
+          "border-top-right-radius": "10px",
+          "border-bottom-right-radius": "10px",
+          "border-bottom-left-radius": "10px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "1px",
+          "border-color": "oklch(1 0 0 / 0.15)",
+          "background-color": "oklab(1 0 0 / 0.045)",
+          "margin": "0px",
+          "padding": "0px 10px"
+        }
+      },
+      {
+        "index": 1,
+        "tag": "div",
+        "slot": null,
+        "box": {
+          "width": 52.2,
+          "height": 32
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "52.2031px",
+          "height": "32px",
+          "flex": "0 1 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "10px",
+          "border-bottom-right-radius": "10px",
+          "border-bottom-left-radius": "0px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "0px",
+          "border-color": "oklch(1 0 0 / 0.1)",
+          "background-color": "oklch(0.269 0 0)",
+          "margin": "0px",
+          "padding": "0px 10px"
+        }
+      }
+    ]
+  },
+  {
+    "case": "button-group-text-both",
+    "present": true,
+    "group": {
+      "display": "flex",
+      "flexDirection": "row",
+      "alignItems": "stretch",
+      "gap": "normal",
+      "width": "200.938px",
+      "orientation": null
+    },
+    "children": [
+      {
+        "index": 0,
+        "tag": "div",
+        "slot": null,
+        "box": {
+          "width": 72.25,
+          "height": 32
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "72.25px",
+          "height": "32px",
+          "flex": "0 1 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "10px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "10px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "1px",
+          "border-color": "oklch(1 0 0 / 0.1)",
+          "background-color": "oklch(0.269 0 0)",
+          "margin": "0px",
+          "padding": "0px 10px"
+        }
+      },
+      {
+        "index": 1,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 76.48,
+          "height": 32
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "76.4844px",
+          "height": "32px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "10px",
+          "border-bottom-right-radius": "10px",
+          "border-bottom-left-radius": "0px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "0px",
+          "border-color": "oklch(1 0 0 / 0.15)",
+          "background-color": "oklab(1 0 0 / 0.045)",
+          "margin": "0px",
+          "padding": "0px 10px"
+        }
+      },
+      {
+        "index": 2,
+        "tag": "div",
+        "slot": null,
+        "box": {
+          "width": 52.2,
+          "height": 32
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "52.2031px",
+          "height": "32px",
+          "flex": "0 1 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "10px",
+          "border-bottom-right-radius": "10px",
+          "border-bottom-left-radius": "0px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "0px",
+          "border-color": "oklch(1 0 0 / 0.1)",
+          "background-color": "oklch(0.269 0 0)",
+          "margin": "0px",
+          "padding": "0px 10px"
+        }
+      }
+    ]
+  },
+  {
+    "case": "button-group-xs",
+    "present": true,
+    "group": {
+      "display": "flex",
+      "flexDirection": "row",
+      "alignItems": "stretch",
+      "gap": "normal",
+      "width": "80.8438px",
+      "orientation": null
+    },
+    "children": [
+      {
+        "index": 0,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 40.88,
+          "height": 24
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "40.875px",
+          "height": "24px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "10px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "10px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "1px",
+          "border-color": "oklch(1 0 0 / 0.15)",
+          "background-color": "oklab(1 0 0 / 0.045)",
+          "margin": "0px",
+          "padding": "0px 8px"
+        }
+      },
+      {
+        "index": 1,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 39.97,
+          "height": 24
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "39.9688px",
+          "height": "24px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "10px",
+          "border-bottom-right-radius": "10px",
+          "border-bottom-left-radius": "0px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "0px",
+          "border-color": "oklch(1 0 0 / 0.15)",
+          "background-color": "oklab(1 0 0 / 0.045)",
+          "margin": "0px",
+          "padding": "0px 8px"
+        }
+      }
+    ]
+  },
+  {
+    "case": "button-group-sm",
+    "present": true,
+    "group": {
+      "display": "flex",
+      "flexDirection": "row",
+      "alignItems": "stretch",
+      "gap": "normal",
+      "width": "91.9062px",
+      "orientation": null
+    },
+    "children": [
+      {
+        "index": 0,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 46.41,
+          "height": 28
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "46.4062px",
+          "height": "28px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "10px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "10px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "1px",
+          "border-color": "oklch(1 0 0 / 0.15)",
+          "background-color": "oklab(1 0 0 / 0.045)",
+          "margin": "0px",
+          "padding": "0px 10px"
+        }
+      },
+      {
+        "index": 1,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 45.5,
+          "height": 28
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "45.5px",
+          "height": "28px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "10px",
+          "border-bottom-right-radius": "10px",
+          "border-bottom-left-radius": "0px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "0px",
+          "border-color": "oklch(1 0 0 / 0.15)",
+          "background-color": "oklab(1 0 0 / 0.045)",
+          "margin": "0px",
+          "padding": "0px 10px"
+        }
+      }
+    ]
+  },
+  {
+    "case": "button-group-icon-xs",
+    "present": true,
+    "group": {
+      "display": "flex",
+      "flexDirection": "row",
+      "alignItems": "stretch",
+      "gap": "normal",
+      "width": "48px",
+      "orientation": null
+    },
+    "children": [
+      {
+        "index": 0,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 24,
+          "height": 24
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "24px",
+          "height": "24px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "10px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "10px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "1px",
+          "border-color": "oklch(1 0 0 / 0.15)",
+          "background-color": "oklab(1 0 0 / 0.045)",
+          "margin": "0px",
+          "padding": "0px"
+        }
+      },
+      {
+        "index": 1,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 24,
+          "height": 24
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "24px",
+          "height": "24px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "10px",
+          "border-bottom-right-radius": "10px",
+          "border-bottom-left-radius": "0px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "0px",
+          "border-color": "oklch(1 0 0 / 0.15)",
+          "background-color": "oklab(1 0 0 / 0.045)",
+          "margin": "0px",
+          "padding": "0px"
+        }
+      }
+    ]
+  },
+  {
+    "case": "button-group-icon-sm",
+    "present": true,
+    "group": {
+      "display": "flex",
+      "flexDirection": "row",
+      "alignItems": "stretch",
+      "gap": "normal",
+      "width": "56px",
+      "orientation": null
+    },
+    "children": [
+      {
+        "index": 0,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 28,
+          "height": 28
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "28px",
+          "height": "28px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "10px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "10px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "1px",
+          "border-color": "oklch(1 0 0 / 0.15)",
+          "background-color": "oklab(1 0 0 / 0.045)",
+          "margin": "0px",
+          "padding": "0px"
+        }
+      },
+      {
+        "index": 1,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 28,
+          "height": 28
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "28px",
+          "height": "28px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "10px",
+          "border-bottom-right-radius": "10px",
+          "border-bottom-left-radius": "0px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "0px",
+          "border-color": "oklch(1 0 0 / 0.15)",
+          "background-color": "oklab(1 0 0 / 0.045)",
+          "margin": "0px",
+          "padding": "0px"
+        }
+      }
+    ]
+  },
+  {
+    "case": "button-group-nested",
+    "present": true,
+    "group": {
+      "display": "flex",
+      "flexDirection": "row",
+      "alignItems": "stretch",
+      "gap": "8px",
+      "width": "133.156px",
+      "orientation": null
+    },
+    "children": [
+      {
+        "index": 0,
+        "tag": "div",
+        "slot": "button-group",
+        "box": {
+          "width": 62.28,
+          "height": 32
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "62.2812px",
+          "height": "32px",
+          "flex": "0 1 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "border-top-width": "0px",
+          "border-right-width": "0px",
+          "border-bottom-width": "0px",
+          "border-left-width": "0px",
+          "border-color": "oklch(1 0 0 / 0.1)",
+          "background-color": "rgba(0, 0, 0, 0)",
+          "margin": "0px",
+          "padding": "0px"
+        }
+      },
+      {
+        "index": 1,
+        "tag": "div",
+        "slot": "button-group",
+        "box": {
+          "width": 62.88,
+          "height": 32
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "62.875px",
+          "height": "32px",
+          "flex": "0 1 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "10px",
+          "border-bottom-right-radius": "10px",
+          "border-bottom-left-radius": "0px",
+          "border-top-width": "0px",
+          "border-right-width": "0px",
+          "border-bottom-width": "0px",
+          "border-left-width": "0px",
+          "border-color": "oklch(1 0 0 / 0.1)",
+          "background-color": "rgba(0, 0, 0, 0)",
+          "margin": "0px",
+          "padding": "0px"
+        }
+      }
+    ]
+  },
+  {
+    "case": "button-group-input",
+    "present": true,
+    "group": {
+      "display": "flex",
+      "flexDirection": "row",
+      "alignItems": "stretch",
+      "gap": "normal",
+      "width": "231.359px",
+      "orientation": null
+    },
+    "children": [
+      {
+        "index": 0,
+        "tag": "input",
+        "slot": "input",
+        "box": {
+          "width": 192,
+          "height": 32
+        },
+        "styles": {
+          "display": "block",
+          "position": "static",
+          "z-index": "auto",
+          "width": "192px",
+          "height": "32px",
+          "flex": "1 1 0%",
+          "align-self": "auto",
+          "border-top-left-radius": "10px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "10px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "1px",
+          "border-color": "oklch(1 0 0 / 0.15)",
+          "background-color": "oklab(1 0 0 / 0.045)",
+          "margin": "0px",
+          "padding": "4px 10px"
+        }
+      },
+      {
+        "index": 1,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 39.36,
+          "height": 32
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "39.3594px",
+          "height": "32px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "10px",
+          "border-bottom-right-radius": "10px",
+          "border-bottom-left-radius": "0px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "0px",
+          "border-color": "oklch(1 0 0 / 0.15)",
+          "background-color": "oklab(1 0 0 / 0.045)",
+          "margin": "0px",
+          "padding": "0px 10px"
+        }
+      }
+    ]
+  },
+  {
+    "case": "button-group-select",
+    "present": true,
+    "group": {
+      "display": "flex",
+      "flexDirection": "row",
+      "alignItems": "stretch",
+      "gap": "normal",
+      "width": "98.0938px",
+      "orientation": null
+    },
+    "children": [
+      {
+        "index": 0,
+        "tag": "button",
+        "slot": "select-trigger",
+        "box": {
+          "width": 42,
+          "height": 32
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "42px",
+          "height": "32px",
+          "flex": "0 1 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "10px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "10px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "1px",
+          "border-color": "oklch(1 0 0 / 0.15)",
+          "background-color": "oklab(1 0 0 / 0.045)",
+          "margin": "0px",
+          "padding": "8px 8px 8px 10px"
+        }
+      },
+      {
+        "index": 1,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 56.09,
+          "height": 32
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "56.0938px",
+          "height": "32px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "10px",
+          "border-bottom-right-radius": "10px",
+          "border-bottom-left-radius": "0px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "0px",
+          "border-color": "oklch(1 0 0 / 0.15)",
+          "background-color": "oklab(1 0 0 / 0.045)",
+          "margin": "0px",
+          "padding": "0px 10px"
+        }
+      }
+    ]
+  },
+  {
+    "case": "button-group-vertical-two",
+    "present": true,
+    "group": {
+      "display": "flex",
+      "flexDirection": "column",
+      "alignItems": "stretch",
+      "gap": "normal",
+      "width": "69.9219px",
+      "orientation": "vertical"
+    },
+    "children": [
+      {
+        "index": 0,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 69.92,
+          "height": 32
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "69.9219px",
+          "height": "32px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "10px",
+          "border-top-right-radius": "10px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "1px",
+          "border-color": "oklch(1 0 0 / 0.15)",
+          "background-color": "oklab(1 0 0 / 0.045)",
+          "margin": "0px",
+          "padding": "0px 10px"
+        }
+      },
+      {
+        "index": 1,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 69.92,
+          "height": 32
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "69.9219px",
+          "height": "32px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "10px",
+          "border-bottom-left-radius": "10px",
+          "border-top-width": "0px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "1px",
+          "border-color": "oklch(1 0 0 / 0.15)",
+          "background-color": "oklab(1 0 0 / 0.045)",
+          "margin": "0px",
+          "padding": "0px 10px"
+        }
+      }
+    ]
+  },
+  {
+    "case": "button-group-vertical-text-last",
+    "present": true,
+    "group": {
+      "display": "flex",
+      "flexDirection": "column",
+      "alignItems": "stretch",
+      "gap": "normal",
+      "width": "65.7188px",
+      "orientation": "vertical"
+    },
+    "children": [
+      {
+        "index": 0,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 65.72,
+          "height": 32
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "65.7188px",
+          "height": "32px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "10px",
+          "border-top-right-radius": "10px",
+          "border-bottom-right-radius": "10px",
+          "border-bottom-left-radius": "10px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "1px",
+          "border-color": "oklch(1 0 0 / 0.15)",
+          "background-color": "oklab(1 0 0 / 0.045)",
+          "margin": "0px",
+          "padding": "0px 10px"
+        }
+      },
+      {
+        "index": 1,
+        "tag": "div",
+        "slot": null,
+        "box": {
+          "width": 65.72,
+          "height": 21
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "65.7188px",
+          "height": "21px",
+          "flex": "0 1 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "10px",
+          "border-bottom-left-radius": "10px",
+          "border-top-width": "0px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "1px",
+          "border-color": "oklch(1 0 0 / 0.1)",
+          "background-color": "oklch(0.269 0 0)",
+          "margin": "0px",
+          "padding": "0px 10px"
+        }
+      }
+    ]
+  },
+  {
+    "case": "button-group-vertical-separator",
+    "present": true,
+    "group": {
+      "display": "flex",
+      "flexDirection": "column",
+      "alignItems": "stretch",
+      "gap": "normal",
+      "width": "59.4531px",
+      "orientation": "vertical"
+    },
+    "children": [
+      {
+        "index": 0,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 59.45,
+          "height": 32
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "59.4531px",
+          "height": "32px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "10px",
+          "border-top-right-radius": "10px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "1px",
+          "border-color": "oklch(1 0 0 / 0.15)",
+          "background-color": "oklab(1 0 0 / 0.045)",
+          "margin": "0px",
+          "padding": "0px 10px"
+        }
+      },
+      {
+        "index": 1,
+        "tag": "div",
+        "slot": "button-group-separator",
+        "box": {
+          "width": 57.45,
+          "height": 1
+        },
+        "styles": {
+          "display": "block",
+          "position": "relative",
+          "z-index": "auto",
+          "width": "57.4531px",
+          "height": "1px",
+          "flex": "0 0 auto",
+          "align-self": "stretch",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "border-top-width": "0px",
+          "border-right-width": "0px",
+          "border-bottom-width": "0px",
+          "border-left-width": "0px",
+          "border-color": "oklch(1 0 0 / 0.1)",
+          "background-color": "oklch(1 0 0 / 0.15)",
+          "margin": "0px 1px",
+          "padding": "0px"
+        }
+      },
+      {
+        "index": 2,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 59.45,
+          "height": 32
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "59.4531px",
+          "height": "32px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "10px",
+          "border-bottom-left-radius": "10px",
+          "border-top-width": "0px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "1px",
+          "border-color": "oklch(1 0 0 / 0.15)",
+          "background-color": "oklab(1 0 0 / 0.045)",
+          "margin": "0px",
+          "padding": "0px 10px"
+        }
+      }
+    ]
+  },
+  {
+    "case": "button-group-mixed-variants",
+    "present": true,
+    "group": {
+      "display": "flex",
+      "flexDirection": "row",
+      "alignItems": "stretch",
+      "gap": "normal",
+      "width": "224.391px",
+      "orientation": null
+    },
+    "children": [
+      {
+        "index": 0,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 72.97,
+          "height": 32
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "72.9688px",
+          "height": "32px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "10px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "10px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "1px",
+          "border-color": "rgba(0, 0, 0, 0)",
+          "background-color": "oklch(0.77 0.16 70)",
+          "margin": "0px",
+          "padding": "0px 10px"
+        }
+      },
+      {
+        "index": 1,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 91.36,
+          "height": 32
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "91.3594px",
+          "height": "32px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "0px",
+          "border-bottom-right-radius": "0px",
+          "border-bottom-left-radius": "0px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "0px",
+          "border-color": "rgba(0, 0, 0, 0)",
+          "background-color": "oklch(0.274 0.006 286.033)",
+          "margin": "0px",
+          "padding": "0px 10px"
+        }
+      },
+      {
+        "index": 2,
+        "tag": "button",
+        "slot": "button",
+        "box": {
+          "width": 60.06,
+          "height": 32
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "z-index": "auto",
+          "width": "60.0625px",
+          "height": "32px",
+          "flex": "0 0 auto",
+          "align-self": "auto",
+          "border-top-left-radius": "0px",
+          "border-top-right-radius": "10px",
+          "border-bottom-right-radius": "10px",
+          "border-bottom-left-radius": "0px",
+          "border-top-width": "1px",
+          "border-right-width": "1px",
+          "border-bottom-width": "1px",
+          "border-left-width": "0px",
+          "border-color": "rgba(0, 0, 0, 0)",
+          "background-color": "rgba(0, 0, 0, 0)",
+          "margin": "0px",
+          "padding": "0px 10px"
+        }
+      }
+    ]
+  }
+]

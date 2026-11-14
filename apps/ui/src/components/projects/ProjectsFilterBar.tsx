@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import * as stylex from '@stylexjs/stylex'
 import { SearchIcon, XIcon } from 'lucide-react'
 import { getToolConfig } from '@/lib/tool-config'
 import { Button } from '@/components/ui/button'
@@ -8,6 +9,62 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from '@/components/ui/input-group'
+import { colors, fonts } from '@/styles/tokens.stylex'
+
+const styles = stylex.create({
+  // `flex items-center gap-3`
+  bar: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+  },
+  // `flex items-center gap-1.5`
+  group: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.375rem',
+  },
+  // `text-muted-foreground rounded bg-muted px-1 py-0.5 font-mono text-[10px]`.
+  //
+  // `rounded` bare is the built-in `0.25rem`, not the project's `--radius`
+  // scale, and `px-*`/`py-*` are logical, as Tailwind writes them. The radius
+  // is dead either way: `InputGroupAddon`'s own
+  // `[&>kbd]:rounded-[calc(var(--radius)-5px)]` is a utility and outranks a
+  // `priorityN` rule, so the corner stays 5px, exactly as before (PR 22).
+  //
+  // **No `line-height`**: `text-[10px]` emits `line-height: var(--tw-leading)`
+  // with no fallback, which is invalid at computed-value time, so the kbd
+  // inherits the addon's `text-sm` ratio instead. That addon keeps its
+  // `text-sm` a Tailwind class for exactly this element (PR 05), and leaving
+  // the property undeclared here reproduces the inheritance.
+  kbd: {
+    color: colors.mutedForeground,
+    borderRadius: '0.25rem',
+    backgroundColor: colors.muted,
+    paddingInline: '0.25rem',
+    paddingBlock: '0.125rem',
+    fontFamily: fonts.mono,
+    fontSize: '10px',
+  },
+})
+
+/**
+ * The tool buttons' own override, passed through `Button`'s `sx` prop.
+ *
+ * `stylex.props` merges a property as a whole, so `fontSize` alone would drop
+ * `size="sm"`'s paired `lineHeight: inherit`; both are restated. `text-xs`'
+ * paired line height is written as the length it resolves to
+ * (`0.75rem x calc(1 / 0.75)` = `1rem`), which is what the utility computed to
+ * on these buttons (PR 22 does the same for the skill-library bar).
+ */
+const buttonStyles = stylex.create({
+  // `h-8 text-xs`
+  filter: {
+    height: '2rem',
+    fontSize: '0.75rem',
+    lineHeight: '1rem',
+  },
+})
 
 interface Props {
   searchQuery: string
@@ -41,8 +98,8 @@ export function ProjectsFilterBar({
   }, [])
 
   return (
-    <div className="flex items-center gap-3">
-      <InputGroup className="w-64">
+    <div {...stylex.props(styles.bar)}>
+      <InputGroup sx={overrideStyles.INPUT_GROUP_CLASSES}>
         <InputGroupAddon align="inline-start">
           <SearchIcon />
         </InputGroupAddon>
@@ -60,15 +117,13 @@ export function ProjectsFilterBar({
           </InputGroupAddon>
         ) : (
           <InputGroupAddon align="inline-end">
-            <kbd className="text-muted-foreground rounded bg-muted px-1 py-0.5 font-mono text-[10px]">
-              {isMac ? '⌘F' : 'Ctrl F'}
-            </kbd>
+            <kbd {...stylex.props(styles.kbd)}>{isMac ? '⌘F' : 'Ctrl F'}</kbd>
           </InputGroupAddon>
         )}
       </InputGroup>
 
       {availableTools.length > 0 && (
-        <div className="flex items-center gap-1.5">
+        <div {...stylex.props(styles.group)}>
           {availableTools.map((tool) => {
             const config = getToolConfig(tool)
             const isActive = selectedTools.includes(tool)
@@ -77,7 +132,7 @@ export function ProjectsFilterBar({
                 key={tool}
                 variant={isActive ? 'secondary' : 'outline'}
                 size="sm"
-                className="h-8 text-xs"
+                sx={buttonStyles.filter}
                 onClick={() => onToolToggle(tool)}
               >
                 {config.displayName}
@@ -89,3 +144,7 @@ export function ProjectsFilterBar({
     </div>
   )
 }
+
+const overrideStyles = stylex.create({
+  INPUT_GROUP_CLASSES: { width: '16rem' },
+})

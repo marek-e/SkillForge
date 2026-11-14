@@ -1,0 +1,175 @@
+[
+  {
+    "id": "wrapper",
+    "selector": "[data-slot=\"sidebar-wrapper\"]",
+    "present": true,
+    "box": {
+      "x": 0,
+      "y": 36,
+      "width": 1440,
+      "height": 864
+    },
+    "styles": {
+      "position": "static",
+      "top": "auto",
+      "right": "auto",
+      "bottom": "auto",
+      "left": "auto",
+      "width": "1440px",
+      "height": "864px",
+      "min-height": "0px",
+      "margin": "0px",
+      "padding": "0px",
+      "z-index": "auto"
+    }
+  },
+  {
+    "id": "sidebar",
+    "selector": "[data-slot=\"sidebar\"]",
+    "present": true,
+    "box": {
+      "x": 0,
+      "y": 36,
+      "width": 176,
+      "height": 864
+    },
+    "styles": {
+      "position": "static",
+      "top": "auto",
+      "right": "auto",
+      "bottom": "auto",
+      "left": "auto",
+      "width": "176px",
+      "height": "864px",
+      "min-height": "auto",
+      "margin": "0px",
+      "padding": "0px",
+      "z-index": "auto"
+    }
+  },
+  {
+    "id": "gap",
+    "selector": "[data-slot=\"sidebar-gap\"]",
+    "present": true,
+    "box": {
+      "x": 0,
+      "y": 36,
+      "width": 176,
+      "height": 0
+    },
+    "styles": {
+      "position": "relative",
+      "top": "0px",
+      "right": "0px",
+      "bottom": "0px",
+      "left": "0px",
+      "width": "176px",
+      "height": "0px",
+      "min-height": "0px",
+      "margin": "0px",
+      "padding": "0px",
+      "z-index": "auto"
+    }
+  },
+  {
+    "id": "container",
+    "selector": "[data-slot=\"sidebar-container\"]",
+    "present": true,
+    "box": {
+      "x": 0,
+      "y": 36,
+      "width": 176,
+      "height": 864
+    },
+    "styles": {
+      "position": "fixed",
+      "top": "36px",
+      "right": "1264px",
+      "bottom": "0px",
+      "left": "0px",
+      "width": "176px",
+      "height": "864px",
+      "min-height": "0px",
+      "margin": "0px",
+      "padding": "8px",
+      "z-index": "10"
+    }
+  },
+  {
+    "id": "inner",
+    "selector": "[data-slot=\"sidebar-inner\"]",
+    "present": true,
+    "box": {
+      "x": 8,
+      "y": 44,
+      "width": 160,
+      "height": 848
+    },
+    "styles": {
+      "position": "static",
+      "top": "auto",
+      "right": "auto",
+      "bottom": "auto",
+      "left": "auto",
+      "width": "160px",
+      "height": "848px",
+      "min-height": "auto",
+      "margin": "0px",
+      "padding": "0px",
+      "z-index": "auto"
+    }
+  },
+  {
+    "id": "inset",
+    "selector": "[data-slot=\"sidebar-inset\"]",
+    "present": true,
+    "box": {
+      "x": 176,
+      "y": 36,
+      "width": 1280,
+      "height": 864
+    },
+    "styles": {
+      "position": "relative",
+      "top": "0px",
+      "right": "0px",
+      "bottom": "0px",
+      "left": "0px",
+      "width": "1280px",
+      "height": "864px",
+      "min-height": "auto",
+      "margin": "0px",
+      "padding": "0px",
+      "z-index": "auto"
+    }
+  },
+  {
+    "id": "rail",
+    "selector": "[data-slot=\"sidebar-rail\"]",
+    "present": false
+  },
+  {
+    "id": "titlebar",
+    "selector": ".electron-app > .drag",
+    "present": true,
+    "box": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 36
+    },
+    "styles": {
+      "position": "static",
+      "top": "auto",
+      "right": "auto",
+      "bottom": "auto",
+      "left": "auto",
+      "width": "1440px",
+      "height": "36px",
+      "min-height": "auto",
+      "margin": "0px",
+      "padding": "0px",
+      "z-index": "auto"
+    }
+  }
+]

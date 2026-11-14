@@ -1,0 +1,9 @@
+[
+  { "name": "claude-code", "detected": false, "paths": {}, "commandCount": 0, "skillCount": 0 },
+  { "name": "cursor", "detected": false, "paths": {}, "commandCount": 0, "skillCount": 0 },
+  { "name": "codex", "detected": false, "paths": {}, "commandCount": 0, "skillCount": 0 },
+  { "name": "gemini-cli", "detected": false, "paths": {}, "commandCount": 0, "skillCount": 0 },
+  { "name": "opencode", "detected": false, "paths": {}, "commandCount": 0, "skillCount": 0 },
+  { "name": "copilot", "detected": false, "paths": {}, "commandCount": 0, "skillCount": 0 },
+  { "name": "vibe", "detected": false, "paths": {}, "commandCount": 0, "skillCount": 0 }
+]

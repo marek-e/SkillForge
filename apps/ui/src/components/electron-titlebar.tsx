@@ -1,6 +1,75 @@
 import { useState, useEffect } from 'react'
 import type { ElectronWindow } from '@/lib/electron'
 import { ArrowLeft, ArrowRight, SquareMinus, SquarePlus, SquareX } from 'lucide-react'
+import * as stylex from '@stylexjs/stylex'
+import { colors, radius } from '@/styles/tokens.stylex'
+
+const styles = stylex.create({
+  titlebar: {
+    WebkitAppRegion: 'drag',
+    display: 'flex',
+    height: '2.25rem',
+    flexShrink: 0,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.sidebar,
+    borderBottomWidth: '1px',
+    borderBottomStyle: 'solid',
+    borderColor: colors.sidebarBorder,
+  },
+  row: { display: 'flex', alignItems: 'center' },
+  controls: { WebkitAppRegion: 'no-drag', display: 'flex', alignItems: 'center' },
+  trafficLights: { width: '5rem' },
+  navigation: {
+    display: 'inline-flex',
+    borderRadius: radius.sm,
+    width: '1.5rem',
+    height: '1.5rem',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: {
+      default: colors.mutedForeground,
+      '@media (hover: hover)': { default: null, ':hover': colors.foreground },
+    },
+    backgroundColor: {
+      default: null,
+      '@media (hover: hover)': { default: null, ':hover': colors.border },
+    },
+    opacity: { default: null, ':disabled': '30%' },
+    cursor: { default: null, ':disabled': 'not-allowed' },
+  },
+  icon: { width: '1rem', height: '1rem' },
+  title: {
+    fontSize: '0.75rem',
+    lineHeight: '1rem',
+    fontWeight: 500,
+    color: colors.mutedForeground,
+    userSelect: 'none',
+  },
+  windowControl: {
+    display: 'inline-flex',
+    height: '2.25rem',
+    width: '2.75rem',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: colors.foreground,
+    backgroundColor: {
+      default: null,
+      '@media (hover: hover)': { default: null, ':hover': colors.border },
+    },
+  },
+  close: {
+    backgroundColor: {
+      default: null,
+      '@media (hover: hover)': { default: null, ':hover': colors.destructive },
+    },
+    color: {
+      default: colors.foreground,
+      '@media (hover: hover)': { default: null, ':hover': '#fff' },
+    },
+  },
+  spacer: { width: '1rem' },
+})
 
 const electronAPI = (window as ElectronWindow).electronAPI
 const isMac = electronAPI?.platform === 'darwin'
@@ -27,6 +96,8 @@ function getNavigation(): WindowNavigation | undefined {
 export function ElectronTitlebar() {
   const [canGoBack, setCanGoBack] = useState(false)
   const [canGoForward, setCanGoForward] = useState(false)
+  const titlebar = stylex.props(styles.titlebar)
+  const controls = stylex.props(styles.controls)
 
   useEffect(() => {
     const nav = getNavigation()
@@ -59,63 +130,63 @@ export function ElectronTitlebar() {
   }, [canGoBack, canGoForward])
 
   return (
-    <div className="drag flex h-9 shrink-0 items-center justify-between bg-sidebar border-b border-sidebar-border">
-      <div className="flex items-center">
+    <div {...titlebar} className={`drag ${titlebar.className}`}>
+      <div {...stylex.props(styles.row)}>
         {/* macOS: leave space for traffic lights */}
-        <div className={isMac ? 'w-20' : ''} />
+        <div {...stylex.props(isMac && styles.trafficLights)} />
         {/* Back/forward navigation */}
-        <div className="no-drag flex items-center">
+        <div {...controls} className={`no-drag ${controls.className}`}>
           <button
             onClick={() => window.history.back()}
             disabled={!canGoBack}
-            className="inline-flex rounded-sm size-6 items-center justify-center text-muted-foreground hover:bg-border hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
+            {...stylex.props(styles.navigation)}
             aria-label="Go back"
             title="Go back"
           >
-            <ArrowLeft className="size-4" />
+            <ArrowLeft {...stylex.props(styles.icon)} />
           </button>
           <button
             onClick={() => window.history.forward()}
             disabled={!canGoForward}
-            className="inline-flex size-6 rounded-sm items-center justify-center text-muted-foreground hover:bg-border hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
+            {...stylex.props(styles.navigation)}
             aria-label="Go forward"
             title="Go forward"
           >
-            <ArrowRight className="size-4" />
+            <ArrowRight {...stylex.props(styles.icon)} />
           </button>
         </div>
       </div>
-      <span className="text-xs font-medium text-muted-foreground select-none">SkillForge</span>
+      <span {...stylex.props(styles.title)}>SkillForge</span>
       {/* Windows/Linux: custom window controls; macOS uses native traffic lights */}
       {!isMac ? (
-        <div className="no-drag flex items-center">
+        <div {...controls} className={`no-drag ${controls.className}`}>
           <button
             onClick={() => electronAPI?.minimizeWindow()}
-            className="inline-flex h-9 w-11 items-center justify-center text-foreground hover:bg-border"
+            {...stylex.props(styles.windowControl)}
             aria-label="Minimize"
             title="Minimize"
           >
-            <SquareMinus className="size-4" />
+            <SquareMinus {...stylex.props(styles.icon)} />
           </button>
           <button
             onClick={() => electronAPI?.maximizeWindow()}
-            className="inline-flex h-9 w-11 items-center justify-center text-foreground hover:bg-border"
+            {...stylex.props(styles.windowControl)}
             aria-label="Maximize"
             title="Maximize"
           >
-            <SquarePlus className="size-4" />
+            <SquarePlus {...stylex.props(styles.icon)} />
           </button>
           <button
             onClick={() => electronAPI?.closeWindow()}
-            className="inline-flex h-9 w-11 items-center justify-center text-foreground hover:bg-destructive hover:text-white"
+            {...stylex.props(styles.windowControl, styles.close)}
             aria-label="Close"
             title="Close"
           >
-            <SquareX className="size-4" />
+            <SquareX {...stylex.props(styles.icon)} />
           </button>
         </div>
       ) : (
-        <div className="w-4" />
+        <div {...stylex.props(styles.spacer)} />
       )}
     </div>
   )

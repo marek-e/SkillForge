@@ -1,0 +1,21 @@
+[
+  {
+    "id": "agent-alpha",
+    "name": "Alpha Agent",
+    "sourceTool": "claude",
+    "enabledSkills": [
+      { "skillId": "skill-alpha", "enabled": true },
+      { "skillId": "skill-beta", "enabled": false }
+    ],
+    "createdAt": "2025-01-15T10:00:00.000Z",
+    "updatedAt": "2025-01-15T10:00:00.000Z"
+  },
+  {
+    "id": "agent-beta",
+    "name": "Beta Agent",
+    "sourceTool": "cursor",
+    "enabledSkills": [],
+    "createdAt": "2025-01-15T10:00:00.000Z",
+    "updatedAt": "2025-01-15T10:00:00.000Z"
+  }
+]

@@ -1,3 +1,4 @@
+import * as stylex from '@stylexjs/stylex'
 import { createRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { rootRoute } from './__root'
@@ -6,10 +7,53 @@ import { getToolConfig } from '@/lib/tool-config'
 import { ToolCard } from '../components/ToolCard'
 import { ErrorContainer } from '../components/ErrorContainer'
 import { Skeleton } from '../components/ui/skeleton'
-import { cn } from '@/lib/utils'
+import { radius } from '@/styles/tokens.stylex'
 import type { SkillItem } from '@skillforge/core'
 import { H1 } from '@/components/typography'
 import { useBreadcrumb } from '@/lib/breadcrumbs'
+
+const styles = stylex.create({
+  // `space-y-6`.
+  //
+  // `space-y-*` is a child rule (`:where(& > :not(:last-child))`); the children
+  // are the title row and the `ToolCard` below it — or the two skeletons of the
+  // loading branch — and none of them declares a margin. Tailwind emits both
+  // margins, the start one at zero (`tailwind-values.md` §7).
+  page: {
+    ':is(*)>:not(:last-child)': {
+      marginBlockStart: '0rem',
+      marginBlockEnd: '1.5rem',
+    },
+  },
+  // `flex items-center gap-3`
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+  },
+  // `flex size-10 items-center justify-center rounded-lg`; the accent colour is
+  // the class `lib/tool-config.ts` supplies, see below. Same box as
+  // `ToolCardCompact`'s logo (PR 22).
+  logo: {
+    display: 'flex',
+    width: '2.5rem',
+    height: '2.5rem',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: radius.lg,
+  },
+  // `size-6`
+  logoImage: {
+    width: '1.5rem',
+    height: '1.5rem',
+  },
+  // `dark:invert`. Tailwind's `invert` sets `--tw-invert: invert(100%)` inside
+  // a `filter` chain whose other slots are empty, so the computed filter is
+  // that one function (`tailwind-values.md` §8).
+  logoImageInverted: {
+    filter: { default: null, ':is(.dark *)': 'invert(100%)' },
+  },
+})
 
 const skillsQueryMap: Record<string, () => Promise<SkillItem[]>> = {
   'claude-code': api.tools.claudeCodeSkills,
@@ -47,9 +91,9 @@ function ToolDetailPage() {
 
   if (toolsLoading) {
     return (
-      <div className="space-y-6">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-64 w-full" />
+      <div {...stylex.props(styles.page)}>
+        <Skeleton sx={overrideStyles.TITLE_SKELETON_CLASSES} />
+        <Skeleton sx={overrideStyles.BODY_SKELETON_CLASSES} />
       </div>
     )
   }
@@ -65,14 +109,19 @@ function ToolDetailPage() {
     )
   }
 
+  // `config.accent` (e.g. `bg-orange-500/15`) is a class name chosen in
+  // `lib/tool-config.ts`, which this row does not touch, so it stays a utility
+  // on the logo box alongside the StyleX class (as in `ToolCardCompact`).
+  const logoSx = stylex.props(styles.logo, config.accent)
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <div className={cn('flex size-10 items-center justify-center rounded-lg', config.accent)}>
+    <div {...stylex.props(styles.page)}>
+      <div {...stylex.props(styles.header)}>
+        <div className={logoSx.className}>
           <img
             src={config.logo}
             alt={config.displayName}
-            className={cn('size-6', config.invert && 'dark:invert')}
+            {...stylex.props(styles.logoImage, config.invert && styles.logoImageInverted)}
           />
         </div>
         <H1>{config.displayName}</H1>
@@ -93,4 +142,9 @@ export const toolDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/tools/$name',
   component: ToolDetailPage,
+})
+
+const overrideStyles = stylex.create({
+  TITLE_SKELETON_CLASSES: { height: '2rem', width: '12rem' },
+  BODY_SKELETON_CLASSES: { height: '16rem', width: '100%' },
 })

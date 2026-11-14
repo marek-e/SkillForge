@@ -1,3 +1,4 @@
+import * as stylex from '@stylexjs/stylex'
 import { Link, useLocation } from '@tanstack/react-router'
 import { useProjects } from '@/hooks/use-projects'
 import {
@@ -9,6 +10,11 @@ import {
 } from '@/components/ui/sidebar'
 import { ProjectAvatar } from '@/components/project-avatar'
 
+const styles = stylex.create({
+  group: { marginTop: '0.25rem' },
+  menu: { gap: '0.25rem' },
+})
+
 export function NavProjects() {
   const location = useLocation()
   const { data: projects } = useProjects()
@@ -17,9 +23,9 @@ export function NavProjects() {
   if (favorites.length === 0) return null
 
   return (
-    <SidebarGroup className="mt-1">
+    <SidebarGroup sx={styles.group}>
       <SidebarGroupLabel>Favorites</SidebarGroupLabel>
-      <SidebarMenu className="gap-1">
+      <SidebarMenu sx={styles.menu}>
         {favorites.map((project) => {
           const isActive = location.pathname === `/projects/${project.id}`
           return (

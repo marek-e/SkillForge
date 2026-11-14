@@ -1,3 +1,4 @@
+import { projectActions } from '@/styles/project-actions.stylex'
 import {
   flexRender,
   getCoreRowModel,
@@ -7,6 +8,7 @@ import {
   type SortingState,
   type OnChangeFn,
 } from '@tanstack/react-table'
+import * as stylex from '@stylexjs/stylex'
 import type { Project } from '@skillforge/core'
 import { StarIcon, Trash2Icon, ArrowUpDownIcon } from 'lucide-react'
 import { getToolConfig } from '@/lib/tool-config'
@@ -21,7 +23,93 @@ import {
   TableHead,
   TableCell,
 } from '@/components/ui/table'
-import { cn } from '@/lib/utils'
+import { colors, fonts } from '@/styles/tokens.stylex'
+
+const styles = stylex.create({
+  clickableRow: { cursor: 'pointer' },
+  // `flex items-center gap-2`
+  nameCell: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+  },
+  // `font-medium`
+  nameText: {
+    fontWeight: 500,
+  },
+  // `text-muted-foreground font-mono text-xs truncate max-w-[300px] block`.
+  //
+  // `truncate` is the three-declaration utility (`tailwind-values.md` §3), and
+  // `text-xs`' paired line height is written as the length it resolves to; the
+  // span holds nothing but text, so no descendant can inherit a ratio.
+  pathText: {
+    display: 'block',
+    maxWidth: '300px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    color: colors.mutedForeground,
+    fontFamily: fonts.mono,
+    fontSize: '0.75rem',
+    lineHeight: '1rem',
+  },
+  // `flex flex-wrap gap-1`
+  toolsCell: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '0.25rem',
+  },
+})
+
+/**
+ * Overrides handed to `Button`, which takes an `sx` prop (PR 05).
+ *
+ * `stylex.props` merges a property as a whole, so both entries below have to
+ * restate every condition the `ghost` variant declares for the same property
+ * and that the Tailwind classes they replace did **not** already shadow:
+ *
+ * - `ghost`'s `aria-expanded:text-foreground` was already shadowed, because a
+ *   plain `text-muted-foreground` utility sits in `@layer utilities` and beats
+ *   any `priorityN` rule whatever its selector. Dropping that arm here
+ *   reproduces the muted colour these buttons compute today.
+ * - `ghost`'s `aria-expanded:bg-muted` was **not** shadowed - no caller utility
+ *   declared a plain `background-color` - so it is restated.
+ *
+ * Neither button is ever a disclosure trigger, so `aria-expanded` is
+ * unreachable in this file; the arms are kept for identity, not for looks.
+ */
+const buttonStyles = stylex.create({
+  // `-ml-2` on the two sortable headers. `ml-*` is the physical longhand, as
+  // Tailwind writes it, and `Button` declares no margin of its own.
+  sortHeader: {
+    marginLeft: '-0.5rem',
+  },
+  // `hover:text-destructive text-muted-foreground hover:bg-destructive/10
+  //  dark:hover:bg-destructive/20`
+  deleteAction: {
+    color: {
+      default: colors.mutedForeground,
+      '@media (hover: hover)': { default: null, ':hover': colors.destructive },
+    },
+    backgroundColor: {
+      default: null,
+      ':is([aria-expanded="true"])': colors.muted,
+      '@media (hover: hover)': {
+        default: null,
+        ':hover': 'color-mix(in oklab, var(--destructive) 10%, transparent)',
+      },
+      // `dark:hover:bg-destructive/20` is (0,3,0) and outranks the light-mode
+      // hover; the nested wrapper reproduces that with a higher priority.
+      ':is(.dark *)': {
+        default: null,
+        '@media (hover: hover)': {
+          default: null,
+          ':hover': 'color-mix(in oklab, var(--destructive) 20%, transparent)',
+        },
+      },
+    },
+  },
+})
 
 interface ProjectsTableProps {
   projects: Project[]
@@ -49,21 +137,18 @@ export function ProjectsTable({
         <Button
           variant="ghost"
           size="icon-xs"
-          className={cn(
-            row.original.isFavorite && 'text-yellow-400 hover:text-yellow-400',
-            !row.original.isFavorite &&
-              'text-muted-foreground hover:text-yellow-400 hover:bg-yellow-400/10 dark:hover:bg-yellow-400/20'
-          )}
+          sx={row.original.isFavorite ? projectActions.favorite : projectActions.unfavorite}
           onClick={(e) => {
             e.stopPropagation()
             onFavoriteToggle(row.original.id)
           }}
         >
           <StarIcon
-            className={cn(
-              'size-4',
-              row.original.isFavorite && 'fill-yellow-400 group-hover/button:fill-yellow-400/50'
-            )}
+            className={[
+              'size-explicit',
+              stylex.props(projectActions.icon, row.original.isFavorite && projectActions.star)
+                .className,
+            ].join(' ')}
           />
         </Button>
       ),
@@ -74,17 +159,19 @@ export function ProjectsTable({
         <Button
           variant="ghost"
           size="sm"
-          className="-ml-2"
+          sx={buttonStyles.sortHeader}
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Name
-          <ArrowUpDownIcon className="size-3.5" />
+          <ArrowUpDownIcon
+            className={['size-explicit', stylex.props(projectActions.sortIcon).className].join(' ')}
+          />
         </Button>
       ),
       cell: ({ row }) => (
-        <div className="flex items-center gap-2">
+        <div {...stylex.props(styles.nameCell)}>
           <ProjectAvatar project={row.original} size="sm" />
-          <span className="font-medium">{row.original.name}</span>
+          <span {...stylex.props(styles.nameText)}>{row.original.name}</span>
         </div>
       ),
     },
@@ -94,25 +181,23 @@ export function ProjectsTable({
         <Button
           variant="ghost"
           size="sm"
-          className="-ml-2"
+          sx={buttonStyles.sortHeader}
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Path
-          <ArrowUpDownIcon className="size-3.5" />
+          <ArrowUpDownIcon
+            className={['size-explicit', stylex.props(projectActions.sortIcon).className].join(' ')}
+          />
         </Button>
       ),
-      cell: ({ row }) => (
-        <span className="text-muted-foreground font-mono text-xs truncate max-w-[300px] block">
-          {row.original.path}
-        </span>
-      ),
+      cell: ({ row }) => <span {...stylex.props(styles.pathText)}>{row.original.path}</span>,
     },
     {
       accessorKey: 'detectedTools',
       header: 'Tools',
       enableSorting: false,
       cell: ({ row }) => (
-        <div className="flex flex-wrap gap-1">
+        <div {...stylex.props(styles.toolsCell)}>
           {row.original.detectedTools
             .filter((t) => t.detected)
             .map((t) => {
@@ -133,13 +218,15 @@ export function ProjectsTable({
         <Button
           variant="ghost"
           size="icon-xs"
-          className="hover:text-destructive text-muted-foreground hover:bg-destructive/10 dark:hover:bg-destructive/20"
+          sx={buttonStyles.deleteAction}
           onClick={(e) => {
             e.stopPropagation()
             onDeleteClick(row.original)
           }}
         >
-          <Trash2Icon className="size-4" />
+          <Trash2Icon
+            className={['size-explicit', stylex.props(projectActions.icon).className].join(' ')}
+          />
         </Button>
       ),
     },
@@ -171,11 +258,7 @@ export function ProjectsTable({
       </TableHeader>
       <TableBody>
         {table.getRowModel().rows.map((row) => (
-          <TableRow
-            key={row.id}
-            className="cursor-pointer"
-            onClick={() => onRowClick(row.original)}
-          >
+          <TableRow key={row.id} sx={styles.clickableRow} onClick={() => onRowClick(row.original)}>
             {row.getVisibleCells().map((cell) => (
               <TableCell key={cell.id}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}

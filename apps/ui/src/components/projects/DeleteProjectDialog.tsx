@@ -1,4 +1,5 @@
 import type { Project } from '@skillforge/core'
+import * as stylex from '@stylexjs/stylex'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -8,6 +9,13 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog'
+
+const styles = stylex.create({
+  // `font-bold`
+  name: {
+    fontWeight: 700,
+  },
+})
 
 interface DeleteProjectDialogProps {
   project: Project | null
@@ -28,8 +36,8 @@ export function DeleteProjectDialog({
         <DialogHeader>
           <DialogTitle>Delete project?</DialogTitle>
           <DialogDescription>
-            This will remove <span className="font-bold">{project?.name}</span> from your project
-            list.
+            This will remove <span {...stylex.props(styles.name)}>{project?.name}</span> from your
+            project list.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

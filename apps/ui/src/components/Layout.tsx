@@ -6,27 +6,76 @@ import { AppSidebar } from './app-sidebar/app-sidebar'
 import { ElectronTitlebar } from './electron-titlebar'
 import { Separator } from './ui/separator'
 import { ModeToggle } from './mode-toggle'
+import * as stylex from '@stylexjs/stylex'
+import { motion } from '@/styles/tokens.stylex'
+
+const styles = stylex.create({
+  root: { display: 'flex', height: '100vh', flexDirection: 'column' },
+  provider: { flex: 1, minHeight: 0, overflow: 'hidden' },
+  header: {
+    display: 'flex',
+    height: {
+      default: '4rem',
+      ':is([data-slot="sidebar-wrapper"]:has([data-collapsible="icon"]) *)': '3rem',
+    },
+    flexShrink: 0,
+    paddingInline: '1rem',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '0.5rem',
+    transitionProperty: 'width, height',
+    transitionTimingFunction: 'linear',
+    transitionDuration: motion.duration,
+  },
+  headerStart: { display: 'flex', alignItems: 'center', gap: '0.5rem' },
+  trigger: { marginLeft: '-0.25rem' },
+  separator: {
+    marginRight: '0.5rem',
+    height: {
+      default: null,
+      ':is([data-orientation="horizontal"])': '1px',
+      ':is([data-orientation="vertical"])': '1rem',
+    },
+    alignSelf: { default: null, ':is([data-orientation="vertical"])': 'center' },
+  },
+  main: {
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    gap: '1rem',
+    padding: '1rem',
+    width: '100%',
+    maxWidth: {
+      default: null,
+      '@media (width >= 40rem)': '40rem',
+      '@media (width >= 48rem)': '48rem',
+      '@media (width >= 64rem)': '64rem',
+      '@media (width >= 80rem)': '80rem',
+      '@media (width >= 96rem)': '96rem',
+    },
+    marginInline: 'auto',
+    overflowY: 'auto',
+  },
+})
 
 export function Layout() {
+  const root = stylex.props(styles.root)
   return (
-    <div className={`flex h-screen flex-col ${isElectron ? 'electron-app' : ''}`}>
+    <div {...root} className={isElectron ? `electron-app ${root.className}` : root.className}>
       {isElectron && <ElectronTitlebar />}
-      <SidebarProvider className="flex-1 min-h-0! overflow-hidden">
+      <SidebarProvider sx={styles.provider}>
         <AppSidebar />
         <BreadcrumbProvider>
           <SidebarInset>
-            <header className="flex h-16 shrink-0 px-4 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-              <div className="flex items-center gap-2">
-                <SidebarTrigger className="-ml-1" />
-                <Separator
-                  orientation="vertical"
-                  className="mr-2 data-[orientation=vertical]:h-4 data-vertical:self-center "
-                />
+            <header {...stylex.props(styles.header)}>
+              <div {...stylex.props(styles.headerStart)}>
+                <SidebarTrigger sx={styles.trigger} />
+                <Separator orientation="vertical" sx={styles.separator} />
                 <Breadcrumbs />
               </div>
               <ModeToggle />
             </header>
-            <main className="flex flex-1 flex-col gap-4 p-4 container mx-auto overflow-y-auto">
+            <main {...stylex.props(styles.main)}>
               <Outlet />
             </main>
           </SidebarInset>

@@ -1,0 +1,54 @@
+{
+  "claude-code": [
+    {
+      "name": "summarize-pull-request",
+      "description": "Reads a pull request diff and produces a reviewer-facing summary with risks and a suggested review order.",
+      "filePath": "/Users/fixture/.claude/skills/summarize-pull-request/SKILL.md",
+      "body": "# Summarize pull request\n\nUse this skill when a reviewer needs a fast, structured read of a large diff.\n"
+    },
+    {
+      "name": "write-release-notes",
+      "description": "Turns merged pull requests into user-facing release notes.",
+      "filePath": "/Users/fixture/.claude/skills/write-release-notes/SKILL.md",
+      "body": "# Write release notes\n"
+    },
+    {
+      "name": "long-name",
+      "description": "A deliberately long description used to exercise wrapping inside the accordion trigger row of the tool detail card, which does not clamp and therefore grows the row.",
+      "filePath": "/Users/fixture/.claude/skills/long-name/SKILL.md"
+    },
+    {
+      "name": "explain-stack-trace",
+      "description": "Explains a stack trace and points at the most likely frame.",
+      "filePath": "/Users/fixture/.claude/skills/explain-stack-trace/SKILL.md",
+      "body": "# Explain stack trace\n"
+    }
+  ],
+  "cursor": [
+    {
+      "name": "write-migration",
+      "description": "Generates a reversible SQL migration from a schema diff.",
+      "filePath": "/Users/fixture/.cursor/skills/write-migration/SKILL.md",
+      "isBuiltIn": false,
+      "body": "# Write migration\n"
+    },
+    {
+      "name": "review-diff",
+      "description": "Built-in Cursor review skill.",
+      "filePath": "/Users/fixture/.cursor/skills/review-diff/SKILL.md",
+      "isBuiltIn": true
+    }
+  ],
+  "codex": [
+    {
+      "name": "triage-incident",
+      "description": "Collects logs, traces and recent deploys into a single incident timeline.",
+      "filePath": "/Users/fixture/.codex/skills/triage-incident/SKILL.md",
+      "body": "# Triage incident\n"
+    }
+  ],
+  "gemini-cli": [],
+  "opencode": [],
+  "copilot": [],
+  "vibe": []
+}

@@ -1,0 +1,263 @@
+[
+  {
+    "id": "carousel-root",
+    "disabled": null,
+    "box": {
+      "width": 308,
+      "height": 112
+    },
+    "styles": {
+      "margin-left": "0px",
+      "margin-top": "0px",
+      "padding-left": "0px",
+      "padding-top": "0px",
+      "min-width": "0px",
+      "flex-shrink": "1",
+      "flex-grow": "0",
+      "flex-basis": "auto",
+      "flex-direction": "row",
+      "top": "0px",
+      "right": "0px",
+      "bottom": "0px",
+      "left": "0px",
+      "width": "308px",
+      "height": "112px",
+      "border-radius": "0px",
+      "translate": "none",
+      "rotate": "none",
+      "touch-action": "auto"
+    }
+  },
+  {
+    "id": "carousel-content-track",
+    "disabled": null,
+    "box": {
+      "width": 324,
+      "height": 112
+    },
+    "styles": {
+      "margin-left": "-16px",
+      "margin-top": "0px",
+      "padding-left": "0px",
+      "padding-top": "0px",
+      "min-width": "0px",
+      "flex-shrink": "1",
+      "flex-grow": "0",
+      "flex-basis": "auto",
+      "flex-direction": "row",
+      "top": "auto",
+      "right": "auto",
+      "bottom": "auto",
+      "left": "auto",
+      "width": "324px",
+      "height": "112px",
+      "border-radius": "0px",
+      "translate": "none",
+      "rotate": "none",
+      "touch-action": "auto"
+    }
+  },
+  {
+    "id": "carousel-item",
+    "disabled": null,
+    "box": {
+      "width": 324,
+      "height": 112
+    },
+    "styles": {
+      "margin-left": "0px",
+      "margin-top": "0px",
+      "padding-left": "16px",
+      "padding-top": "0px",
+      "min-width": "0px",
+      "flex-shrink": "0",
+      "flex-grow": "0",
+      "flex-basis": "100%",
+      "flex-direction": "row",
+      "top": "auto",
+      "right": "auto",
+      "bottom": "auto",
+      "left": "auto",
+      "width": "324px",
+      "height": "112px",
+      "border-radius": "0px",
+      "translate": "none",
+      "rotate": "none",
+      "touch-action": "auto"
+    }
+  },
+  {
+    "id": "carousel-previous",
+    "disabled": true,
+    "box": {
+      "width": 28,
+      "height": 28
+    },
+    "styles": {
+      "margin-left": "0px",
+      "margin-top": "0px",
+      "padding-left": "0px",
+      "padding-top": "0px",
+      "min-width": "0px",
+      "flex-shrink": "0",
+      "flex-grow": "0",
+      "flex-basis": "auto",
+      "flex-direction": "row",
+      "top": "56px",
+      "right": "328px",
+      "bottom": "28px",
+      "left": "-48px",
+      "width": "28px",
+      "height": "28px",
+      "border-radius": "3.35544e+07px",
+      "translate": "0px -50%",
+      "rotate": "none",
+      "touch-action": "manipulation"
+    }
+  },
+  {
+    "id": "carousel-next",
+    "disabled": false,
+    "box": {
+      "width": 28,
+      "height": 28
+    },
+    "styles": {
+      "margin-left": "0px",
+      "margin-top": "0px",
+      "padding-left": "0px",
+      "padding-top": "0px",
+      "min-width": "0px",
+      "flex-shrink": "0",
+      "flex-grow": "0",
+      "flex-basis": "auto",
+      "flex-direction": "row",
+      "top": "56px",
+      "right": "-48px",
+      "bottom": "28px",
+      "left": "328px",
+      "width": "28px",
+      "height": "28px",
+      "border-radius": "3.35544e+07px",
+      "translate": "0px -50%",
+      "rotate": "none",
+      "touch-action": "manipulation"
+    }
+  },
+  {
+    "id": "carousel-vertical-track",
+    "disabled": null,
+    "box": {
+      "width": 240,
+      "height": 112
+    },
+    "styles": {
+      "margin-left": "0px",
+      "margin-top": "-16px",
+      "padding-left": "0px",
+      "padding-top": "0px",
+      "min-width": "0px",
+      "flex-shrink": "1",
+      "flex-grow": "0",
+      "flex-basis": "auto",
+      "flex-direction": "column",
+      "top": "auto",
+      "right": "auto",
+      "bottom": "auto",
+      "left": "auto",
+      "width": "240px",
+      "height": "112px",
+      "border-radius": "0px",
+      "translate": "none",
+      "rotate": "none",
+      "touch-action": "auto"
+    }
+  },
+  {
+    "id": "carousel-vertical-item",
+    "disabled": null,
+    "box": {
+      "width": 240,
+      "height": 128
+    },
+    "styles": {
+      "margin-left": "0px",
+      "margin-top": "0px",
+      "padding-left": "0px",
+      "padding-top": "16px",
+      "min-width": "0px",
+      "flex-shrink": "0",
+      "flex-grow": "0",
+      "flex-basis": "100%",
+      "flex-direction": "row",
+      "top": "auto",
+      "right": "auto",
+      "bottom": "auto",
+      "left": "auto",
+      "width": "240px",
+      "height": "128px",
+      "border-radius": "0px",
+      "translate": "none",
+      "rotate": "none",
+      "touch-action": "auto"
+    }
+  },
+  {
+    "id": "carousel-vertical-previous",
+    "disabled": true,
+    "box": {
+      "width": 28,
+      "height": 28
+    },
+    "styles": {
+      "margin-left": "0px",
+      "margin-top": "0px",
+      "padding-left": "0px",
+      "padding-top": "0px",
+      "min-width": "0px",
+      "flex-shrink": "0",
+      "flex-grow": "0",
+      "flex-basis": "auto",
+      "flex-direction": "row",
+      "top": "-48px",
+      "right": "92px",
+      "bottom": "116px",
+      "left": "120px",
+      "width": "28px",
+      "height": "28px",
+      "border-radius": "3.35544e+07px",
+      "translate": "-50%",
+      "rotate": "90deg",
+      "touch-action": "manipulation"
+    }
+  },
+  {
+    "id": "carousel-vertical-next",
+    "disabled": false,
+    "box": {
+      "width": 28,
+      "height": 28
+    },
+    "styles": {
+      "margin-left": "0px",
+      "margin-top": "0px",
+      "padding-left": "0px",
+      "padding-top": "0px",
+      "min-width": "0px",
+      "flex-shrink": "0",
+      "flex-grow": "0",
+      "flex-basis": "auto",
+      "flex-direction": "row",
+      "top": "116px",
+      "right": "92px",
+      "bottom": "-48px",
+      "left": "120px",
+      "width": "28px",
+      "height": "28px",
+      "border-radius": "3.35544e+07px",
+      "translate": "-50%",
+      "rotate": "90deg",
+      "touch-action": "manipulation"
+    }
+  }
+]

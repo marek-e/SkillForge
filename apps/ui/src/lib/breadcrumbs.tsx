@@ -9,6 +9,14 @@ import {
   BreadcrumbPage,
 } from '@/components/ui/breadcrumb'
 import { HomeIcon } from 'lucide-react'
+import * as stylex from '@stylexjs/stylex'
+
+const styles = stylex.create({
+  ancestor: { display: { default: 'none', '@media (width >= 48rem)': 'block' } },
+  home: { display: 'flex', alignItems: 'center', gap: '0.5rem' },
+  icon: { width: '1rem', height: '1rem' },
+  segment: { display: 'contents' },
+})
 
 type BreadcrumbOverrides = Record<string, string>
 
@@ -89,15 +97,15 @@ export function Breadcrumbs() {
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        <BreadcrumbItem className={isHome ? undefined : 'hidden md:block'}>
+        <BreadcrumbItem sx={!isHome && styles.ancestor}>
           {isHome ? (
-            <BreadcrumbPage className="flex items-center gap-2">
-              <HomeIcon className="size-4" /> Home
+            <BreadcrumbPage sx={styles.home}>
+              <HomeIcon {...stylex.props(styles.icon)} /> Home
             </BreadcrumbPage>
           ) : (
             <BreadcrumbLink asChild>
-              <Link to="/" className="flex items-center gap-2">
-                <HomeIcon className="size-4" /> Home
+              <Link to="/" {...stylex.props(styles.home)}>
+                <HomeIcon {...stylex.props(styles.icon)} /> Home
               </Link>
             </BreadcrumbLink>
           )}
@@ -105,9 +113,9 @@ export function Breadcrumbs() {
         {crumbs.map((crumb, i) => {
           const isLast = i === crumbs.length - 1
           return (
-            <span key={crumb.path} className="contents">
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem className={isLast ? undefined : 'hidden md:block'}>
+            <span key={crumb.path} {...stylex.props(styles.segment)}>
+              <BreadcrumbSeparator sx={styles.ancestor} />
+              <BreadcrumbItem sx={!isLast && styles.ancestor}>
                 {isLast ? (
                   <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
                 ) : (

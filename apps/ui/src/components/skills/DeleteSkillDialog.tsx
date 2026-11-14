@@ -1,3 +1,4 @@
+import * as stylex from '@stylexjs/stylex'
 import type { Skill } from '@skillforge/core'
 import { Button } from '@/components/ui/button'
 import {
@@ -8,6 +9,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+
+const styles = stylex.create({
+  // `font-bold`
+  skillName: {
+    fontWeight: 700,
+  },
+})
 
 interface DeleteSkillDialogProps {
   skill: Skill | null
@@ -28,8 +36,8 @@ export function DeleteSkillDialog({
         <DialogHeader>
           <DialogTitle>Remove skill from library?</DialogTitle>
           <DialogDescription>
-            This will remove <span className="font-bold">{skill?.name}</span> from your library. The
-            original skill files will not be deleted.
+            This will remove <span {...stylex.props(styles.skillName)}>{skill?.name}</span> from
+            your library. The original skill files will not be deleted.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

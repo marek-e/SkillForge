@@ -1,0 +1,136 @@
+/* The project's own global stylesheet (PR 02).
+ *
+ * Imported from `src/index.css`, after the Tailwind, shadcn and font imports,
+ * which is exactly where these blocks used to sit inline - so the emitted
+ * cascade position of every rule below is unchanged.
+ *
+ * What belongs here and nowhere else:
+ *
+ * 1. The `:root` / `.dark` token blocks. StyleX cannot express the `.dark`
+ *    override (`defineVars` has no selector-scoped values, and a
+ *    `':where(.dark)'` key compiles to invalid nested CSS), so the switch stays
+ *    a plain CSS class toggled by `next-themes` on `<html>`.
+ *    `src/styles/tokens.stylex.ts` aliases these properties.
+ * 2. The `@layer base` element defaults, which no element can opt into with a
+ *    class and which therefore cannot become StyleX styles.
+ * 3. Electron window rules that must stay until the components they target are
+ *    migrated (see the comments on each).
+ */
+
+:root {
+  --palette-orange-500: oklch(70.5% 0.213 47.604);
+  --palette-amber-500: oklch(76.9% 0.188 70.08);
+  --palette-yellow-400: oklch(85.2% 0.199 91.936);
+  --palette-green-500: oklch(72.3% 0.219 149.579);
+  --palette-cyan-500: oklch(71.5% 0.143 215.221);
+  --palette-blue-500: oklch(62.3% 0.214 259.815);
+  --palette-purple-500: oklch(62.7% 0.265 303.9);
+  --palette-pink-500: oklch(65.6% 0.241 354.308);
+  --palette-stone-500: oklch(55.3% 0.013 58.071);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.67 0.16 58);
+  --primary-foreground: oklch(0.99 0.02 95);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.58 0.22 27);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.88 0.15 92);
+  --chart-2: oklch(0.77 0.16 70);
+  --chart-3: oklch(0.67 0.16 58);
+  --chart-4: oklch(0.56 0.15 49);
+  --chart-5: oklch(0.47 0.12 46);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.975 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.67 0.16 58);
+  --sidebar-primary-foreground: oklch(0.99 0.02 95);
+  --sidebar-accent: oklch(0.94 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+  --toaster-background: oklch(0.145 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.77 0.16 70);
+  --primary-foreground: oklch(0.28 0.07 46);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.371 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.88 0.15 92);
+  --chart-2: oklch(0.77 0.16 70);
+  --chart-3: oklch(0.67 0.16 58);
+  --chart-4: oklch(0.56 0.15 49);
+  --chart-5: oklch(0.47 0.12 46);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.77 0.16 70);
+  --sidebar-primary-foreground: oklch(0.28 0.07 46);
+  --sidebar-accent: oklch(0.28 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+  --toaster-background: oklch(0.985 0 0);
+}
+
+/* Written out instead of `@apply border-border outline-ring/50` /
+ * `@apply font-sans bg-background text-foreground`.
+ *
+ * These are the declarations Tailwind v4 compiles those three rules to,
+ * verified against the built CSS asset (and quoted in
+ * `docs/stylex-migration/tailwind-values.md` §11). Two details are
+ * load-bearing:
+ *
+ * - `outline-color` is written as the bare `color-mix()`, with no `@supports`
+ *   guard, even though the shipped CSS carries one. The guard is not authored:
+ *   lightningcss (inside the Tailwind Vite plugin) adds it, emitting
+ *   `outline-color:var(--ring)` as the fallback and the `color-mix()` form
+ *   inside `@supports (color:color-mix(in lab,red,red))` - byte for byte what
+ *   `@apply outline-ring/50` used to produce. Writing the guard by hand makes
+ *   lightningcss wrap the guarded rule in a *second* identical guard, which is
+ *   harmless but no longer byte-identical. Leave it un-guarded.
+ * - The `@layer base` wrapper stays. It puts these rules below every StyleX
+ *   `priorityN` layer and below Tailwind utilities, which is where they are
+ *   now. Dropping the wrapper would make them unlayered and beat everything.
+ *
+ * The layer is deliberately not "cleaned up": `border-color` on `*` only
+ * becomes visible once something also sets a border width, and `outline-color`
+ * only once something sets an outline - both of which shadcn components do. */
+@layer base {
+  * {
+    border-color: var(--border);
+    outline-color: color-mix(in oklab, var(--ring) 50%, transparent);
+  }
+  body {
+    font-family: 'Geist Variable', sans-serif;
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+  html {
+    font-family: 'Geist Variable', sans-serif;
+  }
+}

@@ -4,16 +4,8 @@
     ".": {},
     "apps/ui": {
       "project": ["src/**/*.{ts,tsx}"],
-      "ignore": ["src/components/ui/**", "src/components/nav-user.tsx"],
-      "ignoreDependencies": [
-        "@base-ui/react",
-        "cmdk",
-        "date-fns",
-        "embla-carousel-react",
-        "react-day-picker",
-        "react-resizable-panels",
-        "vaul"
-      ]
+      "ignore": ["src/components/ui/**", "src/components/app-sidebar/nav-user.tsx"],
+      "ignoreDependencies": ["date-fns"]
     },
     "apps/runtime": {
       "project": ["src/**/*.ts"],
@@ -21,7 +13,7 @@
     },
     "apps/electron": {
       "project": ["src/**/*.ts"],
-      "ignoreDependencies": ["better-sqlite3"]
+      "ignoreDependencies": ["better-sqlite3", "electron-builder-squirrel-windows"]
     },
     "packages/core": {
       "project": ["src/**/*.ts"]

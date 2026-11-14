@@ -25,4 +25,5 @@ SkillForge is a local-first tool to visualize and manage agent skills across age
 - [Connectors](docs/connectors.md) — How to build tool adapters
 - [Database & Migrations](docs/database.md) — SQLite, Drizzle ORM, schema changes
 - [Code Quality](docs/code-quality.md) — TypeScript rules, testing, commits
+- [Visual Testing](docs/visual-testing.md) — Playwright visual regression suite and frozen originals
 - [Ralph Wiggum](docs/ralph-wiggum.md) — Autonomous coding loop pattern

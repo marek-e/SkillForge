@@ -1,0 +1,40 @@
+{
+  "drag": "drag",
+  "buttons": [
+    {
+      "label": "Go back",
+      "drag": "no-drag",
+      "disabled": true,
+      "width": "24px",
+      "height": "24px"
+    },
+    {
+      "label": "Go forward",
+      "drag": "no-drag",
+      "disabled": true,
+      "width": "24px",
+      "height": "24px"
+    },
+    {
+      "label": "Minimize",
+      "drag": "no-drag",
+      "disabled": false,
+      "width": "44px",
+      "height": "36px"
+    },
+    {
+      "label": "Maximize",
+      "drag": "no-drag",
+      "disabled": false,
+      "width": "44px",
+      "height": "36px"
+    },
+    {
+      "label": "Close",
+      "drag": "no-drag",
+      "disabled": false,
+      "width": "44px",
+      "height": "36px"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "project-alpha": {
+    "claude-code": [
+      {
+        "name": "summarize-pull-request",
+        "description": "Reads a pull request diff and produces a reviewer-facing summary with risks and a suggested review order.",
+        "filePath": "/Users/fixture/.claude/skills/summarize-pull-request/SKILL.md",
+        "body": "# Summarize pull request\n"
+      },
+      {
+        "name": "write-release-notes",
+        "description": "Turns merged pull requests into user-facing release notes.",
+        "filePath": "/Users/fixture/projects/alpha/.claude/skills/write-release-notes/SKILL.md",
+        "body": "# Write release notes\n"
+      },
+      {
+        "name": "multi-file-skill",
+        "description": "A skill whose implementation spans a directory, so the copy action is hidden and only the folder actions remain.",
+        "filePath": "/Users/fixture/projects/alpha/.claude/skills/multi-file-skill/SKILL.md"
+      }
+    ],
+    "cursor": [
+      {
+        "name": "write-migration",
+        "description": "Generates a reversible SQL migration from a schema diff.",
+        "filePath": "/Users/fixture/.cursor/skills/write-migration/SKILL.md",
+        "isBuiltIn": false,
+        "body": "# Write migration\n"
+      }
+    ]
+  },
+  "project-beta": {
+    "claude-code": [
+      {
+        "name": "explain-stack-trace",
+        "description": "Explains a stack trace and points at the most likely frame.",
+        "filePath": "/Users/fixture/projects/beta/.claude/skills/explain-stack-trace/SKILL.md",
+        "body": "# Explain stack trace\n"
+      }
+    ],
+    "codex": []
+  },
+  "project-gamma": {}
+}
