@@ -1,9 +1,9 @@
 import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
+import type { Sx } from '@/lib/sx'
 import { HoverCard as HoverCardPrimitive } from 'radix-ui'
 
-import { colors, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import { colors, radius, typography } from '@/styles/tokens.stylex'
 
 /** `data-open:` / `data-closed:`, the `shadcn/tailwind.css` custom variants (§9). */
 const OPEN = ':is(:where([data-state="open"]), :where([data-open]:not([data-open="false"])))'
@@ -84,6 +84,8 @@ const styles = stylex.create({
   //  ring-foreground/10 duration-100 z-50
   //  origin-(--radix-hover-card-content-transform-origin) outline-hidden`
   content: {
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
     width: '16rem',
     padding: '0.625rem',
     borderRadius: radius.lg,
@@ -127,15 +129,6 @@ const styles = stylex.create({
   },
 })
 
-/**
- * `text-sm` stays a Tailwind class, the paired-line-height exception in
- * `conventions.md`: a hover card is a container a caller fills, and a
- * descendant with its own font size but no line height inherits the *ratio*
- * `calc(1.25 / 0.875)`, which a StyleX `1.25rem` cannot pass down. Removed with
- * the utility layer in PR 32.
- */
-const PAIRED_TEXT_CLASS = 'text-sm'
-
 function HoverCard({ ...props }: React.ComponentProps<typeof HoverCardPrimitive.Root>) {
   return <HoverCardPrimitive.Root data-slot="hover-card" {...props} />
 }
@@ -149,9 +142,10 @@ function HoverCardContent({
   style,
   align = 'center',
   sideOffset = 4,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof HoverCardPrimitive.Content>) {
-  const sx = stylex.props(styles.content)
+}: React.ComponentProps<typeof HoverCardPrimitive.Content> & { sx?: Sx }) {
+  const sx = stylex.props(styles.content, sxProp)
 
   return (
     <HoverCardPrimitive.Portal data-slot="hover-card-portal">
@@ -159,7 +153,7 @@ function HoverCardContent({
         data-slot="hover-card-content"
         align={align}
         sideOffset={sideOffset}
-        className={cn(PAIRED_TEXT_CLASS, sx.className, className)}
+        className={[sx.className, className].filter(Boolean).join(' ')}
         style={sx.style || style ? { ...sx.style, ...style } : undefined}
         {...props}
       />

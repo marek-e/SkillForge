@@ -3,7 +3,6 @@ import * as stylex from '@stylexjs/stylex'
 import { Switch as SwitchPrimitive } from 'radix-ui'
 
 import { colors, motion } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
 
 /** `data-checked:` / `data-unchecked:` / `data-disabled:`, the `shadcn/tailwind.css` custom variants. */
 const CHECKED = ':is([data-state="checked"], [data-checked]:not([data-checked="false"]))'
@@ -178,7 +177,7 @@ function Switch({
       // `peer` is what `Label`'s `peer-disabled:` rules select through;
       // `group/switch` carries no styling of its own now that the thumb takes
       // its size directly, but it stays part of the rendered markup.
-      className={cn('peer group/switch', sx.className, className)}
+      className={['peer group/switch', sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >

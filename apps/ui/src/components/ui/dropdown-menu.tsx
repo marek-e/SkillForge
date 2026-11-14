@@ -3,7 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import { DropdownMenu as DropdownMenuPrimitive } from 'radix-ui'
 
 import { colors, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import type { Sx } from '@/lib/sx'
 import { CheckIcon, ChevronRightIcon } from 'lucide-react'
 
 /** `data-open:` / `data-closed:` / `data-disabled:`, the `shadcn/tailwind.css` custom variants. */
@@ -93,19 +93,27 @@ const SHADOW_MD_RING =
 const SHADOW_LG_RING =
   '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent), 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)'
 
-/**
- * Rules that style an element this file does not own stay Tailwind classes
- * until PR 32 removes Tailwind: a StyleX rule lives in a `priorityN` layer and
- * loses to any utility sitting on the element itself, which is the wrong
- * outcome for a selector that reaches out to a caller's children
- * (`conventions.md`, "A rule that styles a foreign element stays Tailwind").
- *
- * `[&_svg:not([class*='size-'])]:size-4` also reads the literal text of the
- * child's `class` attribute, so it keeps sizing both a caller's icon and the
- * `CheckIcon` / `ChevronRightIcon` this file renders without a size class.
- */
-const ITEM_ICONS =
-  "[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0"
+const descendantStyles = stylex.create({
+  icons: {
+    width: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+    height: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+    pointerEvents: { default: null, ':is(*) svg': 'none' },
+    flexShrink: { default: null, ':is(*) svg': 0 },
+  },
+  focusDescendants: {
+    color: { default: null, ':is(*):focus *': colors.accentForeground },
+  },
+  rowDescendants: {
+    color: {
+      default: null,
+      ':is([data-variant="destructive"])>svg': colors.destructive,
+      ':is(*):not([data-variant="destructive"]):focus *': colors.accentForeground,
+    },
+  },
+})
+const ITEM_ICONS = stylex.props(descendantStyles.icons).className
+const FOCUS_DESCENDANTS = stylex.props(descendantStyles.focusDescendants).className
+const ROW_DESCENDANTS = stylex.props(descendantStyles.rowDescendants).className
 
 const styles = stylex.create({
   // Shared by `DropdownMenuContent` and `DropdownMenuSubContent`:
@@ -332,11 +340,12 @@ function DropdownMenuTrigger({
 function DropdownMenuContent({
   className,
   style,
+  sx: sxProp,
   align = 'start',
   sideOffset = 4,
   ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Content>) {
-  const sx = stylex.props(styles.surface, styles.content)
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Content> & { sx?: Sx }) {
+  const sx = stylex.props(styles.surface, styles.content, sxProp)
 
   return (
     <DropdownMenuPrimitive.Portal>
@@ -344,7 +353,7 @@ function DropdownMenuContent({
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         align={align}
-        className={cn(sx.className, className)}
+        className={[sx.className, className].filter(Boolean).join(' ')}
         style={sx.style || style ? { ...sx.style, ...style } : undefined}
         {...props}
       />
@@ -361,16 +370,18 @@ function DropdownMenuItem({
   style,
   inset,
   variant = 'default',
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Item> & {
   inset?: boolean
   variant?: 'default' | 'destructive'
-}) {
+} & { sx?: Sx }) {
   const sx = stylex.props(
     styles.row,
     styles.rowPadding,
     styles.rowDestructive,
-    styles.rowSelectable
+    styles.rowSelectable,
+    sxProp
   )
 
   return (
@@ -378,16 +389,19 @@ function DropdownMenuItem({
       data-slot="dropdown-menu-item"
       data-inset={inset}
       data-variant={variant}
-      className={cn(
+      className={[
         // `data-[variant=destructive]:*:[svg]:text-destructive` and
         // `not-data-[variant=destructive]:focus:**:text-accent-foreground` colour
         // the caller's children; `group/dropdown-menu-item` is what
         // `DropdownMenuShortcut` selects through. Removed in PR 32.
-        'data-[variant=destructive]:*:[svg]:text-destructive not-data-[variant=destructive]:focus:**:text-accent-foreground group/dropdown-menu-item',
+        'group/dropdown-menu-item',
+        ROW_DESCENDANTS,
         ITEM_ICONS,
         sx.className,
-        className
-      )}
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -400,15 +414,17 @@ function DropdownMenuCheckboxItem({
   children,
   checked,
   inset,
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.CheckboxItem> & {
   inset?: boolean
-}) {
+} & { sx?: Sx }) {
   const sx = stylex.props(
     styles.row,
     styles.rowPaddingIndicator,
     styles.rowFocus,
-    styles.rowSelectable
+    styles.rowSelectable,
+    sxProp
   )
   const indicator = stylex.props(styles.indicator)
 
@@ -416,13 +432,15 @@ function DropdownMenuCheckboxItem({
     <DropdownMenuPrimitive.CheckboxItem
       data-slot="dropdown-menu-checkbox-item"
       data-inset={inset}
-      className={cn(
+      className={[
         // `focus:**:text-accent-foreground` colours the caller's children.
-        'focus:**:text-accent-foreground',
+        FOCUS_DESCENDANTS,
         ITEM_ICONS,
         sx.className,
-        className
-      )}
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       checked={checked}
       {...props}
@@ -452,15 +470,17 @@ function DropdownMenuRadioItem({
   style,
   children,
   inset,
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.RadioItem> & {
   inset?: boolean
-}) {
+} & { sx?: Sx }) {
   const sx = stylex.props(
     styles.row,
     styles.rowPaddingIndicator,
     styles.rowFocus,
-    styles.rowSelectable
+    styles.rowSelectable,
+    sxProp
   )
   const indicator = stylex.props(styles.indicator)
 
@@ -468,13 +488,15 @@ function DropdownMenuRadioItem({
     <DropdownMenuPrimitive.RadioItem
       data-slot="dropdown-menu-radio-item"
       data-inset={inset}
-      className={cn(
+      className={[
         // `focus:**:text-accent-foreground` colours the caller's children.
-        'focus:**:text-accent-foreground',
+        FOCUS_DESCENDANTS,
         ITEM_ICONS,
         sx.className,
-        className
-      )}
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >
@@ -495,18 +517,20 @@ function DropdownMenuRadioItem({
 function DropdownMenuLabel({
   className,
   style,
+  sx: sxProp,
   inset,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Label> & {
+  sx?: Sx
   inset?: boolean
 }) {
-  const sx = stylex.props(styles.label)
+  const sx = stylex.props(styles.label, sxProp)
 
   return (
     <DropdownMenuPrimitive.Label
       data-slot="dropdown-menu-label"
       data-inset={inset}
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -516,27 +540,33 @@ function DropdownMenuLabel({
 function DropdownMenuSeparator({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Separator>) {
-  const sx = stylex.props(styles.separator)
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Separator> & { sx?: Sx }) {
+  const sx = stylex.props(styles.separator, sxProp)
 
   return (
     <DropdownMenuPrimitive.Separator
       data-slot="dropdown-menu-separator"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function DropdownMenuShortcut({ className, style, ...props }: React.ComponentProps<'span'>) {
-  const sx = stylex.props(styles.shortcut)
+function DropdownMenuShortcut({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'span'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.shortcut, sxProp)
 
   return (
     <span
       data-slot="dropdown-menu-shortcut"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -552,25 +582,28 @@ function DropdownMenuSubTrigger({
   style,
   inset,
   children,
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.SubTrigger> & {
   inset?: boolean
-}) {
-  const sx = stylex.props(styles.row, styles.rowPadding, styles.subTriggerOpen)
+} & { sx?: Sx }) {
+  const sx = stylex.props(styles.row, styles.rowPadding, styles.subTriggerOpen, sxProp)
   const icon = stylex.props(styles.subTriggerIcon)
 
   return (
     <DropdownMenuPrimitive.SubTrigger
       data-slot="dropdown-menu-sub-trigger"
       data-inset={inset}
-      className={cn(
+      className={[
         // `not-data-[variant=destructive]:focus:**:text-accent-foreground`
         // colours the caller's children.
-        'not-data-[variant=destructive]:focus:**:text-accent-foreground',
+        ROW_DESCENDANTS,
         ITEM_ICONS,
         sx.className,
-        className
-      )}
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >
@@ -583,14 +616,15 @@ function DropdownMenuSubTrigger({
 function DropdownMenuSubContent({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.SubContent>) {
-  const sx = stylex.props(styles.surface, styles.subContent)
+}: React.ComponentProps<typeof DropdownMenuPrimitive.SubContent> & { sx?: Sx }) {
+  const sx = stylex.props(styles.surface, styles.subContent, sxProp)
 
   return (
     <DropdownMenuPrimitive.SubContent
       data-slot="dropdown-menu-sub-content"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />

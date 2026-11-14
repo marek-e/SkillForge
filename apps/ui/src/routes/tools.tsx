@@ -8,7 +8,7 @@ import { ErrorContainer } from '../components/ErrorContainer'
 import { H1 } from '../components/typography'
 import { Lead } from '../components/typography'
 import { Skeleton } from '../components/ui/skeleton'
-import { colors } from '@/styles/tokens.stylex'
+import { colors, radius } from '@/styles/tokens.stylex'
 
 const styles = stylex.create({
   // `space-y-8`.
@@ -59,16 +59,6 @@ const styles = stylex.create({
   },
 })
 
-/**
- * The loading placeholder's classes stay Tailwind (removed in PR 32).
- *
- * `Skeleton` has no `sx` prop, so `className` is the only channel into it — and
- * `rounded-xl` overrides the radius `skeleton.tsx` sets for itself, which the
- * utility keeps winning because `utilities` outranks every `priorityN` layer.
- */
-const SKELETON_CLASSES =
-  'h-36 w-full rounded-xl sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.75rem)]'
-
 function ToolsPage() {
   const {
     data: tools,
@@ -109,7 +99,7 @@ function ToolsPage() {
       {isLoading ? (
         <div {...stylex.props(styles.grid)}>
           {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className={SKELETON_CLASSES} />
+            <Skeleton key={i} sx={overrideStyles.SKELETON_CLASSES} />
           ))}
         </div>
       ) : (
@@ -129,4 +119,16 @@ export const toolsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/tools',
   component: ToolsPage,
+})
+
+const overrideStyles = stylex.create({
+  SKELETON_CLASSES: {
+    height: '9rem',
+    width: {
+      default: '100%',
+      '@media (width >= 40rem)': 'calc(50% - 0.5rem)',
+      '@media (width >= 64rem)': 'calc(33.333% - 0.75rem)',
+    },
+    borderRadius: radius.xl,
+  },
 })

@@ -18,6 +18,15 @@
  */
 
 :root {
+  --palette-orange-500: oklch(70.5% 0.213 47.604);
+  --palette-amber-500: oklch(76.9% 0.188 70.08);
+  --palette-yellow-400: oklch(85.2% 0.199 91.936);
+  --palette-green-500: oklch(72.3% 0.219 149.579);
+  --palette-cyan-500: oklch(71.5% 0.143 215.221);
+  --palette-blue-500: oklch(62.3% 0.214 259.815);
+  --palette-purple-500: oklch(62.7% 0.265 303.9);
+  --palette-pink-500: oklch(65.6% 0.241 354.308);
+  --palette-stone-500: oklch(55.3% 0.013 58.071);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -124,36 +133,4 @@
   html {
     font-family: 'Geist Variable', sans-serif;
   }
-}
-
-/* Electron window drag regions.
- *
- * Ported in PR 20 (`electron-titlebar`, `Layout`): the elements carrying
- * `.drag` / `.no-drag` are that PR's components, so the equivalent StyleX
- * styles can be attached there without touching the DOM. Until then these must
- * stay global, because a StyleX style cannot be attached to an element that
- * still receives the class from a Tailwind-era caller. */
-.drag {
-  -webkit-app-region: drag;
-}
-.no-drag {
-  -webkit-app-region: no-drag;
-}
-
-/* Electron: offset fixed sidebar below the titlebar (h-9 = 36px)
- *
- * Ported in PR 17 (`sidebar`), as `':is(.electron-app *)'` keys on the styles
- * of the three `data-slot` elements these selectors reach into. Doing it now
- * would mean editing `components/ui/sidebar.tsx`, which is out of this PR's
- * boundary. */
-.electron-app [data-slot='sidebar-container'] {
-  top: 2.25rem;
-  height: calc(100svh - 2.25rem);
-}
-.electron-app [data-slot='sidebar-wrapper'] {
-  min-height: calc(100svh - 2.25rem);
-}
-.electron-app [data-slot='sidebar-rail'] {
-  top: 1.125rem;
-  height: calc(100% - 2.25rem);
 }

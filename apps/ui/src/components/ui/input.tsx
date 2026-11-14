@@ -2,7 +2,7 @@ import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
 
 import { colors, motion, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import type { Sx } from '@/lib/sx'
 
 /**
  * `transition-colors`, spelled out.
@@ -55,13 +55,36 @@ const styles = stylex.create({
         },
       },
     },
-    // `bg-transparent`. The three background rules this variant used to sit
-    // next to stay Tailwind classes; see `CONTESTED_CLASSES`.
-    backgroundColor: 'transparent',
-    // `text-base`, as the pair of lengths it resolves to. The `md:text-sm` half
-    // stays a Tailwind class; see `CONTESTED_CLASSES`.
-    fontSize: '1rem',
-    lineHeight: '1.5rem',
+    backgroundColor: {
+      default: 'transparent',
+      ':disabled': 'color-mix(in oklab, var(--input) 50%, transparent)',
+      ':is(.dark *)': {
+        default: 'color-mix(in oklab, var(--input) 30%, transparent)',
+        ':disabled': 'color-mix(in oklab, var(--input) 80%, transparent)',
+      },
+    },
+    fontSize: { default: '1rem', '@media (width >= 48rem)': '0.875rem' },
+    lineHeight: { default: '1.5rem', '@media (width >= 48rem)': '1.25rem' },
+    boxShadow: {
+      default: null,
+      ':focus-visible':
+        '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent), 0 0 #0000',
+      ':is([aria-invalid="true"])': {
+        default:
+          '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 3px color-mix(in oklab, var(--destructive) 20%, transparent), 0 0 #0000',
+        ':focus-visible':
+          '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 3px color-mix(in oklab, var(--destructive) 20%, transparent), 0 0 #0000',
+      },
+      ':is(.dark *)': {
+        default: null,
+        ':is([aria-invalid="true"])': {
+          default:
+            '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 3px color-mix(in oklab, var(--destructive) 40%, transparent), 0 0 #0000',
+          ':focus-visible':
+            '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 3px color-mix(in oklab, var(--destructive) 40%, transparent), 0 0 #0000',
+        },
+      },
+    },
     // `transition-colors`, with Tailwind's `--default-transition-*`
     transitionProperty: TRANSITION_COLORS,
     transitionTimingFunction: motion.ease,
@@ -103,45 +126,20 @@ const styles = stylex.create({
   },
 })
 
-/**
- * The nine classes that stay Tailwind, and why.
- *
- * A StyleX rule lives in a `priorityN` layer, below `utilities`, and layer order
- * beats specificity — so **any** utility a caller passes on this element now
- * wins, where `twMerge` used to delete only the base class with the *same*
- * variant key and leave a conditional one alone. These are the declarations a
- * current caller would shadow that way:
- *
- * - **background** — `sidebar.tsx`'s `SidebarInput` passes `bg-background`,
- *   which used to lose to `dark:bg-input/30` (0,2,0 against 0,1,0). As StyleX
- *   the dark background would disappear, visibly, in the `sidebar-parts`
- *   gallery section. The two `disabled:` rules are the same property and are
- *   kept with it.
- * - **the rings** — the same caller passes `shadow-none`, which used to lose to
- *   `focus-visible:ring-3`; as StyleX the sidebar's search input would stop
- *   painting a focus ring. Keeping the classes also keeps `--tw-ring-color`
- *   set on the element, which `InputGroupInput`'s `ring-0` composes its
- *   (zero-width) ring colour from.
- * - **`md:text-sm`** — `routes/skill-detail.tsx` passes `text-2xl` to the name
- *   input. A media query adds no specificity but is emitted later, so above
- *   48rem the component's own size still wins over the caller's; that is the
- *   quirk `quirk-input-caller-text-2xl` pins. As StyleX it would lose.
- *
- * `twMerge` still merges them for a caller on the same keys, exactly as before.
- * They go away with `sidebar.tsx` (PR 17) and with the routes that pass a text
- * size (PR 23, PR 28).
- */
-const CONTESTED_CLASSES =
-  'dark:bg-input/30 focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 disabled:bg-input/50 dark:disabled:bg-input/80 focus-visible:ring-3 aria-invalid:ring-3 md:text-sm'
-
-function Input({ className, style, type, ...props }: React.ComponentProps<'input'>) {
-  const sx = stylex.props(styles.base)
+function Input({
+  className,
+  style,
+  type,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'input'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.base, sxProp)
 
   return (
     <input
       type={type}
       data-slot="input"
-      className={cn(CONTESTED_CLASSES, sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />

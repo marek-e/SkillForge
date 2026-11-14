@@ -25,20 +25,6 @@ import {
 import { useCreateSkill, useAvailableTags } from '@/hooks/use-skill-library'
 import { TagsInput } from './TagsInput'
 
-/**
- * The four class lists that stay Tailwind (PR 32).
- *
- * `space-y-4` and `space-y-2` are child rules — `:where(& > :not(:last-child))`
- * — over the controls this form wraps rather than styles, so they keep the
- * specificity they have today. `sr-only` and `w-full` are caller overrides on
- * `DialogDescription` and `SelectTrigger`, neither of which takes an `sx` prop
- * yet, so both still arrive as a `className` that `cn` appends.
- */
-const FORM_CLASSES = 'space-y-4'
-const FIELD_CLASSES = 'space-y-2'
-const DESCRIPTION_CLASSES = 'sr-only'
-const SELECT_TRIGGER_CLASSES = 'w-full'
-
 const styles = stylex.create({
   // `text-muted-foreground text-xs`
   hint: {
@@ -110,12 +96,12 @@ export function CreateSkillDialog({ open, onOpenChange }: CreateSkillDialogProps
       <DialogContent>
         <DialogHeader>
           <DialogTitle>New skill</DialogTitle>
-          <DialogDescription className={DESCRIPTION_CLASSES}>
+          <DialogDescription sx={overrideStyles.DESCRIPTION_CLASSES} className="sr-only">
             Fill in a name, optional description, tags and scope to create a new skill.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className={FORM_CLASSES}>
-          <div className={FIELD_CLASSES}>
+        <form onSubmit={handleSubmit} {...stylex.props(overrideStyles.FORM_CLASSES)}>
+          <div {...stylex.props(overrideStyles.FIELD_CLASSES)}>
             <Label htmlFor="skill-name">Name</Label>
             <Input
               id="skill-name"
@@ -125,7 +111,7 @@ export function CreateSkillDialog({ open, onOpenChange }: CreateSkillDialogProps
               required
             />
           </div>
-          <div className={FIELD_CLASSES}>
+          <div {...stylex.props(overrideStyles.FIELD_CLASSES)}>
             <Label htmlFor="skill-description">Description</Label>
             <Textarea
               id="skill-description"
@@ -135,7 +121,7 @@ export function CreateSkillDialog({ open, onOpenChange }: CreateSkillDialogProps
               rows={3}
             />
           </div>
-          <div className={FIELD_CLASSES}>
+          <div {...stylex.props(overrideStyles.FIELD_CLASSES)}>
             <Label htmlFor="skill-tags">Tags</Label>
             <TagsInput
               id="skill-tags"
@@ -145,10 +131,14 @@ export function CreateSkillDialog({ open, onOpenChange }: CreateSkillDialogProps
             />
             <p {...stylex.props(styles.hint)}>Press Space or Enter to add a tag</p>
           </div>
-          <div className={FIELD_CLASSES}>
+          <div {...stylex.props(overrideStyles.FIELD_CLASSES)}>
             <Label htmlFor="skill-scope">Scope</Label>
             <Select value={scope} onValueChange={(v) => setScope(v as SkillScope)}>
-              <SelectTrigger id="skill-scope" className={SELECT_TRIGGER_CLASSES}>
+              <SelectTrigger
+                id="skill-scope"
+                sx={overrideStyles.SELECT_TRIGGER_CLASSES}
+                className="w-explicit"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -171,3 +161,26 @@ export function CreateSkillDialog({ open, onOpenChange }: CreateSkillDialogProps
     </Dialog>
   )
 }
+
+const overrideStyles = stylex.create({
+  FORM_CLASSES: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '1rem' },
+  },
+  FIELD_CLASSES: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '0.5rem' },
+  },
+  DESCRIPTION_CLASSES: {
+    position: 'absolute',
+    width: '1px',
+    height: '1px',
+    padding: 0,
+    margin: '-1px',
+    overflow: 'hidden',
+    clip: 'rect(0, 0, 0, 0)',
+    whiteSpace: 'nowrap',
+    borderWidth: 0,
+  },
+  SELECT_TRIGGER_CLASSES: { width: '100%' },
+})

@@ -23,21 +23,7 @@ import { ProjectsTable } from '@/components/projects/ProjectsTable'
 import { ProjectsFilterBar } from '@/components/projects/ProjectsFilterBar'
 import { DeleteProjectDialog } from '@/components/projects/DeleteProjectDialog'
 import { AddProjectWebDialog } from '@/components/projects/AddProjectWebDialog'
-import { colors } from '@/styles/tokens.stylex'
-
-/**
- * The one class list this route hands to a component it does not own, kept as
- * Tailwind for now (PR 32 removes it).
- *
- * `Skeleton` is StyleX already but takes no `sx` prop, so a caller's size still
- * arrives as a `className` its `cn` appends — which is also what keeps this
- * override winning: `@layer utilities` sits above every `priorityN` layer, so a
- * utility outranks a StyleX rule whatever the selector. Nothing here is
- * redundant, either: `skeleton.tsx` declares `rounded-md` (`8px`) itself and
- * `rounded-lg` (`10px`) is the caller overruling it, which only a utility can
- * do from the outside.
- */
-const SKELETON_CLASSES = 'h-12 w-full rounded-lg'
+import { colors, radius } from '@/styles/tokens.stylex'
 
 const styles = stylex.create({
   // `space-y-6`, over the header, the body branch and the two dialogs.
@@ -210,7 +196,7 @@ function ProjectsPage() {
       {isLoading ? (
         <div {...stylex.props(styles.skeletons)}>
           {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className={SKELETON_CLASSES} />
+            <Skeleton key={i} sx={overrideStyles.SKELETON_CLASSES} />
           ))}
         </div>
       ) : projects?.length === 0 ? (
@@ -282,3 +268,7 @@ function ProjectsPage() {
     </div>
   )
 }
+
+const overrideStyles = stylex.create({
+  SKELETON_CLASSES: { height: '3rem', width: '100%', borderRadius: radius.lg },
+})

@@ -1,3 +1,5 @@
+import { radius, typography } from '@/styles/tokens.stylex'
+import * as stylex from '@stylexjs/stylex'
 import { Button } from '@/components/ui/button'
 import {
   Drawer,
@@ -36,9 +38,9 @@ const LONG_ITEMS = Array.from({ length: 24 }, (_, index) => `Detected skill ${in
 
 function LongBody() {
   return (
-    <div className="flex flex-col gap-2 px-4">
+    <div {...stylex.props(galleryStyles.case0)}>
       {LONG_ITEMS.map((item) => (
-        <div key={item} className="rounded-md border px-2 py-1 text-sm">
+        <div key={item} {...stylex.props(galleryStyles.case1)}>
           {item}
         </div>
       ))}
@@ -48,7 +50,7 @@ function LongBody() {
 
 export function OverlaysSheetDrawerSection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case2)}>
       <CaseGroup title="sheet without a close button">
         <CaseRow>
           {(['right', 'left'] as const).map((side) => (
@@ -143,3 +145,20 @@ export function OverlaysSheetDrawerSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: { display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingInline: '1rem' },
+  case1: {
+    borderRadius: radius.md,
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    paddingInline: '0.5rem',
+    paddingBlock: '0.25rem',
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+  },
+  case2: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+})

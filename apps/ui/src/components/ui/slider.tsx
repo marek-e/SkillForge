@@ -3,7 +3,6 @@ import * as stylex from '@stylexjs/stylex'
 import { Slider as SliderPrimitive } from 'radix-ui'
 
 import { colors, motion } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
 
 /** `data-horizontal:` / `data-vertical:` / `data-disabled:`, custom variants of `shadcn/tailwind.css`. */
 const HORIZONTAL = ':is([data-orientation="horizontal"])'
@@ -194,7 +193,7 @@ function Slider({
       value={value}
       min={min}
       max={max}
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >

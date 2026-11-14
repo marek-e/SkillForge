@@ -1,3 +1,4 @@
+import * as stylex from '@stylexjs/stylex'
 import { useState } from 'react'
 import type { ToolStatus } from '@skillforge/core'
 import type { SkillViewMode } from '@/lib/skill-view'
@@ -84,7 +85,7 @@ function StatefulFilterBar() {
 
 export function ToolsFiltersExtraSection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="compact tool cards">
         <CaseRow>
           <Case name="toolsx-compact-invert-logo" width={320}>
@@ -230,3 +231,10 @@ export function ToolsFiltersExtraSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+})

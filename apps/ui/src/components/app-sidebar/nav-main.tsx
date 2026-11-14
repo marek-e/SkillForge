@@ -1,3 +1,4 @@
+import * as stylex from '@stylexjs/stylex'
 import { Link, useLocation } from '@tanstack/react-router'
 import {
   SidebarGroup,
@@ -6,6 +7,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
+
+const styles = stylex.create({ menu: { gap: '0.25rem' } })
 
 export function NavMain({
   items,
@@ -21,7 +24,7 @@ export function NavMain({
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-      <SidebarMenu className="gap-1">
+      <SidebarMenu sx={styles.menu}>
         {items.map((item) => {
           const isActive = location.pathname === item.url
           return (

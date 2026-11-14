@@ -81,21 +81,9 @@ const styles = stylex.create({
 })
 
 /**
- * Overrides handed to card and accordion primitives, kept as Tailwind classes
- * (removed in PR 32).
- *
- * `CardTitle` and `Accordion` take no `sx` prop — `className` is the only
- * channel into them — so these stay utilities until those components drop their
- * own `className` bridge.
- */
-const CARD_TITLE_CLASSES = 'flex items-center gap-2'
-const ACCORDION_CLASSES = 'mt-2'
-
-/**
  * `text-xs` on the built-in `Badge`, same reason: `Badge` has no `sx` prop
  * (PR 32).
  */
-const BADGE_CLASSES = 'text-xs'
 
 interface ToolCardProps {
   tool: ToolStatus
@@ -124,7 +112,7 @@ export function ToolCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className={CARD_TITLE_CLASSES}>
+        <CardTitle sx={overrideStyles.CARD_TITLE_CLASSES}>
           <Icon {...stylex.props(styles.titleIcon)} />
           {name}
         </CardTitle>
@@ -151,7 +139,7 @@ export function ToolCard({
                 {commands.length === 0 ? (
                   <p {...stylex.props(styles.emptyText)}>No commands found</p>
                 ) : (
-                  <Accordion type="single" collapsible className={ACCORDION_CLASSES}>
+                  <Accordion type="single" collapsible sx={overrideStyles.ACCORDION_CLASSES}>
                     {commands.map((cmd) => (
                       <AccordionItem key={cmd.name} value={cmd.name}>
                         <AccordionTrigger>
@@ -189,7 +177,7 @@ export function ToolCard({
               {skills.length === 0 ? (
                 <p {...stylex.props(styles.emptyText)}>No skills found</p>
               ) : (
-                <Accordion type="single" collapsible className={ACCORDION_CLASSES}>
+                <Accordion type="single" collapsible sx={overrideStyles.ACCORDION_CLASSES}>
                   {skills.map((skill) => (
                     <AccordionItem key={skill.name} value={skill.name}>
                       <AccordionTrigger>
@@ -197,7 +185,7 @@ export function ToolCard({
                           <WrenchIcon {...stylex.props(styles.itemIcon, styles.muted)} />
                           <span {...stylex.props(styles.skillName)}>{skill.name}</span>
                           {isBuiltInSkill(skill) && (
-                            <Badge variant="outline" className={BADGE_CLASSES}>
+                            <Badge variant="outline" sx={overrideStyles.BADGE_CLASSES}>
                               Built-in
                             </Badge>
                           )}
@@ -220,3 +208,9 @@ export function ToolCard({
     </Card>
   )
 }
+
+const overrideStyles = stylex.create({
+  CARD_TITLE_CLASSES: { display: 'flex', alignItems: 'center', gap: '0.5rem' },
+  ACCORDION_CLASSES: { marginTop: '0.5rem' },
+  BADGE_CLASSES: { fontSize: '0.75rem', lineHeight: '1rem' },
+})

@@ -60,6 +60,21 @@ for (const animation of CASES) {
 
       await page.locator(animation.trigger).first().click()
       await page.locator(animation.content).first().waitFor({ state: 'attached' })
+      if (['dialog-open', 'alert-dialog-open'].includes(animation.id)) {
+        // The dialog covers its trigger. Finish the unrelated hover reversal
+        // before seeking the overlay. Sheet triggers also animate their expanded
+        // background, so their transitions remain part of the timed capture.
+        await page.mouse.move(0, 0)
+        await page
+          .locator(animation.trigger)
+          .first()
+          .evaluate((element) => {
+            void getComputedStyle(element).backgroundColor
+            for (const transition of element.getAnimations()) {
+              if (transition instanceof CSSTransition) transition.finish()
+            }
+          })
+      }
 
       for (const frame of FRAMES) {
         await freezeAnimationsAt(page, frame)
@@ -464,6 +479,8 @@ test.describe('menubar-nav frames', () => {
         .first()
         .click()
       await page.locator('[data-slot="navigation-menu-viewport"]').waitFor({ state: 'attached' })
+      // Radix mounts the viewport before portaling its content into it.
+      await page.locator('[data-slot="navigation-menu-content"]').waitFor({ state: 'attached' })
 
       for (const frame of FRAMES) {
         await freezeAnimationsAt(page, frame)

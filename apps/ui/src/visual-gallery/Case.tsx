@@ -1,3 +1,5 @@
+import { colors, fonts, typography } from '@/styles/tokens.stylex'
+import * as stylex from '@stylexjs/stylex'
 import type { ReactNode } from 'react'
 
 /**
@@ -15,12 +17,12 @@ export function Case({
   width?: number
 }) {
   return (
-    <div className="flex flex-col gap-1">
-      <span className="font-mono text-[10px] text-muted-foreground">{name}</span>
+    <div {...stylex.props(galleryStyles.case0)}>
+      <span {...stylex.props(galleryStyles.case1)}>{name}</span>
       <div
         data-gallery-case={name}
         style={width ? { width: `${width}px` } : undefined}
-        className="w-fit"
+        className={[stylex.props(galleryStyles.case2).className, 'w-explicit'].join(' ')}
       >
         {children}
       </div>
@@ -29,16 +31,39 @@ export function Case({
 }
 
 export function CaseRow({ children }: { children: ReactNode }) {
-  return <div className="flex flex-wrap items-start gap-6">{children}</div>
+  return <div {...stylex.props(galleryStyles.case3)}>{children}</div>
 }
 
 export function CaseGroup({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div className="space-y-3">
-      <h2 className="font-mono text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-        {title}
-      </h2>
+    <div {...stylex.props(galleryStyles.case4)}>
+      <h2 {...stylex.props(galleryStyles.case5)}>{title}</h2>
       {children}
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: { display: 'flex', flexDirection: 'column', gap: '0.25rem' },
+  case1: {
+    fontFamily: fonts.mono,
+    fontSize: '10px',
+    lineHeight: 'inherit',
+    color: colors.mutedForeground,
+  },
+  case2: { width: 'fit-content' },
+  case3: { display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start', gap: '1.5rem' },
+  case4: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '0.75rem' },
+  },
+  case5: {
+    fontFamily: fonts.mono,
+    fontSize: '0.75rem',
+    lineHeight: typography.xsLineHeight,
+    fontWeight: 600,
+    textTransform: 'uppercase',
+    letterSpacing: '.05em',
+    color: colors.mutedForeground,
+  },
+})

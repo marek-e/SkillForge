@@ -1,5 +1,12 @@
 # StyleX migration plan
 
+## Integration status, November 14, 2026
+
+Recovered the unfinished work from `pr-17`, `pr-25`, and `pr-31` into `stylex-migration`.
+Rows 17, 20, 21, 25, 31, and the final dependency removal are implemented. Local verification is complete with targeted reruns; see `pr-32.md` for the results. The matching-OS frozen PNG release gate remains pending.
+
+The repository originals remain immutable. This machine runs macOS 27, while the originals were captured on macOS 25. An isolated `ee0f797` home screenshot differs from the frozen PNG by 1,072 pixels and is byte-identical to the recovered home screenshot on this machine. Separate `/tmp` references support same-machine comparisons; they do not replace the frozen CI gate.
+
 ## Goal and boundary
 
 Move all SkillForge-owned UI styling in `apps/ui` from Tailwind, `cva`, and `cn` to StyleX while preserving the rendered UI and behavior at the frozen pre-migration commit. Preserve visible defects and odd interactions. File a separate issue for any discovered bug; do not fix it in a migration PR.

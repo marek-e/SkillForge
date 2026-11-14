@@ -1,9 +1,9 @@
 import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
+import type { Sx } from '@/lib/sx'
 import { Command as CommandPrimitive } from 'cmdk'
 
 import { colors, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
 import {
   Dialog,
   DialogContent,
@@ -48,9 +48,48 @@ const ITEM_HAS_SHORTCUT = ':is(.group\\/command-item:has([data-slot="command-sho
 const ITEM_SELECTED = ':is(.group\\/command-item[data-selected="true"] *)'
 
 const styles = stylex.create({
+  rootRadius: { borderRadius: radius.xl },
+  dialogHeader: {
+    position: 'absolute',
+    width: '1px',
+    height: '1px',
+    padding: 0,
+    margin: '-1px',
+    overflow: 'hidden',
+    clipPath: 'inset(50%)',
+    whiteSpace: 'nowrap',
+    borderWidth: 0,
+  },
+  dialogContent: {
+    borderRadius: radius.xl,
+    top: 'calc(100% / 3)',
+    translate: '-50% 0px',
+    overflow: 'hidden',
+    padding: 0,
+  },
+  inputGroup: {
+    backgroundColor: {
+      default: 'color-mix(in oklab, var(--input) 30%, transparent)',
+      ':has(:disabled)': 'color-mix(in oklab, var(--input) 50%, transparent)',
+      ':is(.dark *)': {
+        default: 'color-mix(in oklab, var(--input) 30%, transparent)',
+        ':has(:disabled)': 'color-mix(in oklab, var(--input) 80%, transparent)',
+      },
+    },
+    borderColor: {
+      default: 'color-mix(in oklab, var(--input) 30%, transparent)',
+      ':has([data-slot="input-group-control"]:focus-visible)': colors.ring,
+      ':has([data-slot][aria-invalid="true"])': colors.destructive,
+    },
+    height: '2rem',
+    borderRadius: radius.lg,
+    boxShadow: '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 #0000',
+    paddingLeft: { default: null, ':is(*)>[data-slot="input-group-addon"]': '0.5rem' },
+  },
   // `bg-popover text-popover-foreground p-1 flex size-full flex-col
   //  overflow-hidden`. The radius stays a class; see `ROOT_RADIUS_CLASS`.
   root: {
+    borderRadius: radius.xl,
     display: 'flex',
     flexDirection: 'column',
     width: '100%',
@@ -101,6 +140,9 @@ const styles = stylex.create({
   // `max-h-72 scroll-py-1 outline-none overflow-x-hidden overflow-y-auto`.
   // `no-scrollbar` stays a class; see `LIST_SCROLLBAR_CLASS`.
   list: {
+    msOverflowStyle: 'none',
+    scrollbarWidth: 'none',
+    '::-webkit-scrollbar': { display: 'none' },
     maxHeight: '18rem',
     scrollPaddingBlock: '0.25rem',
     overflowX: 'hidden',
@@ -148,11 +190,11 @@ const styles = stylex.create({
   //  outline-hidden select-none data-[disabled=true]:pointer-events-none
   //  data-[disabled=true]:opacity-50`
   item: {
+    borderRadius: { default: radius.sm, ':is([data-slot="dialog-content"] *)': radius.lg },
     position: 'relative',
     display: 'flex',
     alignItems: 'center',
     gap: '0.5rem',
-    borderRadius: radius.sm,
     paddingInline: '0.5rem',
     paddingBlock: '0.375rem',
     fontSize: '0.875rem',
@@ -196,74 +238,28 @@ const styles = stylex.create({
   },
 })
 
-/**
- * `rounded-xl!` on the root, kept as a Tailwind class (PR 16).
- *
- * StyleX has no way to emit `!important`, and the `!` is the whole point of the
- * class: it is what makes the radius survive a caller's own `rounded-*`. PR 32.
- */
-const ROOT_RADIUS_CLASS = 'rounded-xl!'
+const descendantStyles = stylex.create({
+  item: {
+    width: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+    height: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+    pointerEvents: { default: null, ':is(*) svg': 'none' },
+    flexShrink: { default: null, ':is(*) svg': 0 },
+    color: { default: null, ':is([data-selected="true"])>svg': colors.foreground },
+  },
+})
+const ITEM_CLASSES = stylex.props(descendantStyles.item).className
 
-/**
- * `no-scrollbar`, a project `@utility` (`-ms-overflow-style: none`,
- * `scrollbar-width: none` and a `::-webkit-scrollbar { display: none }` rule).
- *
- * The pseudo-element half has no StyleX equivalent that keeps the same
- * selector, and the utility is shared with `combobox.tsx` and `sidebar.tsx`, so
- * it stays a class until Tailwind goes. PR 32.
- */
-const LIST_SCROLLBAR_CLASS = 'no-scrollbar'
-
-/**
- * The `InputGroup` overrides, kept as Tailwind classes (PR 16).
- *
- * Four of the five carry `!`, and the fifth reaches into the addon `InputGroup`
- * renders. `InputGroup` is already StyleX, so these have to stay in the
- * `utilities` layer to keep winning. PR 32.
- */
-const INPUT_GROUP_CLASSES =
-  'bg-input/30 border-input/30 h-8! rounded-lg! shadow-none! *:data-[slot=input-group-addon]:pl-2!'
-
-/**
- * `sr-only` on the dialog header, kept as a Tailwind class (PR 16).
- *
- * `DialogHeader` has no `sx` prop, so the only way to override its own
- * `display: flex` from here is a utility. PR 32.
- */
-const DIALOG_HEADER_CLASS = 'sr-only'
-
-/**
- * The `DialogContent` overrides, kept as Tailwind classes (PR 16).
- *
- * `translate-y-0` is the one that cannot move: `DialogContent` still carries
- * `-translate-x-1/2 -translate-y-1/2` as classes precisely because each utility
- * writes one axis into a `--tw-translate-*` variable and both read the pair
- * back (`dialog.tsx`, `CONTENT_TRANSLATE_CLASSES`). `rounded-xl!` is an
- * important, and `top-1/3`, `overflow-hidden` and `p-0` have to keep beating
- * `DialogContent`'s own StyleX declarations from `utilities`. None of them
- * needs an `sx` prop today; the pair goes when the variables do, in PR 32.
- */
-const DIALOG_CONTENT_CLASSES = 'rounded-xl! top-1/3 translate-y-0 overflow-hidden p-0'
-
-/**
- * The item rules that style something this file does not own, kept as Tailwind
- * classes (PR 16).
- *
- * `[&_svg…]` reaches the caller's icons and reads the literal text of their
- * `class` attribute; `data-selected:*:[svg]:text-foreground` colours them;
- * `in-data-[slot=dialog-content]:rounded-lg!` is an important; and
- * `group/command-item` is the hook the shortcut and the check mark select
- * through. PR 32.
- */
-const ITEM_CLASSES =
-  "data-selected:*:[svg]:text-foreground in-data-[slot=dialog-content]:rounded-lg! [&_svg:not([class*='size-'])]:size-4 group/command-item [&_svg]:pointer-events-none [&_svg]:shrink-0"
-
-function Command({ className, style, ...props }: React.ComponentProps<typeof CommandPrimitive>) {
-  const sx = stylex.props(styles.root)
+function Command({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive> & { sx?: Sx }) {
+  const sx = stylex.props(styles.root, sxProp, styles.rootRadius)
   return (
     <CommandPrimitive
       data-slot="command"
-      className={cn(ROOT_RADIUS_CLASS, sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -276,21 +272,24 @@ function CommandDialog({
   children,
   className,
   showCloseButton = false,
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof Dialog> & {
   title?: string
   description?: string
   className?: string
   showCloseButton?: boolean
+  sx?: Sx
 }) {
   return (
     <Dialog {...props}>
-      <DialogHeader className={DIALOG_HEADER_CLASS}>
+      <DialogHeader sx={styles.dialogHeader}>
         <DialogTitle>{title}</DialogTitle>
         <DialogDescription>{description}</DialogDescription>
       </DialogHeader>
       <DialogContent
-        className={cn(DIALOG_CONTENT_CLASSES, className)}
+        className={className}
+        sx={[styles.dialogContent, sxProp, styles.rootRadius]}
         showCloseButton={showCloseButton}
       >
         {children}
@@ -302,15 +301,16 @@ function CommandDialog({
 function CommandInput({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.Input>) {
-  const sx = stylex.props(styles.input)
+}: React.ComponentProps<typeof CommandPrimitive.Input> & { sx?: Sx }) {
+  const sx = stylex.props(styles.input, sxProp)
   return (
     <div data-slot="command-input-wrapper" {...stylex.props(styles.inputWrapper)}>
-      <InputGroup className={INPUT_GROUP_CLASSES}>
+      <InputGroup sx={styles.inputGroup}>
         <CommandPrimitive.Input
           data-slot="command-input"
-          className={cn(sx.className, className)}
+          className={[sx.className, className].filter(Boolean).join(' ')}
           style={sx.style || style ? { ...sx.style, ...style } : undefined}
           {...props}
         />
@@ -325,13 +325,14 @@ function CommandInput({
 function CommandList({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.List>) {
-  const sx = stylex.props(styles.list)
+}: React.ComponentProps<typeof CommandPrimitive.List> & { sx?: Sx }) {
+  const sx = stylex.props(styles.list, sxProp)
   return (
     <CommandPrimitive.List
       data-slot="command-list"
-      className={cn(LIST_SCROLLBAR_CLASS, sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -341,13 +342,14 @@ function CommandList({
 function CommandEmpty({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.Empty>) {
-  const sx = stylex.props(styles.empty)
+}: React.ComponentProps<typeof CommandPrimitive.Empty> & { sx?: Sx }) {
+  const sx = stylex.props(styles.empty, sxProp)
   return (
     <CommandPrimitive.Empty
       data-slot="command-empty"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -357,13 +359,14 @@ function CommandEmpty({
 function CommandGroup({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.Group>) {
-  const sx = stylex.props(styles.group, styles.groupHeading)
+}: React.ComponentProps<typeof CommandPrimitive.Group> & { sx?: Sx }) {
+  const sx = stylex.props(styles.group, styles.groupHeading, sxProp)
   return (
     <CommandPrimitive.Group
       data-slot="command-group"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -373,13 +376,14 @@ function CommandGroup({
 function CommandSeparator({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.Separator>) {
-  const sx = stylex.props(styles.separator)
+}: React.ComponentProps<typeof CommandPrimitive.Separator> & { sx?: Sx }) {
+  const sx = stylex.props(styles.separator, sxProp)
   return (
     <CommandPrimitive.Separator
       data-slot="command-separator"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -390,13 +394,16 @@ function CommandItem({
   className,
   style,
   children,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.Item>) {
-  const sx = stylex.props(styles.item)
+}: React.ComponentProps<typeof CommandPrimitive.Item> & { sx?: Sx }) {
+  const sx = stylex.props(styles.item, sxProp)
   return (
     <CommandPrimitive.Item
       data-slot="command-item"
-      className={cn(ITEM_CLASSES, sx.className, className)}
+      className={['group/command-item', ITEM_CLASSES, sx.className, className]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >
@@ -406,12 +413,17 @@ function CommandItem({
   )
 }
 
-function CommandShortcut({ className, style, ...props }: React.ComponentProps<'span'>) {
-  const sx = stylex.props(styles.shortcut)
+function CommandShortcut({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'span'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.shortcut, sxProp)
   return (
     <span
       data-slot="command-shortcut"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />

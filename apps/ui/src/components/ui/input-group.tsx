@@ -1,17 +1,13 @@
 import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
-import { cva, type VariantProps } from 'class-variance-authority'
-
-import { colors, motion, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import { colors, motion, radius, typography } from '@/styles/tokens.stylex'
+import type { Sx } from '@/lib/sx'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-
 /** `transition-colors`, copied verbatim (`tailwind-values.md` §8). */
 const TRANSITION_COLORS =
   'color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to'
-
 /**
  * `shadow-none`, as the five-layer chain it composes.
  *
@@ -29,7 +25,16 @@ const RING_DESTRUCTIVE_20 =
 /** the destructive ring at 40%, used by every `dark:` ring rule */
 const RING_DESTRUCTIVE_40 =
   '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 3px color-mix(in oklab, var(--destructive) 40%, transparent), 0 0 #0000'
-
+const FOCUSED_CONTROL = ':has([data-slot="input-group-control"]:focus-visible)'
+const INVALID_CONTROL = ':has([data-slot][aria-invalid="true"])'
+const IN_COMBOBOX = ':is([data-slot="combobox-content"] *)'
+const RING_ZERO = '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 0px currentColor, 0 0 #0000'
+const RING_ZERO_FOCUS =
+  '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 0px color-mix(in oklab, var(--ring) 50%, transparent), 0 0 #0000'
+const RING_ZERO_INVALID =
+  '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 0px color-mix(in oklab, var(--destructive) 20%, transparent), 0 0 #0000'
+const RING_ZERO_INVALID_DARK =
+  '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 0px color-mix(in oklab, var(--destructive) 40%, transparent), 0 0 #0000'
 const styles = stylex.create({
   // `group/input-group relative flex w-full min-w-0 items-center outline-none
   //  h-8 rounded-lg border border-input transition-colors
@@ -56,9 +61,46 @@ const styles = stylex.create({
     borderRadius: radius.lg,
     borderWidth: '1px',
     borderStyle: 'solid',
-    // `border-input` only; the three conditional border colours stay Tailwind,
-    // see `CONTESTED_CLASSES`.
-    borderColor: colors.input,
+    borderColor: {
+      default: colors.input,
+      [FOCUSED_CONTROL]: colors.ring,
+      [INVALID_CONTROL]: { default: colors.destructive, [FOCUSED_CONTROL]: colors.destructive },
+      [IN_COMBOBOX]: {
+        default: null,
+        ':focus-within': {
+          default: 'inherit',
+          [FOCUSED_CONTROL]: colors.ring,
+          [INVALID_CONTROL]: { default: colors.destructive, [FOCUSED_CONTROL]: colors.destructive },
+        },
+      },
+    },
+    boxShadow: {
+      default: null,
+      [FOCUSED_CONTROL]: RING_FOCUS,
+      [INVALID_CONTROL]: { default: RING_DESTRUCTIVE_20, [FOCUSED_CONTROL]: RING_DESTRUCTIVE_20 },
+      ':is(.dark *)': {
+        default: null,
+        [INVALID_CONTROL]: { default: RING_DESTRUCTIVE_40, [FOCUSED_CONTROL]: RING_DESTRUCTIVE_40 },
+      },
+      [IN_COMBOBOX]: {
+        default: null,
+        ':focus-within': {
+          default: RING_ZERO,
+          [FOCUSED_CONTROL]: RING_FOCUS,
+          [INVALID_CONTROL]: {
+            default: RING_DESTRUCTIVE_20,
+            [FOCUSED_CONTROL]: RING_DESTRUCTIVE_20,
+          },
+          ':is(.dark *)': {
+            default: null,
+            [INVALID_CONTROL]: {
+              default: RING_DESTRUCTIVE_40,
+              [FOCUSED_CONTROL]: RING_DESTRUCTIVE_40,
+            },
+          },
+        },
+      },
+    },
     backgroundColor: {
       default: null,
       ':has(:disabled)': 'color-mix(in oklab, var(--input) 50%, transparent)',
@@ -77,6 +119,8 @@ const styles = stylex.create({
     transitionTimingFunction: motion.ease,
     transitionDuration: motion.duration,
     outlineStyle: 'none',
+  },
+  inputGroupChildren: {
     // `has-[>[data-align=block-end]]:[&>input]:pt-3`,
     // `has-[>[data-align=block-start]]:[&>input]:pb-3`,
     // `has-[>[data-align=inline-end]]:[&>input]:pr-1.5`,
@@ -89,16 +133,18 @@ const styles = stylex.create({
     paddingRight: { default: null, ':has(>[data-align="inline-end"])>input': '0.375rem' },
     paddingLeft: { default: null, ':has(>[data-align="inline-start"])>input': '0.375rem' },
   },
-
   // addon base: `text-muted-foreground h-auto gap-2 py-1.5 font-medium
   //  group-data-[disabled=true]/input-group:opacity-50 flex cursor-text
   //  items-center justify-center select-none`
-  // (`text-sm` stays a class; see `ADDON_CHILD_CLASSES`.)
   addon: {
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 'auto',
+    height: {
+      default: 'auto',
+    },
     gap: '0.5rem',
     paddingTop: '0.375rem',
     paddingBottom: '0.375rem',
@@ -111,6 +157,14 @@ const styles = stylex.create({
     opacity: {
       default: null,
       ':is(.group\\/input-group[data-disabled="true"] *)': '50%',
+    },
+  },
+  addonChildren: {
+    borderRadius: { default: null, ':is(*)>kbd': 'calc(var(--radius) - 5px)' },
+    width: { default: null, ':is(*)>svg:not([class*="size-"])': '1rem' },
+    height: {
+      default: null,
+      ':is(*)>svg:not([class*="size-"])': '1rem',
     },
   },
   // `pl-2 has-[>button]:ml-[-0.3rem] has-[>kbd]:ml-[-0.15rem] order-first`
@@ -165,7 +219,6 @@ const styles = stylex.create({
     justifyContent: 'flex-start',
     order: 9999,
   },
-
   // `text-muted-foreground gap-2 text-sm flex items-center`
   text: {
     display: 'flex',
@@ -175,7 +228,11 @@ const styles = stylex.create({
     lineHeight: '1.25rem',
     color: colors.mutedForeground,
   },
-
+  textChildren: {
+    width: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+    height: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+    pointerEvents: { default: null, ':is(*) svg': 'none' },
+  },
   // `InputGroupButton` base: `gap-2 text-sm shadow-none flex items-center`.
   // Passed to `Button` as `sx` rather than as classes, because `shadow-none`
   // as a utility would beat `Button`'s own StyleX focus ring — the gap PR 04
@@ -228,11 +285,20 @@ const styles = stylex.create({
   },
   // `h-6 gap-1 rounded-[calc(var(--radius)-3px)] px-1.5`
   buttonXs: {
-    height: '1.5rem',
+    height: {
+      default: '1.5rem',
+    },
     gap: '0.25rem',
     borderRadius: 'calc(var(--radius) - 3px)',
     paddingLeft: '0.375rem',
     paddingRight: '0.375rem',
+  },
+  buttonXsChildren: {
+    width: { default: null, ':is([data-size="xs"])>svg:not([class*="size-"])': '0.875rem' },
+    height: {
+      default: null,
+      ':is([data-size="xs"])>svg:not([class*="size-"])': '0.875rem',
+    },
   },
   // `size-6 rounded-[calc(var(--radius)-3px)] p-0 has-[>svg]:p-0`
   buttonIconXs: {
@@ -253,112 +319,82 @@ const styles = stylex.create({
     paddingBottom: { default: '0rem', ':has(>svg)': '0rem' },
     paddingLeft: { default: '0rem', ':has(>svg)': '0rem' },
   },
+  control: {
+    borderRadius: '0',
+    borderWidth: '0px',
+    backgroundColor: 'transparent',
+    flex: '1',
+    boxShadow: {
+      default: RING_ZERO,
+      ':focus-visible': RING_ZERO_FOCUS,
+      ':is([aria-invalid="true"])': {
+        default: RING_ZERO_INVALID,
+        ':focus-visible': RING_ZERO_INVALID,
+      },
+      ':is(.dark *)': {
+        default: null,
+        ':is([aria-invalid="true"])': {
+          default: RING_ZERO_INVALID_DARK,
+          ':focus-visible': RING_ZERO_INVALID_DARK,
+        },
+      },
+    },
+  },
+  textareaControl: { paddingBlock: '0.5rem', resize: 'none' },
 })
-
-/**
- * The border and ring rules of `InputGroup`, kept as Tailwind classes.
- *
- * Two reasons, both of which would change a frozen screenshot:
- *
- * - `components/ui/command.tsx` passes `border-input/30` to the group. A plain
- *   utility used to lose to the `has-[…]` rules (0,1,0 against 0,2,0); as
- *   StyleX rules they would lose to it instead, and the command palette's
- *   focused input would stop painting its ring border.
- * - `in-data-[slot=combobox-content]:focus-within:*` only applies inside
- *   `combobox.tsx`'s content, and Tailwind resolves it against the two
- *   `has-[…]` rules by emission order (measured on the built CSS: 724 for the
- *   combobox rule, 758 for the focus ring, 762 for the invalid ring). StyleX
- *   orders the same three by its own per-condition priority and puts the
- *   combobox rule on top, so the mixed states would come out different.
- *
- * They go away with `command.tsx` (PR 16) and `combobox.tsx` (PR 15).
- */
-const CONTESTED_CLASSES =
-  'has-[[data-slot=input-group-control]:focus-visible]:border-ring has-[[data-slot=input-group-control]:focus-visible]:ring-ring/50 has-[[data-slot=input-group-control]:focus-visible]:ring-3 has-[[data-slot][aria-invalid=true]]:border-destructive has-[[data-slot][aria-invalid=true]]:ring-destructive/20 has-[[data-slot][aria-invalid=true]]:ring-3 dark:has-[[data-slot][aria-invalid=true]]:ring-destructive/40 in-data-[slot=combobox-content]:focus-within:border-inherit in-data-[slot=combobox-content]:focus-within:ring-0'
-
-function InputGroup({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.inputGroup)
-
+function InputGroup({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & {
+  sx?: Sx
+}) {
+  const sx = stylex.props(styles.inputGroup, sxProp)
   return (
     <div
       data-slot="input-group"
       role="group"
       // `group/input-group` is selected through by `InputGroupAddon`.
-      className={cn('group/input-group', CONTESTED_CLASSES, sx.className, className)}
+      className={[
+        'group/input-group',
+        sx.className,
+        stylex.props(styles.inputGroupChildren).className,
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
-
-/**
- * Kept **unchanged** so Tailwind keeps emitting every class it names and so the
- * `align` prop keeps its type. `InputGroupAddon` no longer calls it; the
- * equivalent StyleX styles are above. Removed with `cva` in PR 32.
- */
-const inputGroupAddonVariants = cva(
-  "text-muted-foreground h-auto gap-2 py-1.5 text-sm font-medium group-data-[disabled=true]/input-group:opacity-50 [&>kbd]:rounded-[calc(var(--radius)-5px)] [&>svg:not([class*='size-'])]:size-4 flex cursor-text items-center justify-center select-none",
-  {
-    variants: {
-      align: {
-        'inline-start': 'pl-2 has-[>button]:ml-[-0.3rem] has-[>kbd]:ml-[-0.15rem] order-first',
-        'inline-end': 'pr-2 has-[>button]:mr-[-0.3rem] has-[>kbd]:mr-[-0.15rem] order-last',
-        'block-start':
-          'px-2.5 pt-2 group-has-[>input]/input-group:pt-2 [.border-b]:pb-2 order-first w-full justify-start',
-        'block-end':
-          'px-2.5 pb-2 group-has-[>input]/input-group:pb-2 [.border-t]:pt-2 order-last w-full justify-start',
-      },
-    },
-    defaultVariants: {
-      align: 'inline-start',
-    },
-  }
-)
-
 const ADDON_STYLES = {
   'inline-start': styles.addonInlineStart,
   'inline-end': styles.addonInlineEnd,
   'block-start': styles.addonBlockStart,
   'block-end': styles.addonBlockEnd,
 } as const
-
-/**
- * Three classes that stay Tailwind, all because of the addon's children.
- *
- * - `[&>kbd]:rounded-[calc(var(--radius)-5px)]` and
- *   `[&>svg:not([class*='size-'])]:size-4` style a child the caller wrote — a
- *   `<kbd>` and a `lucide` icon — where a StyleX rule would lose to any
- *   utility on that child (PR 32 removes them).
- * - `text-sm` has to keep producing a **unitless** line height. Tailwind pairs
- *   `font-size: 0.875rem` with `calc(1.25 / 0.875)`, and a ratio passes down to
- *   a descendant with a different font size, where the equivalent length
- *   (`1.25rem`) passes down 20px. Both filter bars and the `input-group-search`
- *   gallery case put a `text-[10px]` `<kbd>` inside the addon, and that kbd's
- *   own line height is invalid at computed-value time, so it inherits: it
- *   measures 14.2857px today and 20px from a length. Writing the ratio instead
- *   is not an option either — lightningcss folds it to five decimals, which
- *   moves the addon's own line box off 20px (`conventions.md`, "Paired
- *   line-heights"). Removed with the callers that pass a sized child (PR 21,
- *   PR 22, PR 24).
- */
-const ADDON_CHILD_CLASSES =
-  "text-sm [&>kbd]:rounded-[calc(var(--radius)-5px)] [&>svg:not([class*='size-'])]:size-4"
-
 function InputGroupAddon({
   className,
   style,
   align = 'inline-start',
+  sx: sxProp,
   ...props
-}: React.ComponentProps<'div'> & VariantProps<typeof inputGroupAddonVariants>) {
-  const resolved = align ?? 'inline-start'
-  const sx = stylex.props(styles.addon, ADDON_STYLES[resolved])
-
+}: React.ComponentProps<'div'> & {
+  align?: keyof typeof ADDON_STYLES | null
+  sx?: Sx
+}) {
+  const resolved = align
+  const sx = stylex.props(styles.addon, resolved && ADDON_STYLES[resolved], sxProp)
   return (
     <div
       role="group"
       data-slot="input-group-addon"
       data-align={resolved}
-      className={cn(ADDON_CHILD_CLASSES, sx.className, className)}
+      className={[sx.className, stylex.props(styles.addonChildren).className, className]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       onClick={(e) => {
         if ((e.target as HTMLElement).closest('button')) {
@@ -370,56 +406,23 @@ function InputGroupAddon({
     />
   )
 }
-
-/**
- * Kept **unchanged** for the same reasons as `inputGroupAddonVariants`.
- * `InputGroupButton` now passes the equivalent StyleX styles to `Button`
- * through its `sx` prop, plus the one icon class below.
- */
-const inputGroupButtonVariants = cva('gap-2 text-sm shadow-none flex items-center', {
-  variants: {
-    size: {
-      xs: "h-6 gap-1 rounded-[calc(var(--radius)-3px)] px-1.5 [&>svg:not([class*='size-'])]:size-3.5",
-      sm: '',
-      'icon-xs': 'size-6 rounded-[calc(var(--radius)-3px)] p-0 has-[>svg]:p-0',
-      'icon-sm': 'size-8 p-0 has-[>svg]:p-0',
-    },
-  },
-  defaultVariants: {
-    size: 'xs',
-  },
-})
-
 const BUTTON_SIZE_STYLES = {
   xs: styles.buttonXs,
   sm: null,
   'icon-xs': styles.buttonIconXs,
   'icon-sm': styles.buttonIconSm,
 } as const
-
-/**
- * `[&>svg:not([class*='size-'])]:size-3.5` of the `xs` size, kept as a Tailwind
- * class: it styles the caller's icon, and `Button` keeps its own icon rule as a
- * class for the same reason (PR 04), so the two still resolve against each
- * other exactly as they did. Removed with `Button`'s (PR 20 onwards).
- */
-const BUTTON_SIZE_CLASSES = {
-  xs: "[&>svg:not([class*='size-'])]:size-3.5",
-  sm: '',
-  'icon-xs': '',
-  'icon-sm': '',
-} as const
-
 function InputGroupButton({
   className,
   type = 'button',
   variant = 'ghost',
   size = 'xs',
+  sx: sxProp,
   ...props
-}: Omit<React.ComponentProps<typeof Button>, 'size'> &
-  VariantProps<typeof inputGroupButtonVariants>) {
-  const resolved = size ?? 'xs'
-
+}: Omit<React.ComponentProps<typeof Button>, 'size'> & {
+  size?: keyof typeof BUTTON_SIZE_STYLES | null
+}) {
+  const resolved = size
   return (
     <Button
       type={type}
@@ -428,68 +431,67 @@ function InputGroupButton({
       sx={[
         styles.button,
         variant === 'destructive' ? styles.buttonShadowDestructive : styles.buttonShadow,
-        BUTTON_SIZE_STYLES[resolved],
+        resolved && BUTTON_SIZE_STYLES[resolved],
+        sxProp,
       ]}
-      className={cn(BUTTON_SIZE_CLASSES[resolved], className)}
+      className={[resolved === 'xs' && stylex.props(styles.buttonXsChildren).className, className]
+        .filter(Boolean)
+        .join(' ')}
       {...props}
     />
   )
 }
-
-function InputGroupText({ className, style, ...props }: React.ComponentProps<'span'>) {
-  const sx = stylex.props(styles.text)
-
+function InputGroupText({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'span'> & {
+  sx?: Sx
+}) {
+  const sx = stylex.props(styles.text, sxProp)
   return (
     <span
-      // Both rules style a `lucide` icon the caller passed in, so they stay
-      // Tailwind (PR 32).
-      className={cn(
-        "[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none",
-        sx.className,
-        className
-      )}
+      className={[sx.className, stylex.props(styles.textChildren).className, className]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
-
-/**
- * The control overrides stay Tailwind classes on purpose.
- *
- * They are a caller `className` on `Input`/`Textarea`, and every one of them
- * is a plain utility that beats the component's own StyleX rule exactly the way
- * it used to beat the component's base class — including the three background
- * classes `Input` still carries, which `twMerge` removes here. Rewriting them
- * as StyleX would change nothing and would lose that `twMerge` deletion, so
- * they are left byte for byte as they were.
- */
-function InputGroupInput({ className, ...props }: React.ComponentProps<'input'>) {
+function InputGroupInput({
+  className,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'input'> & {
+  sx?: Sx
+}) {
   return (
     <Input
       data-slot="input-group-control"
-      className={cn(
-        'rounded-none border-0 bg-transparent shadow-none ring-0 focus-visible:ring-0 disabled:bg-transparent aria-invalid:ring-0 dark:bg-transparent dark:disabled:bg-transparent flex-1',
-        className
-      )}
+      className={className}
+      sx={[styles.control, sxProp]}
       {...props}
     />
   )
 }
-
-function InputGroupTextarea({ className, ...props }: React.ComponentProps<'textarea'>) {
+function InputGroupTextarea({
+  className,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'textarea'> & {
+  sx?: Sx
+}) {
   return (
     <Textarea
       data-slot="input-group-control"
-      className={cn(
-        'rounded-none border-0 bg-transparent py-2 shadow-none ring-0 focus-visible:ring-0 disabled:bg-transparent aria-invalid:ring-0 dark:bg-transparent dark:disabled:bg-transparent flex-1 resize-none',
-        className
-      )}
+      className={className}
+      sx={[styles.control, styles.textareaControl, sxProp]}
       {...props}
     />
   )
 }
-
 export {
   InputGroup,
   InputGroupAddon,

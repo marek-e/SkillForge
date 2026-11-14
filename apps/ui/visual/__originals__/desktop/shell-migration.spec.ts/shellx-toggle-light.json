@@ -1,0 +1,22 @@
+[
+  {
+    "width": "16px",
+    "height": "16px",
+    "position": "static",
+    "scale": "1",
+    "rotate": "0deg",
+    "transition-property": "all",
+    "transition-duration": "0.15s",
+    "transition-timing-function": "cubic-bezier(0.4, 0, 0.2, 1)"
+  },
+  {
+    "width": "16px",
+    "height": "16px",
+    "position": "absolute",
+    "scale": "0",
+    "rotate": "90deg",
+    "transition-property": "all",
+    "transition-duration": "0.15s",
+    "transition-timing-function": "cubic-bezier(0.4, 0, 0.2, 1)"
+  }
+]

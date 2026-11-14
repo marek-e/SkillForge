@@ -1,7 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { WrenchIcon } from 'lucide-react'
 import type { SkillViewMode } from '@/lib/skill-view'
-import { colors } from '@/styles/tokens.stylex'
+import { colors, motion } from '@/styles/tokens.stylex'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 /**
@@ -22,9 +22,6 @@ import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/componen
  * elements `CardContent` wraps, and `flex items-center gap-2` sits on an
  * element this component does not own.
  */
-const CARD_HOVER_CLASSES = 'cursor-pointer hover:ring-foreground/20 transition-shadow'
-const CARD_TITLE_CLASSES = 'flex items-center gap-2'
-const CARD_CONTENT_CLASSES = 'space-y-2'
 
 const styles = stylex.create({
   // `size-3.5 text-muted-foreground shrink-0`
@@ -146,15 +143,19 @@ export function SkillCard({
 }: SkillCardProps) {
   if (viewMode === 'grid') {
     return (
-      <Card size="sm" className={onClick ? CARD_HOVER_CLASSES : undefined} onClick={onClick}>
+      <Card
+        size="sm"
+        sx={onClick ? overrideStyles.CARD_HOVER_CLASSES : undefined}
+        onClick={onClick}
+      >
         <CardHeader>
-          <CardTitle className={CARD_TITLE_CLASSES}>
+          <CardTitle sx={overrideStyles.CARD_TITLE_CLASSES}>
             <WrenchIcon {...stylex.props(styles.gridIcon)} />
             <span {...stylex.props(styles.gridName)}>{name}</span>
           </CardTitle>
           {actions && <CardAction>{actions}</CardAction>}
         </CardHeader>
-        <CardContent className={CARD_CONTENT_CLASSES}>
+        <CardContent sx={overrideStyles.CARD_CONTENT_CLASSES}>
           <p {...stylex.props(styles.gridDescription)}>{description}</p>
           {badges && <div {...stylex.props(styles.gridBadges)}>{badges}</div>}
         </CardContent>
@@ -176,3 +177,26 @@ export function SkillCard({
     </div>
   )
 }
+
+const overrideStyles = stylex.create({
+  CARD_HOVER_CLASSES: {
+    cursor: 'pointer',
+    boxShadow: {
+      default:
+        '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent), 0 0 #0000',
+      '@media (hover: hover)': {
+        default: null,
+        ':hover':
+          '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 1px color-mix(in oklab, var(--foreground) 20%, transparent), 0 0 #0000',
+      },
+    },
+    transitionProperty: 'box-shadow',
+    transitionTimingFunction: motion.ease,
+    transitionDuration: motion.duration,
+  },
+  CARD_TITLE_CLASSES: { display: 'flex', alignItems: 'center', gap: '0.5rem' },
+  CARD_CONTENT_CLASSES: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '0.5rem' },
+  },
+})

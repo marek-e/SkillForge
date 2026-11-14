@@ -1,3 +1,5 @@
+import { radius, typography } from '@/styles/tokens.stylex'
+import * as stylex from '@stylexjs/stylex'
 import { BellIcon, CopyIcon, SettingsIcon, StarIcon, TrashIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -53,7 +55,7 @@ const SIDES = ['top', 'right', 'bottom', 'left'] as const
  */
 export function MenusExtraSection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="dropdown menu, every item kind">
         <CaseRow>
           <Case name="menu-dropdown-rich">
@@ -135,7 +137,7 @@ export function MenusExtraSection() {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline">Inset menu</Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="min-w-56">
+              <DropdownMenuContent align="start" sx={galleryStyles.case1} className="w-explicit">
                 <DropdownMenuLabel inset>Inset label</DropdownMenuLabel>
                 <DropdownMenuItem inset>Inset item</DropdownMenuItem>
                 <DropdownMenuItem inset={false}>Inset false item</DropdownMenuItem>
@@ -185,7 +187,7 @@ export function MenusExtraSection() {
         <CaseRow>
           <Case name="menu-context-rich">
             <ContextMenu>
-              <ContextMenuTrigger className="flex h-20 w-56 items-center justify-center rounded-lg border border-dashed text-sm">
+              <ContextMenuTrigger sx={galleryStyles.case2} className="w-explicit">
                 Right click for the rich menu
               </ContextMenuTrigger>
               <ContextMenuContent>
@@ -242,7 +244,7 @@ export function MenusExtraSection() {
 
           <Case name="menu-context-edge">
             <ContextMenu>
-              <ContextMenuTrigger className="flex h-20 w-56 items-center justify-center rounded-lg border border-dashed text-sm">
+              <ContextMenuTrigger sx={galleryStyles.case3} className="w-explicit">
                 Collision target
               </ContextMenuTrigger>
               <ContextMenuContent>
@@ -269,3 +271,35 @@ export function MenusExtraSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: { minWidth: '14rem' },
+  case2: {
+    display: 'flex',
+    height: '5rem',
+    width: '14rem',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: radius.lg,
+    borderWidth: '1px',
+    borderStyle: 'dashed',
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+  },
+  case3: {
+    display: 'flex',
+    height: '5rem',
+    width: '14rem',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: radius.lg,
+    borderWidth: '1px',
+    borderStyle: 'dashed',
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+  },
+})

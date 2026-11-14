@@ -1,17 +1,14 @@
 import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
 import { Avatar as AvatarPrimitive } from 'radix-ui'
-
-import { colors } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
-
+import { colors, typography } from '@/styles/tokens.stylex'
+import type { Sx } from '@/lib/sx'
 /**
  * `rounded-full`, whose value is `calc(infinity * 1px)`
  * (`tailwind-values.md` §5). lightningcss folds it to the same
  * `3.40282e38px` the Tailwind asset already ships.
  */
 const ROUNDED_FULL = 'calc(infinity * 1px)'
-
 /**
  * `ring-2 ring-background`, as the five-layer `box-shadow` chain a ring utility
  * composes (`tailwind-values.md` §5). Tailwind never writes `box-shadow`
@@ -20,63 +17,20 @@ const ROUNDED_FULL = 'calc(infinity * 1px)'
  * registered `0px`, so `calc(2px + 0px)` is written as the `2px` it computes to.
  */
 const RING_2_BACKGROUND = '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 2px var(--background), 0 0 #0000'
-
 /**
  * `group-data-[size=…]/avatar:` and `group-has-data-[size=…]/avatar-group:`,
  * read off the built CSS: Tailwind wraps the group class in `:where()`, so the
  * selector is `:is(:where(.group\/avatar)[data-size=sm] *)` and the class
  * contributes no specificity of its own.
  *
- * The marker classes `group/avatar` and `group/avatar-group` therefore stay on
- * the two roots below. They emit no rules themselves, and the `[&>svg]` classes
- * that still have to be Tailwind (`BADGE_ICON_CLASSES`, `GROUP_COUNT_ICON_CLASSES`)
- * are written against them.
+ * The marker classes `group/avatar` and `group/avatar-group` remain selector
+ * hooks. They emit no styling of their own.
  */
 const IN_AVATAR_SM = ':is(:where(.group\\/avatar)[data-size="sm"] *)'
 const IN_AVATAR_DEFAULT = ':is(:where(.group\\/avatar)[data-size="default"] *)'
 const IN_AVATAR_LG = ':is(:where(.group\\/avatar)[data-size="lg"] *)'
 const IN_GROUP_WITH_LG = ':is(:where(.group\\/avatar-group):has([data-size="lg"]) *)'
 const IN_GROUP_WITH_SM = ':is(:where(.group\\/avatar-group):has([data-size="sm"]) *)'
-
-/**
- * The icon rules of `AvatarBadge` and `AvatarGroupCount`, kept as Tailwind
- * classes: each one styles an `svg` the component does not own, and a StyleX
- * rule in a `priorityN` layer cannot beat a `size-*` utility a caller puts on
- * that icon. Removed with the rest of the bridge in PR 32.
- *
- * `AvatarBadge`'s own `group-data-[size=…]/avatar:size-*` rules style the badge
- * itself and did migrate; only the `[&>svg]` halves are left here, which is why
- * the two lists read as one class string split in half.
- */
-const BADGE_ICON_CLASSES =
-  'group-data-[size=sm]/avatar:[&>svg]:hidden group-data-[size=default]/avatar:[&>svg]:size-2 group-data-[size=lg]/avatar:[&>svg]:size-2'
-const GROUP_COUNT_ICON_CLASSES =
-  '[&>svg]:size-4 group-has-data-[size=lg]/avatar-group:[&>svg]:size-5 group-has-data-[size=sm]/avatar-group:[&>svg]:size-3'
-
-/**
- * `text-sm` on `AvatarFallback` and `AvatarGroupCount`, and the two variants
- * that reduce it. They stay Tailwind for the paired-line-height reason in
- * `conventions.md`: `text-sm`'s line height is the ratio `calc(1.25 / 0.875)`,
- * and `group-data-[size=xs]/avatar:text-[8px]` compiles to a bare
- * `font-size: 8px` with **no** line-height declaration at all, so at `xs` the
- * ratio re-resolves against 8px. A StyleX `lineHeight: '1.25rem'` is a length
- * and would keep a 20px line box at every size. Removed in PR 32.
- */
-const FALLBACK_TEXT_CLASSES =
-  'text-sm group-data-[size=sm]/avatar:text-xs group-data-[size=xs]/avatar:text-[8px]'
-const GROUP_COUNT_TEXT_CLASS = 'text-sm'
-
-/**
- * `-space-x-2` and `*:data-[slot=avatar]:ring-background`
- * `*:data-[slot=avatar]:ring-2` on `AvatarGroup`. All three reach out to the
- * group's children — `-space-x-2` compiles to
- * `:where(.-space-x-2 > :not(:last-child))` and the two ring utilities to
- * `:is(.…>*)[data-slot=avatar]` — so they keep the specificity advantage they
- * have today by staying Tailwind. Removed in PR 32.
- */
-const GROUP_CHILD_CLASSES =
-  '*:data-[slot=avatar]:ring-background -space-x-2 *:data-[slot=avatar]:ring-2'
-
 const styles = stylex.create({
   // `size-8 rounded-full after:rounded-full data-[size=lg]:size-10
   //  data-[size=sm]:size-6 data-[size=xs]:size-4 after:border-border relative
@@ -118,7 +72,6 @@ const styles = stylex.create({
       mixBlendMode: { default: 'darken', ':is(.dark *)': 'lighten' },
     },
   },
-
   // `rounded-full aspect-square size-full object-cover`
   image: {
     borderRadius: ROUNDED_FULL,
@@ -127,12 +80,17 @@ const styles = stylex.create({
     height: '100%',
     objectFit: 'cover',
   },
-
   // `bg-muted text-muted-foreground rounded-full flex size-full items-center
   //  justify-center`
   fallback: {
     backgroundColor: colors.muted,
     color: colors.mutedForeground,
+    fontSize: {
+      default: '0.875rem',
+      [IN_AVATAR_SM]: '0.75rem',
+      ':is(:where(.group\\/avatar)[data-size="xs"] *)': '8px',
+    },
+    lineHeight: { default: typography.smLineHeight, [IN_AVATAR_SM]: typography.xsLineHeight },
     borderRadius: ROUNDED_FULL,
     display: 'flex',
     width: '100%',
@@ -140,7 +98,6 @@ const styles = stylex.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   // `bg-primary text-primary-foreground ring-background absolute right-0
   //  bottom-0 z-10 inline-flex items-center justify-center rounded-full
   //  bg-blend-color ring-2 select-none` plus the per-size `size-*` rules
@@ -149,7 +106,9 @@ const styles = stylex.create({
     right: '0rem',
     bottom: '0rem',
     zIndex: 10,
-    display: 'inline-flex',
+    display: {
+      default: 'inline-flex',
+    },
     alignItems: 'center',
     justifyContent: 'center',
     userSelect: 'none',
@@ -175,12 +134,33 @@ const styles = stylex.create({
       [IN_AVATAR_LG]: '0.75rem',
     },
   },
-
+  badgeChildren: {
+    display: {
+      default: null,
+      ':is(*)>svg': { default: null, [IN_AVATAR_SM]: 'none' },
+    },
+    // `group-data-[size=sm]/avatar:size-2`,
+    // `group-data-[size=default]/avatar:size-2.5`,
+    // `group-data-[size=lg]/avatar:size-3`. There is deliberately no `xs` arm:
+    // the file has never had one, so an `xs` badge is sized by its content.
+    width: {
+      default: null,
+      ':is(*)>svg': { default: null, [IN_AVATAR_DEFAULT]: '0.5rem', [IN_AVATAR_LG]: '0.5rem' },
+    },
+    height: {
+      default: null,
+      ':is(*)>svg': { default: null, [IN_AVATAR_DEFAULT]: '0.5rem', [IN_AVATAR_LG]: '0.5rem' },
+    },
+  },
   // `flex`
   group: {
     display: 'flex',
   },
-
+  groupChildren: {
+    marginInlineStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginInlineEnd: { default: null, ':is(*)>:not(:last-child)': '-0.5rem' },
+    boxShadow: { default: null, ':is(*)>[data-slot="avatar"]': RING_2_BACKGROUND },
+  },
   // `bg-muted text-muted-foreground size-8 rounded-full ring-background
   //  relative flex shrink-0 items-center justify-center ring-2` plus
   //  `group-has-data-[size=lg]/avatar-group:size-10` and
@@ -191,6 +171,8 @@ const styles = stylex.create({
     flexShrink: 0,
     alignItems: 'center',
     justifyContent: 'center',
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
     backgroundColor: colors.muted,
     color: colors.mutedForeground,
     borderRadius: ROUNDED_FULL,
@@ -208,100 +190,147 @@ const styles = stylex.create({
       [IN_GROUP_WITH_SM]: '1.5rem',
     },
   },
+  groupCountChildren: {
+    // `lg` before `sm`, the order Tailwind emits them in, so a group that
+    // somehow held both sizes resolves the tie the same way it does today.
+    width: {
+      default: null,
+      ':is(*)>svg': {
+        default: '1rem',
+        [IN_GROUP_WITH_LG]: '1.25rem',
+        [IN_GROUP_WITH_SM]: '0.75rem',
+      },
+    },
+    height: {
+      default: null,
+      ':is(*)>svg': {
+        default: '1rem',
+        [IN_GROUP_WITH_LG]: '1.25rem',
+        [IN_GROUP_WITH_SM]: '0.75rem',
+      },
+    },
+  },
 })
-
 function Avatar({
   className,
   style,
+  sx: sxProp,
   size = 'default',
   ...props
 }: React.ComponentProps<typeof AvatarPrimitive.Root> & {
+  sx?: Sx
   size?: 'default' | 'sm' | 'xs' | 'lg'
 }) {
-  const sx = stylex.props(styles.root)
-
+  const sx = stylex.props(styles.root, sxProp)
   return (
     <AvatarPrimitive.Root
       data-slot="avatar"
       data-size={size}
-      className={cn('group/avatar', sx.className, className)}
+      className={['group/avatar', sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
-
 function AvatarImage({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Image>) {
-  const sx = stylex.props(styles.image)
-
+}: React.ComponentProps<typeof AvatarPrimitive.Image> & {
+  sx?: Sx
+}) {
+  const sx = stylex.props(styles.image, sxProp)
   return (
     <AvatarPrimitive.Image
       data-slot="avatar-image"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
-
 function AvatarFallback({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Fallback>) {
-  const sx = stylex.props(styles.fallback)
-
+}: React.ComponentProps<typeof AvatarPrimitive.Fallback> & {
+  sx?: Sx
+}) {
+  const sx = stylex.props(styles.fallback, sxProp)
   return (
     <AvatarPrimitive.Fallback
       data-slot="avatar-fallback"
-      className={cn(FALLBACK_TEXT_CLASSES, sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
-
-function AvatarBadge({ className, style, ...props }: React.ComponentProps<'span'>) {
-  const sx = stylex.props(styles.badge)
-
+function AvatarBadge({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'span'> & {
+  sx?: Sx
+}) {
+  const sx = stylex.props(styles.badge, sxProp)
   return (
     <span
       data-slot="avatar-badge"
-      className={cn(BADGE_ICON_CLASSES, sx.className, className)}
+      className={[sx.className, stylex.props(styles.badgeChildren).className, className]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
-
-function AvatarGroup({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.group)
-
+function AvatarGroup({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & {
+  sx?: Sx
+}) {
+  const sx = stylex.props(styles.group, sxProp)
   return (
     <div
       data-slot="avatar-group"
-      className={cn('group/avatar-group', GROUP_CHILD_CLASSES, sx.className, className)}
+      className={[
+        'group/avatar-group',
+        sx.className,
+        stylex.props(styles.groupChildren).className,
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
-
-function AvatarGroupCount({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.groupCount)
-
+function AvatarGroupCount({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & {
+  sx?: Sx
+}) {
+  const sx = stylex.props(styles.groupCount, sxProp)
   return (
     <div
       data-slot="avatar-group-count"
-      className={cn(GROUP_COUNT_TEXT_CLASS, GROUP_COUNT_ICON_CLASSES, sx.className, className)}
+      className={[sx.className, stylex.props(styles.groupCountChildren).className, className]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
-
 export { Avatar, AvatarImage, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarBadge }

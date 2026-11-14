@@ -1,6 +1,5 @@
 import path from 'path'
 import stylex from '@stylexjs/unplugin'
-import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
@@ -17,11 +16,15 @@ const csp = [
 ].join('; ')
 
 export default defineConfig({
+  // Parallel visual checks must not rewrite another server's dependency cache.
+  cacheDir: process.env.VISUAL_PORT
+    ? `node_modules/.vite-visual-${process.env.VISUAL_PORT}`
+    : undefined,
   plugins: [
     // StyleX must run before the React plugin: it needs the untransformed
     // `stylex.create` calls. `useCSSLayers` makes it emit `@layer priorityN`
     // blocks whose order is declared in `src/index.css`, which puts StyleX
-    // between Tailwind's `base` and `utilities` layers.
+    // above the preserved element reset.
     //
     // `before`/`after` make StyleX repeat that full order in its own output, so
     // the cascade is identical whether StyleX CSS is parsed before `index.css`
@@ -37,12 +40,11 @@ export default defineConfig({
       unstable_moduleResolution: { type: 'commonJS', rootDir: __dirname },
       aliases: { '@/*': [path.resolve(__dirname, 'src', '*')] },
       useCSSLayers: {
-        before: ['theme', 'base'],
-        after: ['components', 'utilities'],
+        before: ['base'],
+        after: [],
       },
     }),
     react(),
-    tailwindcss(),
   ],
   server: {
     port: 4320,

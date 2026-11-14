@@ -1,3 +1,4 @@
+import * as stylex from '@stylexjs/stylex'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { RenameProjectDialog } from '@/components/project-detail/RenameProjectDialog'
@@ -41,7 +42,7 @@ export function AppDialogsSection() {
   }
 
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="skill dialogs">
         <CaseRow>
           {trigger('create-skill', 'Create skill')}
@@ -121,3 +122,10 @@ export function AppDialogsSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+})

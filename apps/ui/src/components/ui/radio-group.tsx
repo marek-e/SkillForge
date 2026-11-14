@@ -3,7 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import { RadioGroup as RadioGroupPrimitive } from 'radix-ui'
 
 import { colors } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import type { Sx } from '@/lib/sx'
 import { CircleIcon } from 'lucide-react'
 
 /** `focus-visible:ring-3` with `focus-visible:ring-ring/50` (see `button.tsx`). */
@@ -128,14 +128,15 @@ const styles = stylex.create({
 function RadioGroup({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof RadioGroupPrimitive.Root>) {
-  const sx = stylex.props(styles.root)
+}: React.ComponentProps<typeof RadioGroupPrimitive.Root> & { sx?: Sx }) {
+  const sx = stylex.props(styles.root, sxProp)
 
   return (
     <RadioGroupPrimitive.Root
       data-slot="radio-group"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -157,7 +158,7 @@ function RadioGroupItem({
       // Both classes carry no styling of their own: the indicator selects
       // through `group/radio-group-item`, and `Label`'s `peer-disabled:` rules
       // select through `peer`.
-      className={cn('group/radio-group-item peer', sx.className, className)}
+      className={['group/radio-group-item peer', sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >

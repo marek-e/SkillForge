@@ -1,17 +1,17 @@
 import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
 
-import { colors, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import { colors, radius, typography } from '@/styles/tokens.stylex'
+import type { Sx } from '@/lib/sx'
 
 /**
  * `group-data-[size=sm]/card:` — a compact card's paddings and title size.
  *
  * The group class is matched through `[data-slot="card"]` instead of
  * `.group\/card`, which is the same set of elements: only a `Card` carries that
- * slot, and only a `Card` carries the group class. The class itself stays in
- * the markup because the two `[.border-b]` rules below are still Tailwind and
- * still select through it.
+ * slot, and only a `Card` carries the group class. The group marker stays in
+ * the markup as a semantic hook. Header padding still recognizes the original
+ * border marker, whose border styling now comes from StyleX.
  */
 const IN_SM_CARD = ':is([data-slot="card"][data-size="sm"] *)'
 
@@ -21,6 +21,14 @@ const styles = stylex.create({
   //  has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3
   //  data-[size=sm]:has-data-[slot=card-footer]:pb-0`
   card: {
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+    boxShadow:
+      '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent), 0 0 #0000',
+    borderTopLeftRadius: { default: radius.xl, ':is(*)>img:first-child': radius.xl },
+    borderTopRightRadius: { default: radius.xl, ':is(*)>img:first-child': radius.xl },
+    borderBottomLeftRadius: { default: radius.xl, ':is(*)>img:last-child': radius.xl },
+    borderBottomRightRadius: { default: radius.xl, ':is(*)>img:last-child': radius.xl },
     display: 'flex',
     flexDirection: 'column',
     gap: '1rem',
@@ -52,6 +60,10 @@ const styles = stylex.create({
   //  has-data-[slot=card-action]:grid-cols-[1fr_auto]
   //  has-data-[slot=card-description]:grid-rows-[auto_auto]`
   header: {
+    paddingBottom: {
+      default: null,
+      ':is(.border-b)': { default: '1rem', [IN_SM_CARD]: '0.75rem' },
+    },
     display: 'grid',
     gridAutoRows: 'min-content',
     alignItems: 'flex-start',
@@ -117,138 +129,130 @@ const styles = stylex.create({
   },
 })
 
-/**
- * The classes that stay Tailwind on `Card`, and why.
- *
- * A StyleX rule sits in a `priorityN` layer, below `utilities`, and layer order
- * beats specificity, so any utility on the same element — or on a child this
- * component reaches into — now wins where `twMerge` used to delete only the
- * base class with the *same* variant key.
- *
- * - **the ring** — `ToolCardCompact` passes `hover:ring-foreground/20
- *   hover:shadow-md` and `SkillCard` passes `hover:ring-foreground/20`. Those
- *   utilities do not paint a ring by themselves: they set `--tw-ring-color`
- *   and `--tw-shadow`, which the `box-shadow` chain *this* class writes reads.
- *   A StyleX `box-shadow` writes the property, never the variables, so both
- *   callers would silently stop changing on hover. They go with PR 22 and
- *   PR 23.
- * - **`text-sm`** — a paired `text-*` on a container. Tailwind passes the
- *   unitless `calc(1.25 / 0.875)` down to every descendant that has a font
- *   size but no line height of its own, and `Button`'s `sm` size is exactly
- *   that (`text-[0.8rem]` has no paired line height, so it computes to
- *   `inherit`). A StyleX `line-height: 1.25rem` would pass 20px down instead
- *   of 18.29px. It goes when the utility layer does (PR 32).
- * - **the two image radii** — `*:[img:first-child]:rounded-t-xl` and
- *   `*:[img:last-child]:rounded-b-xl` style an `<img>` the *caller* supplies,
- *   so any radius utility on that image would outrank a StyleX rule (PR 32).
- *
- * `group/card` carries no styling itself; `CardHeader`'s two `[.border-b]`
- * rules still select through it.
- */
-const CARD_CLASSES =
-  'group/card ring-1 ring-foreground/10 text-sm *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl'
-
-/**
- * `[.border-b]:pb-4` and `group-data-[size=sm]/card:[.border-b]:pb-3` — the
- * header pads itself differently when the **caller** gives it a `border-b`
- * class. The selector matches a Tailwind utility by name, so it can only stay a
- * Tailwind rule; it goes with the utility layer in PR 32. `group/card-header`
- * has no selector of its own any more but stays part of the markup.
- */
-const HEADER_CLASSES =
-  'group/card-header [.border-b]:pb-4 group-data-[size=sm]/card:[.border-b]:pb-3'
+// The border marker is preserved for CardHeader's existing conditional padding.
 
 function Card({
   className,
   style,
+  sx: sxProp,
   size = 'default',
   ...props
-}: React.ComponentProps<'div'> & { size?: 'default' | 'sm' }) {
-  const sx = stylex.props(styles.card, size === 'sm' && styles.cardSm)
+}: React.ComponentProps<'div'> & { size?: 'default' | 'sm'; sx?: Sx }) {
+  const sx = stylex.props(styles.card, size === 'sm' && styles.cardSm, sxProp)
 
   return (
     <div
       data-slot="card"
       data-size={size}
-      className={cn(CARD_CLASSES, sx.className, className)}
+      className={['group/card', sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function CardHeader({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.header)
+function CardHeader({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.header, sxProp)
 
   return (
     <div
       data-slot="card-header"
-      className={cn(HEADER_CLASSES, sx.className, className)}
+      className={['group/card-header', sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function CardTitle({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.title)
+function CardTitle({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.title, sxProp)
 
   return (
     <div
       data-slot="card-title"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function CardDescription({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.description)
+function CardDescription({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.description, sxProp)
 
   return (
     <div
       data-slot="card-description"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function CardAction({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.action)
+function CardAction({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.action, sxProp)
 
   return (
     <div
       data-slot="card-action"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function CardContent({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.content)
+function CardContent({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.content, sxProp)
 
   return (
     <div
       data-slot="card-content"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function CardFooter({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.footer)
+function CardFooter({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.footer, sxProp)
 
   return (
     <div
       data-slot="card-footer"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />

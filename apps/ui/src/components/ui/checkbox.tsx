@@ -3,7 +3,6 @@ import * as stylex from '@stylexjs/stylex'
 import { Checkbox as CheckboxPrimitive } from 'radix-ui'
 
 import { colors, motion } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
 import { CheckIcon } from 'lucide-react'
 
 /**
@@ -189,7 +188,7 @@ function Checkbox({
       // `peer` carries no styling of its own, but `Label`'s `peer-disabled:`
       // rules select through it (PR 05 keeps that rule as StyleX on `Label`,
       // which still needs this exact class name on the sibling).
-      className={cn('peer', sx.className, className)}
+      className={['peer', sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >

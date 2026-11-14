@@ -1948,3 +1948,217 @@ for (const theme of THEMES) {
     )
   })
 }
+
+/**
+ * The sidebar shell (PR 17).
+ *
+ * The shell is the one component whose geometry is written almost entirely by
+ * ancestor-conditioned rules — `group-data-[collapsible=icon]:`,
+ * `group-data-[side=right]:`, `peer-data-[variant=inset]:` and the unlayered
+ * `.electron-app` offsets — so a pixel comparison of a clipped frame would not
+ * prove the boxes moved for the right reason. These dumps pin the bounds and
+ * the contested properties of every part of every shell case, expanded and
+ * collapsed, with and without the Electron branch.
+ */
+const SIDEBAR_PROPERTIES = [
+  'display',
+  'position',
+  'box-sizing',
+  'width',
+  'height',
+  'min-width',
+  'min-height',
+  'max-width',
+  'top',
+  'right',
+  'bottom',
+  'left',
+  'margin',
+  'padding',
+  'gap',
+  'translate',
+  'rotate',
+  'aspect-ratio',
+  'flex-grow',
+  'flex-shrink',
+  'font-size',
+  'line-height',
+  'font-weight',
+  'color',
+  'background-color',
+  'border-width',
+  'border-style',
+  'border-color',
+  'border-radius',
+  'box-shadow',
+  'outline-style',
+  'outline-width',
+  'opacity',
+  'z-index',
+  'overflow-x',
+  'overflow-y',
+  'cursor',
+  'pointer-events',
+  'user-select',
+  'text-align',
+  'scrollbar-width',
+  'transition-property',
+  'transition-duration',
+  'transition-timing-function',
+]
+
+/** The parts whose `::before` / `::after` the file actually writes. */
+const PSEUDO_PROPERTIES = [
+  'content',
+  'position',
+  'display',
+  'width',
+  'height',
+  'top',
+  'right',
+  'bottom',
+  'left',
+  'inset-inline-start',
+  'background-color',
+  'border-radius',
+  'opacity',
+  'transition-property',
+  'transition-duration',
+]
+
+const SHELL_SLOTS = [
+  'sidebar',
+  'sidebar-wrapper',
+  'sidebar-gap',
+  'sidebar-container',
+  'sidebar-inner',
+  'sidebar-inset',
+  'sidebar-rail',
+  'sidebar-header',
+  'sidebar-content',
+  'sidebar-footer',
+  'sidebar-separator',
+  'sidebar-group',
+  'sidebar-group-label',
+  'sidebar-group-action',
+]
+
+const MENU_SLOTS = [
+  'sidebar-menu',
+  'sidebar-menu-item',
+  'sidebar-menu-button',
+  'sidebar-menu-action',
+  'sidebar-menu-badge',
+  'sidebar-menu-skeleton',
+  'sidebar-menu-sub',
+  'sidebar-menu-sub-item',
+  'sidebar-menu-sub-button',
+  'sidebar-group-content',
+  'sidebar-group-label',
+  'sidebar-input',
+  'sidebar-separator',
+  'skeleton',
+  'input',
+]
+
+const PSEUDO_SLOTS = [
+  'sidebar-menu-button',
+  'sidebar-menu-action',
+  'sidebar-group-action',
+  'sidebar-rail',
+]
+
+async function collectSidebarParts(page: Page): Promise<string> {
+  const report = await page.evaluate(
+    ({ properties, pseudoProperties, shellSlots, menuSlots, pseudoSlots }) => {
+      const round = (value: number) => Math.round(value * 100) / 100
+      const read = (element: Element, props: string[], pseudo?: string) => {
+        const computed = getComputedStyle(element, pseudo ?? null)
+        const styles: Record<string, string> = {}
+        for (const property of props) styles[property] = computed.getPropertyValue(property)
+        return styles
+      }
+
+      return [...document.querySelectorAll('[data-gallery-case^="sidebarx-"]')].map((host) => {
+        const name = host.getAttribute('data-gallery-case') ?? ''
+        const slots =
+          name.startsWith('sidebarx-menu') || name.startsWith('sidebarx-text')
+            ? [...menuSlots, ...shellSlots]
+            : name === 'sidebarx-structure'
+              ? [...menuSlots, ...shellSlots]
+              : shellSlots
+        const selector = slots.map((slot) => `[data-slot="${slot}"]`).join(', ')
+        const parts = [...host.querySelectorAll(selector)].map((element, index) => {
+          const rect = element.getBoundingClientRect()
+          const hostRect = host.getBoundingClientRect()
+          const slot = element.getAttribute('data-slot') ?? ''
+          const entry: Record<string, unknown> = {
+            index,
+            slot,
+            state: element.getAttribute('data-state'),
+            collapsible: element.getAttribute('data-collapsible'),
+            variant: element.getAttribute('data-variant'),
+            side: element.getAttribute('data-side'),
+            size: element.getAttribute('data-size'),
+            active: element.getAttribute('data-active'),
+            box: {
+              x: round(rect.x - hostRect.x),
+              y: round(rect.y - hostRect.y),
+              width: round(rect.width),
+              height: round(rect.height),
+            },
+            styles: read(element, properties),
+          }
+          if (pseudoSlots.includes(slot)) {
+            entry.before = read(element, pseudoProperties, '::before')
+            entry.after = read(element, pseudoProperties, '::after')
+          }
+          return entry
+        })
+        return { case: name, parts }
+      })
+    },
+    {
+      properties: SIDEBAR_PROPERTIES,
+      pseudoProperties: PSEUDO_PROPERTIES,
+      shellSlots: SHELL_SLOTS,
+      menuSlots: MENU_SLOTS,
+      pseudoSlots: PSEUDO_SLOTS,
+    }
+  )
+
+  return `${JSON.stringify(report, null, 2)}\n`
+}
+
+for (const theme of THEMES) {
+  test(`computed styles sidebarx ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/sidebar-extra', {
+      theme,
+      waitFor: '[data-gallery-section="sidebar-extra"]',
+    })
+    await waitForAnimationsToFinish(page)
+    // `sidebarx-menu-skeleton` renders two `Skeleton`s, and their pulse never
+    // finishes — without this the dumped `opacity` is wherever the compositor
+    // clock happened to be.
+    await freezeLoops(page)
+    await expectTextSnapshot(await collectSidebarParts(page), `computed-sidebarx-${theme}.json`)
+  })
+
+  // The `.electron-app` rules in `styles/global.css` reach into three sidebar
+  // `data-slot` elements; `lib/electron.ts` reads `window.electronAPI` at module
+  // scope, so the fake object is what puts the class on `Layout`'s root.
+  test(`computed styles sidebarx electron ${theme}`, async ({ page }) => {
+    await gotoRoute(page, '/__gallery/sidebar-extra', {
+      theme,
+      electron: 'darwin',
+      waitFor: '[data-gallery-section="sidebar-extra"]',
+    })
+    await page.locator('.electron-app').first().waitFor({ state: 'visible' })
+    await waitForAnimationsToFinish(page)
+    await freezeLoops(page)
+    await expectTextSnapshot(
+      await collectSidebarParts(page),
+      `computed-sidebarx-electron-${theme}.json`
+    )
+  })
+}

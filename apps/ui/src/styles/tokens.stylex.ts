@@ -104,3 +104,24 @@ export const motion = stylex.defineConsts({
   duration: '150ms',
   ease: 'cubic-bezier(0.4, 0, 0.2, 1)',
 })
+
+/** Unitless paired line heights remain exact when inherited by smaller text. */
+export const typography = stylex.defineVars({
+  xsLineHeight: 'calc(1 / 0.75)',
+  smLineHeight: 'calc(1.25 / 0.875)',
+  lgLineHeight: 'calc(1.75 / 1.125)',
+  xxlLineHeight: 'calc(2 / 1.5)',
+})
+
+/** Palette values used by tool accents and project actions. */
+export const palette = stylex.defineVars({
+  orange500: 'var(--palette-orange-500)',
+  amber500: 'var(--palette-amber-500)',
+  yellow400: 'var(--palette-yellow-400)',
+  green500: 'var(--palette-green-500)',
+  cyan500: 'var(--palette-cyan-500)',
+  blue500: 'var(--palette-blue-500)',
+  purple500: 'var(--palette-purple-500)',
+  pink500: 'var(--palette-pink-500)',
+  stone500: 'var(--palette-stone-500)',
+})

@@ -1,3 +1,5 @@
+import { colors, radius, typography } from '@/styles/tokens.stylex'
+import * as stylex from '@stylexjs/stylex'
 import { Button } from '@/components/ui/button'
 import {
   Carousel,
@@ -59,20 +61,16 @@ const PILL = {
 } as const
 
 function Slide({ index }: { index: number }) {
-  return (
-    <div className="flex h-28 items-center justify-center rounded-lg bg-muted text-sm">
-      Slide {index}
-    </div>
-  )
+  return <div {...stylex.props(galleryStyles.case0)}>Slide {index}</div>
 }
 
 export function CarouselToasterExtraSection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case1)}>
       <CaseGroup title="carousel horizontal">
         <CaseRow>
           <Case name="cartoast-carousel-steps" width={420}>
-            <div className="px-14">
+            <div {...stylex.props(galleryStyles.case2)}>
               <Carousel>
                 <CarouselContent>
                   {[1, 2, 3].map((index) => (
@@ -92,11 +90,11 @@ export function CarouselToasterExtraSection() {
               gutter the content's `-ml-4` and the item's `pl-4` compose is
               on screen. */}
           <Case name="cartoast-carousel-half" width={420}>
-            <div className="px-14">
+            <div {...stylex.props(galleryStyles.case3)}>
               <Carousel>
                 <CarouselContent>
                   {[1, 2, 3, 4].map((index) => (
-                    <CarouselItem key={index} className="basis-1/2">
+                    <CarouselItem key={index} sx={galleryStyles.case4}>
                       <Slide index={index} />
                     </CarouselItem>
                   ))}
@@ -111,7 +109,7 @@ export function CarouselToasterExtraSection() {
           {/* One slide: Embla can scroll neither way, so both controls are
               disabled from the start. */}
           <Case name="cartoast-carousel-single" width={420}>
-            <div className="px-14">
+            <div {...stylex.props(galleryStyles.case5)}>
               <Carousel>
                 <CarouselContent>
                   <CarouselItem>
@@ -126,7 +124,7 @@ export function CarouselToasterExtraSection() {
         </CaseRow>
         <CaseRow>
           <Case name="cartoast-carousel-focus-target" width={420}>
-            <div className="px-14">
+            <div {...stylex.props(galleryStyles.case6)}>
               <Carousel>
                 <CarouselContent>
                   {[1, 2, 3].map((index) => (
@@ -146,9 +144,9 @@ export function CarouselToasterExtraSection() {
       <CaseGroup title="carousel vertical">
         <CaseRow>
           <Case name="cartoast-carousel-vertical-steps" width={240}>
-            <div className="py-14">
+            <div {...stylex.props(galleryStyles.case7)}>
               <Carousel orientation="vertical">
-                <CarouselContent className="h-28">
+                <CarouselContent sx={galleryStyles.case8}>
                   {[1, 2, 3].map((index) => (
                     <CarouselItem key={index}>
                       <Slide index={index} />
@@ -163,11 +161,11 @@ export function CarouselToasterExtraSection() {
           {/* The vertical counterpart of `cartoast-carousel-half`: two items in
               view, so the `-mt-4`/`pt-4` gutter is visible. */}
           <Case name="cartoast-carousel-vertical-half" width={240}>
-            <div className="py-14">
+            <div {...stylex.props(galleryStyles.case9)}>
               <Carousel orientation="vertical">
-                <CarouselContent className="h-56">
+                <CarouselContent sx={galleryStyles.case10}>
                   {[1, 2, 3, 4].map((index) => (
-                    <CarouselItem key={index} className="basis-1/2">
+                    <CarouselItem key={index} sx={galleryStyles.case11}>
                       <Slide index={index} />
                     </CarouselItem>
                   ))}
@@ -325,3 +323,30 @@ export function CarouselToasterExtraSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    display: 'flex',
+    height: '7rem',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: radius.lg,
+    backgroundColor: colors.muted,
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+  },
+  case1: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case2: { paddingInline: '3.5rem' },
+  case3: { paddingInline: '3.5rem' },
+  case4: { flexBasis: '50%' },
+  case5: { paddingInline: '3.5rem' },
+  case6: { paddingInline: '3.5rem' },
+  case7: { paddingBlock: '3.5rem' },
+  case8: { height: '7rem' },
+  case9: { paddingBlock: '3.5rem' },
+  case10: { height: '14rem' },
+  case11: { flexBasis: '50%' },
+})

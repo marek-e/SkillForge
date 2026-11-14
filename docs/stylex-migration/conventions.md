@@ -1,5 +1,7 @@
 # StyleX migration conventions
 
+The migration is integrated as of November 14, 2026. These notes preserve the coexistence decisions for reference audits. Current component styling uses StyleX exclusively; follow [UI Components](../ui-components.md#styling) and [final integration notes](pr-32.md).
+
 Shared rules for every migration PR. Read `docs/stylex-migration-plan.md` first; this file
 records the decisions taken so each PR does not re-derive them. The per-row worktree protocol
 lives in [`row-brief.md`](row-brief.md). Findings below were verified

@@ -2,7 +2,7 @@ import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
 
 import { colors, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import type { Sx } from '@/lib/sx'
 
 /**
  * Tailwind's `pulse`, character for character
@@ -30,13 +30,18 @@ const styles = stylex.create({
   },
 })
 
-function Skeleton({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.skeleton)
+function Skeleton({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.skeleton, sxProp)
 
   return (
     <div
       data-slot="skeleton"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />

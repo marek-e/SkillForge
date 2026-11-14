@@ -28,48 +28,6 @@ import { useSkillDetailForm } from '@/hooks/use-skill-detail-form'
 import { useState } from 'react'
 
 /**
- * The class lists this route hands to a component it does not own. They stay
- * Tailwind for now; PR 32 removes them together with the rules they contest.
- *
- * `Skeleton`, `Input`, `Textarea` and `Badge` are StyleX already but none of
- * them takes an `sx` prop, so a caller's override still arrives as the
- * `className` their `cn` appends — which is also what keeps it winning, since a
- * utility sits in the `utilities` layer and a `priorityN` rule does not.
- * `Button` and `Label` do take one, but this route passes them nothing to
- * override.
- *
- * Two of these are more than a missing prop:
- *
- * - `size-4` on the two icons is read as **text**. `Button` sizes the icons
- *   inside it with `[&_svg:not([class*='size-'])]:size-N` — `size-3` at
- *   `icon-xs`, `size-3.5` at `sm` — and that selector matches on the literal
- *   `class` attribute, not on a computed width. Hashing it would hand both
- *   icons back to the button, which sizes them down to 12px and 14px from the
- *   16px they measure today (`conventions.md`, "A class name can itself be the
- *   contract", PR 08). The plain English word for that reduction is itself a
- *   utility name, and PR 24 watched the scanner turn one into a rule.
- * - the name field's list contests `input.tsx`'s own declarations, which is why
- *   that file's `CONTESTED_CLASSES` block already names this route: its
- *   `md:text-sm` is a media query emitted after the caller's `text-2xl`, so
- *   above 48rem the component used to win, and as StyleX it would not
- *   (`conventions.md`, "A caller's utility also shadows…", PR 05).
- *
- * The rest are plain overrides of a size or a spacing step. `text-xs` on the
- * `SKILL.md` badge is redundant against `badgeVariants`' own, and is kept
- * verbatim because dropping a class is a behaviour change this row may not
- * make; both forms measure 12px / 16px (PR 27).
- */
-const SKELETON_TITLE_CLASSES = 'h-8 w-48'
-const SKELETON_LINE_CLASSES = 'h-4 w-96'
-const SKELETON_BODY_CLASSES = 'h-64 w-full'
-const BUTTON_ICON_CLASSES = 'size-4'
-const NAME_INPUT_CLASSES =
-  'text-2xl font-bold border-none shadow-none px-0 h-auto focus-visible:ring-0'
-const BADGE_TOOL_CLASSES = 'gap-1 px-1.5 py-0'
-const BADGE_FILE_CLASSES = 'text-xs px-1.5 py-0 font-mono'
-const BODY_TEXTAREA_CLASSES = 'font-mono text-xs min-h-64'
-
-/**
  * Everything this route renders itself.
  *
  * `space-y-*` is a child rule — `:where(& > :not(:last-child))` — but every
@@ -213,9 +171,9 @@ function SkillDetailPage() {
   if (skillLoading) {
     return (
       <div {...stylex.props(styles.loading)}>
-        <Skeleton className={SKELETON_TITLE_CLASSES} />
-        <Skeleton className={SKELETON_LINE_CLASSES} />
-        <Skeleton className={SKELETON_BODY_CLASSES} />
+        <Skeleton sx={overrideStyles.SKELETON_TITLE_CLASSES} />
+        <Skeleton sx={overrideStyles.SKELETON_LINE_CLASSES} />
+        <Skeleton sx={overrideStyles.SKELETON_BODY_CLASSES} />
       </div>
     )
   }
@@ -264,19 +222,24 @@ function SkillDetailForm({ skill, skillId }: { skill: Skill; skillId: string }) 
             `text-muted-foreground`, and passing it again shadowed the variant's
             own `hover:text-foreground` once `Button` moved to StyleX (PR 05). */}
         <Button variant="ghost" size="icon-xs" onClick={() => navigate({ to: '/skill-library' })}>
-          <ArrowLeftIcon className={BUTTON_ICON_CLASSES} />
+          <ArrowLeftIcon
+            className={[
+              'size-explicit',
+              stylex.props(overrideStyles.BUTTON_ICON_CLASSES).className,
+            ].join(' ')}
+          />
         </Button>
         <Input
           value={nameDraft}
           onChange={(e) => setNameDraft(e.target.value)}
-          className={NAME_INPUT_CLASSES}
+          sx={overrideStyles.NAME_INPUT_CLASSES}
           placeholder="Skill name"
         />
       </div>
 
       <div {...stylex.props(styles.metaRow)}>
         {config && (
-          <Badge variant="outline" className={BADGE_TOOL_CLASSES}>
+          <Badge variant="outline" sx={overrideStyles.BADGE_TOOL_CLASSES}>
             <img
               src={config.logo}
               alt={config.displayName}
@@ -331,14 +294,14 @@ function SkillDetailForm({ skill, skillId }: { skill: Skill; skillId: string }) 
         <div {...stylex.props(styles.field)}>
           <div {...stylex.props(styles.labelRow)}>
             <Label>Instructions</Label>
-            <Badge variant="outline" className={BADGE_FILE_CLASSES}>
+            <Badge variant="outline" sx={overrideStyles.BADGE_FILE_CLASSES}>
               SKILL.md
             </Badge>
           </div>
           <Textarea
             value={bodyDraft}
             onChange={(e) => setBodyDraft(e.target.value)}
-            className={BODY_TEXTAREA_CLASSES}
+            sx={overrideStyles.BODY_TEXTAREA_CLASSES}
             placeholder="Skill instructions…"
           />
         </div>
@@ -374,7 +337,12 @@ function SkillDetailForm({ skill, skillId }: { skill: Skill; skillId: string }) 
           onClick={() => setDeleteDialogOpen(true)}
           disabled={deleteMutation.isPending}
         >
-          <Trash2Icon className={BUTTON_ICON_CLASSES} />
+          <Trash2Icon
+            className={[
+              'size-explicit',
+              stylex.props(overrideStyles.BUTTON_ICON_CLASSES).className,
+            ].join(' ')}
+          />
           Remove from library
         </Button>
         <Button size="sm" onClick={handleSave} disabled={!hasChanges || isSaving}>
@@ -384,3 +352,46 @@ function SkillDetailForm({ skill, skillId }: { skill: Skill; skillId: string }) 
     </div>
   )
 }
+
+const overrideStyles = stylex.create({
+  SKELETON_TITLE_CLASSES: { height: '2rem', width: '12rem' },
+  SKELETON_LINE_CLASSES: { height: '1rem', width: '24rem' },
+  SKELETON_BODY_CLASSES: { height: '16rem', width: '100%' },
+  BUTTON_ICON_CLASSES: { width: '1rem', height: '1rem' },
+  NAME_INPUT_CLASSES: {
+    fontSize: { default: '1.5rem', '@media (width >= 48rem)': '0.875rem' },
+    lineHeight: { default: '2rem', '@media (width >= 48rem)': '1.25rem' },
+    fontWeight: 700,
+    borderStyle: 'none',
+    boxShadow: {
+      default: '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 #0000',
+      ':focus-visible':
+        '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 0px color-mix(in oklab, var(--ring) 50%, transparent), 0 0 #0000',
+    },
+    paddingLeft: '0rem',
+    paddingRight: '0rem',
+    height: 'auto',
+  },
+  BADGE_TOOL_CLASSES: {
+    gap: '0.25rem',
+    paddingLeft: '0.375rem',
+    paddingRight: '0.375rem',
+    paddingTop: '0rem',
+    paddingBottom: '0rem',
+  },
+  BADGE_FILE_CLASSES: {
+    fontSize: '0.75rem',
+    lineHeight: '1rem',
+    paddingLeft: '0.375rem',
+    paddingRight: '0.375rem',
+    paddingTop: '0rem',
+    paddingBottom: '0rem',
+    fontFamily: fonts.mono,
+  },
+  BODY_TEXTAREA_CLASSES: {
+    fontFamily: fonts.mono,
+    fontSize: { default: '0.75rem', '@media (width >= 48rem)': '0.875rem' },
+    lineHeight: { default: '1rem', '@media (width >= 48rem)': '1.25rem' },
+    minHeight: '16rem',
+  },
+})

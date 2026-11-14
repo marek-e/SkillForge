@@ -1,3 +1,4 @@
+import * as stylex from '@stylexjs/stylex'
 import { useState } from 'react'
 import { ArrowRightIcon, PlusIcon, StarIcon, Trash2Icon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
@@ -17,7 +18,7 @@ export function ButtonsSection() {
   const [viewMode, setViewMode] = useState<SkillViewMode>('list')
 
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="button variants">
         <CaseRow>
           {BUTTON_VARIANTS.map((variant) => (
@@ -93,7 +94,9 @@ export function ButtonsSection() {
             </Button>
           </Case>
           <Case name="button-long-label" width={160}>
-            <Button className="w-full">A button label long enough to be truncated</Button>
+            <Button sx={galleryStyles.case1} className="w-explicit">
+              A button label long enough to be truncated
+            </Button>
           </Case>
         </CaseRow>
       </CaseGroup>
@@ -206,3 +209,11 @@ export function ButtonsSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: { width: '100%' },
+})

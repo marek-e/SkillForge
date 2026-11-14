@@ -1,35 +1,9 @@
 import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
-import { cva, type VariantProps } from 'class-variance-authority'
 import { Slot } from 'radix-ui'
 
 import { colors, motion, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
-
-/**
- * Kept for the exported type only (PR 04). Nothing outside this file calls
- * `badgeVariants()`; `Badge` renders from the StyleX styles below, and every
- * class of this string has a comment there. PR 32 removes it.
- */
-const badgeVariants = cva(
-  'h-5 gap-1 rounded-4xl border border-transparent px-2 py-0.5 text-xs font-medium transition-all has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&>svg]:size-3! inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive overflow-hidden group/badge',
-  {
-    variants: {
-      variant: {
-        default: 'bg-primary text-primary-foreground [a]:hover:bg-primary/80',
-        secondary: 'bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80',
-        destructive:
-          'bg-destructive/10 [a]:hover:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 text-destructive dark:bg-destructive/20',
-        outline: 'border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground',
-        ghost: 'hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50',
-        link: 'text-primary underline-offset-4 hover:underline',
-      },
-    },
-    defaultVariants: {
-      variant: 'default',
-    },
-  }
-)
+import type { Sx } from '@/lib/sx'
 
 /** the focus ring: `focus-visible:ring-ring/50` at three pixels — see `button.tsx` for the layer chain */
 const RING_FOCUS =
@@ -67,8 +41,9 @@ const styles = stylex.create({
     borderWidth: '1px',
     borderStyle: 'solid',
     // `px-2` with `has-data-[icon=inline-start|end]:p{l,r}-1.5`
-    paddingLeft: { default: '0.5rem', ':has([data-icon="inline-start"])': '0.375rem' },
-    paddingRight: { default: '0.5rem', ':has([data-icon="inline-end"])': '0.375rem' },
+    paddingInline: '0.5rem',
+    paddingLeft: { default: null, ':has([data-icon="inline-start"])': '0.375rem' },
+    paddingRight: { default: null, ':has([data-icon="inline-end"])': '0.375rem' },
     // `py-0.5`
     paddingTop: '0.125rem',
     paddingBottom: '0.125rem',
@@ -326,15 +301,16 @@ const styles = stylex.create({
   },
 })
 
-/**
- * `[&>svg]:size-3!`, kept as a Tailwind class (PR 04).
- *
- * Same reason as `button.tsx`: it styles an icon the badge does not own, and a
- * StyleX rule in a `priorityN` layer cannot beat a width/height utility on the
- * icon. The `!important` makes that even clearer — it exists precisely to win
- * against a caller's own `size-*`, which StyleX has no way to express.
- */
-const ICON_SIZE_CLASS = '[&>svg]:size-3!'
+const iconStyles = stylex.create({
+  child: {
+    width: { default: null, ':is(*)>svg': '0.75rem !important' },
+    height: { default: null, ':is(*)>svg': '0.75rem !important' },
+  },
+})
+
+const nullableStyles = stylex.create({
+  uncolored: { backgroundColor: 'transparent', color: 'inherit' },
+})
 
 const variantStyles = {
   default: styles.default,
@@ -348,12 +324,21 @@ const variantStyles = {
 function Badge({
   className,
   style,
+  sx: sxProp,
   variant = 'default',
   asChild = false,
   ...props
-}: React.ComponentProps<'span'> & VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
+}: React.ComponentProps<'span'> & { variant?: keyof typeof variantStyles | null } & {
+  asChild?: boolean
+  sx?: Sx
+}) {
   const Comp = asChild ? Slot.Root : 'span'
-  const sx = stylex.props(styles.base, variantStyles[variant ?? 'default'])
+  const sx = stylex.props(
+    styles.base,
+    variantStyles[variant ?? 'default'],
+    variant === null && nullableStyles.uncolored,
+    sxProp
+  )
 
   return (
     <Comp
@@ -361,11 +346,13 @@ function Badge({
       data-variant={variant}
       // `group/badge` is a marker class with no rules of its own; it is kept
       // literally so any `group-*/badge` variant a caller adds keeps working.
-      className={cn('group/badge', ICON_SIZE_CLASS, sx.className, className)}
+      className={['group/badge', stylex.props(iconStyles.child).className, sx.className, className]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-export { Badge, badgeVariants }
+export { Badge }

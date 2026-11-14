@@ -66,15 +66,6 @@ const buttonStyles = stylex.create({
   },
 })
 
-/**
- * `w-64` on the search field, kept as a Tailwind class (removed in PR 32).
- *
- * `InputGroup` takes no `sx` prop - `className` is the only channel into it -
- * so this override stays a utility until that component drops its own
- * `className` bridge.
- */
-const INPUT_GROUP_CLASSES = 'w-64'
-
 interface Props {
   searchQuery: string
   onSearchChange: (q: string) => void
@@ -108,7 +99,7 @@ export function ProjectsFilterBar({
 
   return (
     <div {...stylex.props(styles.bar)}>
-      <InputGroup className={INPUT_GROUP_CLASSES}>
+      <InputGroup sx={overrideStyles.INPUT_GROUP_CLASSES}>
         <InputGroupAddon align="inline-start">
           <SearchIcon />
         </InputGroupAddon>
@@ -153,3 +144,7 @@ export function ProjectsFilterBar({
     </div>
   )
 }
+
+const overrideStyles = stylex.create({
+  INPUT_GROUP_CLASSES: { width: '16rem' },
+})

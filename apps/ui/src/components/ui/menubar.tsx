@@ -1,9 +1,9 @@
 import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
+import type { Sx } from '@/lib/sx'
 import { Menubar as MenubarPrimitive } from 'radix-ui'
 
 import { colors, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
 import { CheckIcon, ChevronRightIcon } from 'lucide-react'
 
 /**
@@ -475,35 +475,40 @@ const styles = stylex.create({
   },
 })
 
-/**
- * Rules that reach an element this component does not own, kept as Tailwind
- * classes until **PR 32** removes Tailwind itself.
- *
- * Cascade layers outrank specificity, so a StyleX rule in a `priorityN` layer
- * loses to any utility class sitting on the target — which is wrong for a rule
- * that used to win on specificity over the target's own classes.
- *
- * - `[&_svg:not([class*='size-'])]:size-4` matches on the *literal text* of the
- *   child's `class` attribute, so it is a naming contract, not a measurement.
- * - the `**:` colour rules paint every descendant, including nodes the caller
- *   passes in, and the destructive one carries `!` precisely to beat a caller.
- */
-const ICON_SIZE_CLASS = "[&_svg:not([class*='size-'])]:size-4"
-const ITEM_DESCENDANT_CLASSES =
-  'data-[variant=destructive]:*:[svg]:text-destructive! not-data-[variant=destructive]:focus:**:text-accent-foreground'
-const FOCUS_DESCENDANT_CLASS = 'focus:**:text-accent-foreground'
+const descendantStyles = stylex.create({
+  icons: {
+    width: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+    height: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+    pointerEvents: { default: null, ':is(*) svg': 'none' },
+    flexShrink: { default: null, ':is(*) svg': 0 },
+  },
+  focusDescendants: {
+    color: { default: null, ':is(*):focus *': colors.accentForeground },
+  },
+  rowDescendants: {
+    color: {
+      default: null,
+      ':is([data-variant="destructive"])>svg': colors.destructive,
+      ':is(*):not([data-variant="destructive"]):focus *': colors.accentForeground,
+    },
+  },
+})
+const ICON_SIZE_CLASS = stylex.props(descendantStyles.icons).className
+const ITEM_DESCENDANT_CLASSES = stylex.props(descendantStyles.rowDescendants).className
+const FOCUS_DESCENDANT_CLASS = stylex.props(descendantStyles.focusDescendants).className
 
 function Menubar({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof MenubarPrimitive.Root>) {
-  const sx = stylex.props(styles.menubar)
+}: React.ComponentProps<typeof MenubarPrimitive.Root> & { sx?: Sx }) {
+  const sx = stylex.props(styles.menubar, sxProp)
 
   return (
     <MenubarPrimitive.Root
       data-slot="menubar"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -529,14 +534,15 @@ function MenubarRadioGroup({ ...props }: React.ComponentProps<typeof MenubarPrim
 function MenubarTrigger({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof MenubarPrimitive.Trigger>) {
-  const sx = stylex.props(styles.trigger)
+}: React.ComponentProps<typeof MenubarPrimitive.Trigger> & { sx?: Sx }) {
+  const sx = stylex.props(styles.trigger, sxProp)
 
   return (
     <MenubarPrimitive.Trigger
       data-slot="menubar-trigger"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -549,9 +555,10 @@ function MenubarContent({
   align = 'start',
   alignOffset = -4,
   sideOffset = 8,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof MenubarPrimitive.Content>) {
-  const sx = stylex.props(styles.content)
+}: React.ComponentProps<typeof MenubarPrimitive.Content> & { sx?: Sx }) {
+  const sx = stylex.props(styles.content, sxProp)
 
   return (
     <MenubarPortal>
@@ -560,7 +567,7 @@ function MenubarContent({
         align={align}
         alignOffset={alignOffset}
         sideOffset={sideOffset}
-        className={cn(sx.className, className)}
+        className={[sx.className, className].filter(Boolean).join(' ')}
         style={sx.style || style ? { ...sx.style, ...style } : undefined}
         {...props}
       />
@@ -573,12 +580,13 @@ function MenubarItem({
   style,
   inset,
   variant = 'default',
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof MenubarPrimitive.Item> & {
   inset?: boolean
   variant?: 'default' | 'destructive'
-}) {
-  const sx = stylex.props(styles.item)
+} & { sx?: Sx }) {
+  const sx = stylex.props(styles.item, sxProp)
 
   return (
     <MenubarPrimitive.Item
@@ -588,13 +596,15 @@ function MenubarItem({
       // `group/menubar-item` carries no styling of its own, but
       // `MenubarShortcut` still selects through it, so the literal class name
       // is part of the contract until PR 32.
-      className={cn(
+      className={[
         'group/menubar-item',
         ICON_SIZE_CLASS,
         ITEM_DESCENDANT_CLASSES,
         sx.className,
-        className
-      )}
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -607,24 +617,25 @@ function MenubarCheckboxItem({
   children,
   checked,
   inset,
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof MenubarPrimitive.CheckboxItem> & {
   inset?: boolean
-}) {
-  const sx = stylex.props(styles.checkboxItem)
+} & { sx?: Sx }) {
+  const sx = stylex.props(styles.checkboxItem, sxProp)
   const indicator = stylex.props(styles.indicator)
 
   return (
     <MenubarPrimitive.CheckboxItem
       data-slot="menubar-checkbox-item"
       data-inset={inset}
-      className={cn(FOCUS_DESCENDANT_CLASS, sx.className, className)}
+      className={[FOCUS_DESCENDANT_CLASS, sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       checked={checked}
       {...props}
     >
       <span
-        className={cn(ICON_SIZE_CLASS, indicator.className)}
+        className={[ICON_SIZE_CLASS, indicator.className].filter(Boolean).join(' ')}
         style={indicator.style || undefined}
       >
         <MenubarPrimitive.ItemIndicator>
@@ -641,23 +652,26 @@ function MenubarRadioItem({
   style,
   children,
   inset,
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof MenubarPrimitive.RadioItem> & {
   inset?: boolean
-}) {
-  const sx = stylex.props(styles.radioItem)
+} & { sx?: Sx }) {
+  const sx = stylex.props(styles.radioItem, sxProp)
   const indicator = stylex.props(styles.indicator)
 
   return (
     <MenubarPrimitive.RadioItem
       data-slot="menubar-radio-item"
       data-inset={inset}
-      className={cn(FOCUS_DESCENDANT_CLASS, ICON_SIZE_CLASS, sx.className, className)}
+      className={[FOCUS_DESCENDANT_CLASS, ICON_SIZE_CLASS, sx.className, className]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >
       <span
-        className={cn(ICON_SIZE_CLASS, indicator.className)}
+        className={[ICON_SIZE_CLASS, indicator.className].filter(Boolean).join(' ')}
         style={indicator.style || undefined}
       >
         <MenubarPrimitive.ItemIndicator>
@@ -673,17 +687,18 @@ function MenubarLabel({
   className,
   style,
   inset,
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof MenubarPrimitive.Label> & {
   inset?: boolean
-}) {
-  const sx = stylex.props(styles.label)
+} & { sx?: Sx }) {
+  const sx = stylex.props(styles.label, sxProp)
 
   return (
     <MenubarPrimitive.Label
       data-slot="menubar-label"
       data-inset={inset}
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -693,27 +708,33 @@ function MenubarLabel({
 function MenubarSeparator({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof MenubarPrimitive.Separator>) {
-  const sx = stylex.props(styles.separator)
+}: React.ComponentProps<typeof MenubarPrimitive.Separator> & { sx?: Sx }) {
+  const sx = stylex.props(styles.separator, sxProp)
 
   return (
     <MenubarPrimitive.Separator
       data-slot="menubar-separator"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function MenubarShortcut({ className, style, ...props }: React.ComponentProps<'span'>) {
-  const sx = stylex.props(styles.shortcut)
+function MenubarShortcut({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'span'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.shortcut, sxProp)
 
   return (
     <span
       data-slot="menubar-shortcut"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -729,18 +750,19 @@ function MenubarSubTrigger({
   style,
   inset,
   children,
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof MenubarPrimitive.SubTrigger> & {
   inset?: boolean
-}) {
-  const sx = stylex.props(styles.subTrigger)
+} & { sx?: Sx }) {
+  const sx = stylex.props(styles.subTrigger, sxProp)
   const icon = stylex.props(styles.subTriggerIcon)
 
   return (
     <MenubarPrimitive.SubTrigger
       data-slot="menubar-sub-trigger"
       data-inset={inset}
-      className={cn(ICON_SIZE_CLASS, sx.className, className)}
+      className={[ICON_SIZE_CLASS, sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >
@@ -753,14 +775,15 @@ function MenubarSubTrigger({
 function MenubarSubContent({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof MenubarPrimitive.SubContent>) {
-  const sx = stylex.props(styles.subContent)
+}: React.ComponentProps<typeof MenubarPrimitive.SubContent> & { sx?: Sx }) {
+  const sx = stylex.props(styles.subContent, sxProp)
 
   return (
     <MenubarPrimitive.SubContent
       data-slot="menubar-sub-content"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />

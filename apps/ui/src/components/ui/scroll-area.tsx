@@ -1,9 +1,9 @@
 import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
+import type { Sx } from '@/lib/sx'
 import { ScrollArea as ScrollAreaPrimitive } from 'radix-ui'
 
 import { colors, motion } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
 
 /**
  * The three-pixel focus ring, written as the whole five-layer chain Tailwind
@@ -93,13 +93,14 @@ function ScrollArea({
   className,
   style,
   children,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof ScrollAreaPrimitive.Root>) {
-  const sx = stylex.props(styles.root)
+}: React.ComponentProps<typeof ScrollAreaPrimitive.Root> & { sx?: Sx }) {
+  const sx = stylex.props(styles.root, sxProp)
   return (
     <ScrollAreaPrimitive.Root
       data-slot="scroll-area"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >
@@ -119,15 +120,16 @@ function ScrollBar({
   className,
   style,
   orientation = 'vertical',
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>) {
-  const sx = stylex.props(styles.scrollbar)
+}: React.ComponentProps<typeof ScrollAreaPrimitive.ScrollAreaScrollbar> & { sx?: Sx }) {
+  const sx = stylex.props(styles.scrollbar, sxProp)
   return (
     <ScrollAreaPrimitive.ScrollAreaScrollbar
       data-slot="scroll-area-scrollbar"
       data-orientation={orientation}
       orientation={orientation}
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >

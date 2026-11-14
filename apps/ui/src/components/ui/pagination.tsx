@@ -1,36 +1,17 @@
 import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
+import type { Sx } from '@/lib/sx'
 
-import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon } from 'lucide-react'
 
-/**
- * `pl-1.5!` / `pr-1.5!` on `PaginationPrevious` / `PaginationNext`, kept as
- * Tailwind classes.
- *
- * They are not this component's own styling: they are a caller override handed
- * to `Button`, and the `!` exists to beat `Button`'s own
- * `has-data-[icon=inline-start]:pl-2` (and its `inline-end` twin), which both
- * elements trigger by rendering a `data-icon` chevron. An `!important` utility
- * is the one shape StyleX cannot express, and a `sx` override would instead
- * replace `Button`'s whole conditional padding declaration
- * (`stylex.props` merges a property as a whole). Removed in PR 32, when
- * `Button` stops carrying the Tailwind bridge at all.
- */
-const PREVIOUS_PADDING_CLASS = 'pl-1.5!'
-const NEXT_PADDING_CLASS = 'pr-1.5!'
-
-/**
- * `[&_svg:not([class*='size-'])]:size-4` on `PaginationEllipsis`, kept as a
- * Tailwind class: it styles an `svg` the component does not own, and it matches
- * on the *literal text* of the child's `class` attribute, which no StyleX hash
- * can reproduce (`conventions.md`, "A class name can itself be the contract").
- * Removed in PR 32.
- */
-const ELLIPSIS_ICON_CLASS = "[&_svg:not([class*='size-'])]:size-4"
-
 const styles = stylex.create({
+  previous: { paddingLeft: '0.375rem' },
+  next: { paddingRight: '0.375rem' },
+  ellipsisIcon: {
+    width: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+    height: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+  },
   // `mx-auto flex w-full justify-center`
   nav: {
     marginInline: 'auto',
@@ -77,28 +58,38 @@ const styles = stylex.create({
   },
 })
 
-function Pagination({ className, style, ...props }: React.ComponentProps<'nav'>) {
-  const sx = stylex.props(styles.nav)
+function Pagination({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'nav'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.nav, sxProp)
 
   return (
     <nav
       role="navigation"
       aria-label="pagination"
       data-slot="pagination"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function PaginationContent({ className, style, ...props }: React.ComponentProps<'ul'>) {
-  const sx = stylex.props(styles.content)
+function PaginationContent({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'ul'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.content, sxProp)
 
   return (
     <ul
       data-slot="pagination-content"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -111,16 +102,28 @@ function PaginationItem({ ...props }: React.ComponentProps<'li'>) {
 
 type PaginationLinkProps = {
   isActive?: boolean
-} & Pick<React.ComponentProps<typeof Button>, 'size'> &
+} & Pick<React.ComponentProps<typeof Button>, 'size' | 'sx'> &
   React.ComponentProps<'a'>
 
 /**
  * Unchanged by this row: the link has no styling of its own, it renders a
  * `Button` with `asChild`, and `Button` has been StyleX since PR 04.
  */
-function PaginationLink({ className, isActive, size = 'icon', ...props }: PaginationLinkProps) {
+function PaginationLink({
+  className,
+  isActive,
+  size = 'icon',
+  sx: sxProp,
+  ...props
+}: PaginationLinkProps) {
   return (
-    <Button asChild variant={isActive ? 'outline' : 'ghost'} size={size} className={cn(className)}>
+    <Button
+      asChild
+      variant={isActive ? 'outline' : 'ghost'}
+      size={size}
+      sx={sxProp}
+      className={[className].filter(Boolean).join(' ')}
+    >
       <a
         aria-current={isActive ? 'page' : undefined}
         data-slot="pagination-link"
@@ -133,6 +136,7 @@ function PaginationLink({ className, isActive, size = 'icon', ...props }: Pagina
 
 function PaginationPrevious({
   className,
+  sx: sxProp,
   text = 'Previous',
   ...props
 }: React.ComponentProps<typeof PaginationLink> & { text?: string }) {
@@ -142,7 +146,8 @@ function PaginationPrevious({
     <PaginationLink
       aria-label="Go to previous page"
       size="default"
-      className={cn(PREVIOUS_PADDING_CLASS, className)}
+      className={className}
+      sx={[sxProp, styles.previous]}
       {...props}
     >
       <ChevronLeftIcon data-icon="inline-start" />
@@ -153,6 +158,7 @@ function PaginationPrevious({
 
 function PaginationNext({
   className,
+  sx: sxProp,
   text = 'Next',
   ...props
 }: React.ComponentProps<typeof PaginationLink> & { text?: string }) {
@@ -162,7 +168,8 @@ function PaginationNext({
     <PaginationLink
       aria-label="Go to next page"
       size="default"
-      className={cn(NEXT_PADDING_CLASS, className)}
+      className={className}
+      sx={[sxProp, styles.next]}
       {...props}
     >
       <span {...label}>{text}</span>
@@ -171,15 +178,22 @@ function PaginationNext({
   )
 }
 
-function PaginationEllipsis({ className, style, ...props }: React.ComponentProps<'span'>) {
-  const sx = stylex.props(styles.ellipsis)
+function PaginationEllipsis({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'span'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.ellipsis, sxProp)
   const srOnly = stylex.props(styles.srOnly)
 
   return (
     <span
       aria-hidden
       data-slot="pagination-ellipsis"
-      className={cn(ELLIPSIS_ICON_CLASS, sx.className, className)}
+      className={[stylex.props(styles.ellipsisIcon).className, sx.className, className]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >

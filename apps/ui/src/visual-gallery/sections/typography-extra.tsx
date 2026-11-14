@@ -1,3 +1,5 @@
+import { colors, radius, typography } from '@/styles/tokens.stylex'
+import * as stylex from '@stylexjs/stylex'
 import { WrenchIcon } from 'lucide-react'
 import { Blockquote, Code, H1, H2, H3, Large, Lead, Muted, P, Small } from '@/components/typography'
 import { Case, CaseGroup, CaseRow } from '../Case'
@@ -28,7 +30,7 @@ import { LONG_TEXT } from '../data'
  */
 export function TypographyExtraSection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="flow between siblings">
         <Case name="typography-h2-in-flow" width={480}>
           <div>
@@ -101,30 +103,30 @@ export function TypographyExtraSection() {
 
       <CaseGroup title="caller overrides">
         <Case name="typography-h2-flex-override" width={480}>
-          <H2 className="flex items-center gap-2">
+          <H2 sx={galleryStyles.case1}>
             <WrenchIcon /> Connected Tools
           </H2>
         </Case>
         <CaseRow>
           <Case name="typography-h1-size-override">
-            <H1 className="text-lg">H1 at the large size</H1>
+            <H1 sx={galleryStyles.case2}>H1 at the large size</H1>
           </Case>
           <Case name="typography-p-override" width={320}>
-            <P className="text-sm text-muted-foreground">A paragraph with a smaller, muted size.</P>
+            <P sx={galleryStyles.case3}>A paragraph with a smaller, muted size.</P>
           </Case>
         </CaseRow>
         <CaseRow>
           <Case name="typography-code-override">
-            <Code className="bg-primary text-primary-foreground">override</Code>
+            <Code sx={galleryStyles.case4}>override</Code>
           </Case>
           <Case name="typography-blockquote-override" width={320}>
-            <Blockquote className="border-l-4 pl-4 not-italic">
+            <Blockquote sx={galleryStyles.case5}>
               A quotation with a wider rule and upright text.
             </Blockquote>
           </Case>
         </CaseRow>
         <Case name="typography-code-block-override" width={320}>
-          <Code variant="block" className="p-2 rounded-sm">
+          <Code variant="block" sx={galleryStyles.case6}>
             {'pnpm visual\n'}
           </Code>
         </Case>
@@ -132,3 +134,31 @@ export function TypographyExtraSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: { display: 'flex', alignItems: 'center', gap: '0.5rem' },
+  case2: { fontSize: '1.125rem', lineHeight: typography.lgLineHeight },
+  case3: {
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+    color: colors.mutedForeground,
+  },
+  case4: { backgroundColor: colors.primary, color: colors.primaryForeground },
+  case5: {
+    borderLeftWidth: '4px',
+    borderLeftStyle: 'solid',
+    paddingLeft: '1rem',
+    fontStyle: 'normal',
+  },
+  case6: {
+    paddingTop: '0.5rem',
+    paddingRight: '0.5rem',
+    paddingBottom: '0.5rem',
+    paddingLeft: '0.5rem',
+    borderRadius: radius.sm,
+  },
+})

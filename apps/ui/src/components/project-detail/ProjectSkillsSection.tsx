@@ -19,17 +19,15 @@ import { DisplayViewSwitch } from '@/components/ui/display-view-switch'
 import { Label } from '@/components/ui/label'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { SkillCard } from '@/components/skills/SkillCard'
-import { colors } from '@/styles/tokens.stylex'
+import { colors, palette } from '@/styles/tokens.stylex'
 
 const styles = stylex.create({
   // `space-y-2`, a child rule (`:where(& > :not(:last-child))`) that emits both
   // block margins, the start one at zero (`tailwind-values.md` §7). Both
   // children - the header row and the list - are rendered here.
   section: {
-    ':is(*)>:not(:last-child)': {
-      marginBlockStart: '0rem',
-      marginBlockEnd: '0.5rem',
-    },
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '0.5rem' },
   },
   // `flex items-center gap-2`
   header: {
@@ -82,38 +80,6 @@ const styles = stylex.create({
     filter: { default: null, ':is(.dark *)': 'invert(100%)' },
   },
 })
-
-/** The grid branch's styles, resolved once. */
-const gridProps = stylex.props(styles.grid)
-
-/**
- * Overrides that stay Tailwind class strings (all removed in PR 32).
- *
- * - `divide-y divide-border` styles the **children** of the list wrapper, and
- *   those children are `SkillCard`s - a component this row does not own and
- *   which is still Tailwind (PR 23). A StyleX rule sits in a `priorityN` layer
- *   and would lose to any border utility that component grows, where the
- *   utility it replaces would have won on specificity
- *   (`conventions.md`, "A rule that styles a foreign element stays Tailwind").
- * - `Badge` takes no `sx` prop, so `className` is the only channel into it.
- * - `size-3` / `size-3.5` on the action icons: they sit inside `icon-xs` and
- *   default `Button`s, whose `[&_svg:not([class*='size-'])]:size-N` reads the
- *   child's `class` **attribute text**, not its computed size (`button.tsx`,
- *   PR 04). A StyleX hash would stop matching and the button would then own
- *   their width and height.
- * - `text-green-500` and `text-muted-foreground` ride along in those same icon
- *   strings. `green-500` is a Tailwind **palette** colour: `text-green-500`
- *   compiles to `color: var(--color-green-500)`, a generated custom property a
- *   StyleX rule may not reference, and the literal alternative is folded by
- *   lightningcss into a different computed string (PR 22).
- */
-const LIST_CLASSES = 'divide-y divide-border'
-const COUNT_BADGE_CLASSES = 'text-xs'
-const TOOL_BADGE_CLASSES = 'text-xs gap-1 px-1.5 py-0'
-const SAVE_ALL_ICON_CLASS = 'size-3'
-const ICON_COPIED_CLASSES = 'size-3.5 text-green-500'
-const ICON_SAVED_CLASSES = 'size-3.5 text-green-500'
-const ICON_MUTED_CLASSES = 'size-3.5 text-muted-foreground'
 
 interface SkillRow {
   skill: SkillItem
@@ -199,9 +165,19 @@ export function ProjectSkillsSection({
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon-xs" onClick={() => handleCopy(skill)}>
                 {isCopied ? (
-                  <CheckIcon className={ICON_COPIED_CLASSES} />
+                  <CheckIcon
+                    className={[
+                      'size-explicit',
+                      stylex.props(overrideStyles.ICON_COPIED_CLASSES).className,
+                    ].join(' ')}
+                  />
                 ) : (
-                  <ClipboardCopyIcon className={ICON_MUTED_CLASSES} />
+                  <ClipboardCopyIcon
+                    className={[
+                      'size-explicit',
+                      stylex.props(overrideStyles.ICON_MUTED_CLASSES).className,
+                    ].join(' ')}
+                  />
                 )}
               </Button>
             </TooltipTrigger>
@@ -213,7 +189,12 @@ export function ProjectSkillsSection({
           <Tooltip delayDuration={700}>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon-xs" onClick={() => handleOpenInEditor(skill)}>
-                <ExternalLinkIcon className={ICON_MUTED_CLASSES} />
+                <ExternalLinkIcon
+                  className={[
+                    'size-explicit',
+                    stylex.props(overrideStyles.ICON_MUTED_CLASSES).className,
+                  ].join(' ')}
+                />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
@@ -227,7 +208,12 @@ export function ProjectSkillsSection({
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon-xs" asChild>
                 <Link to="/skill-library/$skillId" params={{ skillId: savedId }}>
-                  <BookmarkCheck className={ICON_SAVED_CLASSES} />
+                  <BookmarkCheck
+                    className={[
+                      'size-explicit',
+                      stylex.props(overrideStyles.ICON_SAVED_CLASSES).className,
+                    ].join(' ')}
+                  />
                 </Link>
               </Button>
             </TooltipTrigger>
@@ -242,7 +228,12 @@ export function ProjectSkillsSection({
                 disabled={isSaving}
                 onClick={() => onSave(skill, toolName)}
               >
-                <BookmarkPlusIcon className={ICON_MUTED_CLASSES} />
+                <BookmarkPlusIcon
+                  className={[
+                    'size-explicit',
+                    stylex.props(overrideStyles.ICON_MUTED_CLASSES).className,
+                  ].join(' ')}
+                />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Save to library</TooltipContent>
@@ -257,7 +248,7 @@ export function ProjectSkillsSection({
       <div {...stylex.props(styles.header)}>
         <Label>Skills</Label>
         {rows.length > 0 && (
-          <Badge variant="secondary" className={COUNT_BADGE_CLASSES}>
+          <Badge variant="secondary" sx={overrideStyles.COUNT_BADGE_CLASSES}>
             {rows.length}
           </Badge>
         )}
@@ -272,7 +263,12 @@ export function ProjectSkillsSection({
                 }
               }}
             >
-              <BookmarkPlusIcon className={SAVE_ALL_ICON_CLASS} />
+              <BookmarkPlusIcon
+                className={[
+                  'size-explicit',
+                  stylex.props(overrideStyles.SAVE_ALL_ICON_CLASS).className,
+                ].join(' ')}
+              />
               Save all
             </Button>
           )}
@@ -283,7 +279,7 @@ export function ProjectSkillsSection({
       {rows.length === 0 ? (
         <p {...stylex.props(styles.emptyText)}>No skills found in this project</p>
       ) : (
-        <div className={viewMode === 'grid' ? gridProps.className : LIST_CLASSES}>
+        <div {...stylex.props(viewMode === 'grid' ? styles.grid : overrideStyles.LIST_CLASSES)}>
           {rows.map(({ skill, toolName }) => {
             const config = getToolConfig(toolName)
             return (
@@ -293,7 +289,7 @@ export function ProjectSkillsSection({
                 name={skill.name}
                 description={skill.description}
                 badges={
-                  <Badge variant="outline" className={TOOL_BADGE_CLASSES}>
+                  <Badge variant="outline" sx={overrideStyles.TOOL_BADGE_CLASSES}>
                     <img
                       src={config.logo}
                       alt={config.displayName}
@@ -311,3 +307,26 @@ export function ProjectSkillsSection({
     </div>
   )
 }
+
+const overrideStyles = stylex.create({
+  LIST_CLASSES: {
+    borderTopWidth: { default: null, ':is(*)>:not(:last-child)': '0px' },
+    borderBottomWidth: { default: null, ':is(*)>:not(:last-child)': '1px' },
+    borderBottomStyle: { default: null, ':is(*)>:not(:last-child)': 'solid' },
+    borderColor: { default: null, ':is(*)>:not(:last-child)': colors.border },
+  },
+  COUNT_BADGE_CLASSES: { fontSize: '0.75rem', lineHeight: '1rem' },
+  TOOL_BADGE_CLASSES: {
+    fontSize: '0.75rem',
+    lineHeight: '1rem',
+    gap: '0.25rem',
+    paddingLeft: '0.375rem',
+    paddingRight: '0.375rem',
+    paddingTop: '0rem',
+    paddingBottom: '0rem',
+  },
+  SAVE_ALL_ICON_CLASS: { width: '0.75rem', height: '0.75rem' },
+  ICON_COPIED_CLASSES: { width: '0.875rem', height: '0.875rem', color: palette.green500 },
+  ICON_SAVED_CLASSES: { width: '0.875rem', height: '0.875rem', color: palette.green500 },
+  ICON_MUTED_CLASSES: { width: '0.875rem', height: '0.875rem', color: colors.mutedForeground },
+})

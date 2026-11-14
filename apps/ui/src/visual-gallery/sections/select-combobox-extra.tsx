@@ -1,3 +1,4 @@
+import * as stylex from '@stylexjs/stylex'
 import {
   Combobox,
   ComboboxChip,
@@ -42,12 +43,12 @@ const LONG_LABEL = 'A very long editor name that has to be clamped by the trigge
 
 export function SelectComboboxExtraSection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="select trigger">
         <CaseRow>
           <Case name="selcombo-select-placeholder" width={240}>
             <Select>
-              <SelectTrigger className="w-full">
+              <SelectTrigger sx={galleryStyles.case1} className="w-explicit">
                 <SelectValue placeholder="Pick an editor" />
               </SelectTrigger>
               <SelectContent>
@@ -57,7 +58,7 @@ export function SelectComboboxExtraSection() {
           </Case>
           <Case name="selcombo-select-value" width={240}>
             <Select defaultValue="cursor">
-              <SelectTrigger className="w-full">
+              <SelectTrigger sx={galleryStyles.case2} className="w-explicit">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -67,7 +68,7 @@ export function SelectComboboxExtraSection() {
           </Case>
           <Case name="selcombo-select-disabled" width={240}>
             <Select disabled defaultValue="cursor">
-              <SelectTrigger className="w-full">
+              <SelectTrigger sx={galleryStyles.case3} className="w-explicit">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -77,7 +78,7 @@ export function SelectComboboxExtraSection() {
           </Case>
           <Case name="selcombo-select-invalid" width={240}>
             <Select defaultValue="cursor">
-              <SelectTrigger className="w-full" aria-invalid>
+              <SelectTrigger sx={galleryStyles.case4} className="w-explicit" aria-invalid>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -89,7 +90,7 @@ export function SelectComboboxExtraSection() {
         <CaseRow>
           <Case name="selcombo-select-size-default" width={240}>
             <Select defaultValue="cursor">
-              <SelectTrigger className="w-full" size="default">
+              <SelectTrigger sx={galleryStyles.case5} className="w-explicit" size="default">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -99,7 +100,7 @@ export function SelectComboboxExtraSection() {
           </Case>
           <Case name="selcombo-select-size-sm" width={240}>
             <Select defaultValue="cursor">
-              <SelectTrigger className="w-full" size="sm">
+              <SelectTrigger sx={galleryStyles.case6} className="w-explicit" size="sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -119,7 +120,7 @@ export function SelectComboboxExtraSection() {
           </Case>
           <Case name="selcombo-select-long" width={240}>
             <Select defaultValue="long">
-              <SelectTrigger className="w-full">
+              <SelectTrigger sx={galleryStyles.case7} className="w-explicit">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -132,7 +133,7 @@ export function SelectComboboxExtraSection() {
         <CaseRow>
           <Case name="selcombo-select-hover-target" width={240}>
             <Select defaultValue="cursor">
-              <SelectTrigger className="w-full">
+              <SelectTrigger sx={galleryStyles.case8} className="w-explicit">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -142,7 +143,7 @@ export function SelectComboboxExtraSection() {
           </Case>
           <Case name="selcombo-select-focus-target" width={240}>
             <Select defaultValue="cursor">
-              <SelectTrigger className="w-full">
+              <SelectTrigger sx={galleryStyles.case9} className="w-explicit">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -152,7 +153,7 @@ export function SelectComboboxExtraSection() {
           </Case>
           <Case name="selcombo-select-invalid-focus-target" width={240}>
             <Select defaultValue="cursor">
-              <SelectTrigger className="w-full" aria-invalid>
+              <SelectTrigger sx={galleryStyles.case10} className="w-explicit" aria-invalid>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -167,7 +168,7 @@ export function SelectComboboxExtraSection() {
         <CaseRow>
           <Case name="selcombo-select-groups" width={240}>
             <Select defaultValue="cursor">
-              <SelectTrigger className="w-full">
+              <SelectTrigger sx={galleryStyles.case11} className="w-explicit">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -189,7 +190,7 @@ export function SelectComboboxExtraSection() {
           </Case>
           <Case name="selcombo-select-popper" width={240}>
             <Select defaultValue="cursor">
-              <SelectTrigger className="w-full">
+              <SelectTrigger sx={galleryStyles.case12} className="w-explicit">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent position="popper" side="bottom" align="start">
@@ -201,7 +202,7 @@ export function SelectComboboxExtraSection() {
           </Case>
           <Case name="selcombo-select-scroll" width={240}>
             <Select defaultValue="Editor 20">
-              <SelectTrigger className="w-full">
+              <SelectTrigger sx={galleryStyles.case13} className="w-explicit">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -402,3 +403,23 @@ export function SelectComboboxExtraSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: { width: '100%' },
+  case2: { width: '100%' },
+  case3: { width: '100%' },
+  case4: { width: '100%' },
+  case5: { width: '100%' },
+  case6: { width: '100%' },
+  case7: { width: '100%' },
+  case8: { width: '100%' },
+  case9: { width: '100%' },
+  case10: { width: '100%' },
+  case11: { width: '100%' },
+  case12: { width: '100%' },
+  case13: { width: '100%' },
+})

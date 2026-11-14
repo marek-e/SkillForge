@@ -1,9 +1,9 @@
 import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
+import type { Sx } from '@/lib/sx'
 import { Popover as PopoverPrimitive } from 'radix-ui'
 
-import { colors, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import { colors, radius, typography } from '@/styles/tokens.stylex'
 
 /**
  * `data-open:` and `data-closed:`, the `shadcn/tailwind.css` custom variants
@@ -117,6 +117,8 @@ const styles = stylex.create({
   //  shadow-md ring-1 ring-foreground/10 duration-100 z-50 w-72
   //  origin-(--radix-popover-content-transform-origin) outline-hidden`
   content: {
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
     display: 'flex',
     flexDirection: 'column',
     gap: '0.625rem',
@@ -172,6 +174,8 @@ const styles = stylex.create({
 
   // `flex flex-col gap-0.5`
   header: {
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
     display: 'flex',
     flexDirection: 'column',
     gap: '0.125rem',
@@ -188,22 +192,6 @@ const styles = stylex.create({
   },
 })
 
-/**
- * `text-sm` stays a Tailwind class on both `PopoverContent` and
- * `PopoverHeader`, the paired-line-height exception in `conventions.md`.
- *
- * A paired `text-*` couples `font-size: 0.875rem` with the *ratio*
- * `calc(1.25 / 0.875)`, and a descendant with a different font size and no line
- * height of its own inherits that ratio. The live case is the calendar inside a
- * popover (`overlays.tsx`, `calendar-in-popover-trigger`): `calendar.tsx`'s
- * weekday cells are `text-[0.8rem]`, which compiles to
- * `line-height: var(--tw-leading)` with no fallback — invalid at
- * computed-value time, so it inherits. A StyleX `line-height: 1.25rem` would
- * hand those cells 20px instead of the 18.29px the ratio resolves to and move
- * the calendar's header row. Both go with the utility layer in PR 32.
- */
-const PAIRED_TEXT_CLASS = 'text-sm'
-
 function Popover({ ...props }: React.ComponentProps<typeof PopoverPrimitive.Root>) {
   return <PopoverPrimitive.Root data-slot="popover" {...props} />
 }
@@ -217,9 +205,10 @@ function PopoverContent({
   style,
   align = 'center',
   sideOffset = 4,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Content>) {
-  const sx = stylex.props(styles.content)
+}: React.ComponentProps<typeof PopoverPrimitive.Content> & { sx?: Sx }) {
+  const sx = stylex.props(styles.content, sxProp)
 
   return (
     <PopoverPrimitive.Portal>
@@ -227,7 +216,7 @@ function PopoverContent({
         data-slot="popover-content"
         align={align}
         sideOffset={sideOffset}
-        className={cn(PAIRED_TEXT_CLASS, sx.className, className)}
+        className={[sx.className, className].filter(Boolean).join(' ')}
         style={sx.style || style ? { ...sx.style, ...style } : undefined}
         {...props}
       />
@@ -239,39 +228,54 @@ function PopoverAnchor({ ...props }: React.ComponentProps<typeof PopoverPrimitiv
   return <PopoverPrimitive.Anchor data-slot="popover-anchor" {...props} />
 }
 
-function PopoverHeader({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.header)
+function PopoverHeader({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.header, sxProp)
 
   return (
     <div
       data-slot="popover-header"
-      className={cn(PAIRED_TEXT_CLASS, sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function PopoverTitle({ className, style, ...props }: React.ComponentProps<'h2'>) {
-  const sx = stylex.props(styles.title)
+function PopoverTitle({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'h2'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.title, sxProp)
 
   return (
     <div
       data-slot="popover-title"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function PopoverDescription({ className, style, ...props }: React.ComponentProps<'p'>) {
-  const sx = stylex.props(styles.description)
+function PopoverDescription({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'p'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.description, sxProp)
 
   return (
     <p
       data-slot="popover-description"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />

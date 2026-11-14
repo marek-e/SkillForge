@@ -1,3 +1,4 @@
+import * as stylex from '@stylexjs/stylex'
 import { ArrowRightIcon, PlusIcon, StarIcon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -37,7 +38,7 @@ const BADGE_LINK_VARIANTS = ['default', 'secondary', 'outline', 'ghost', 'link']
 
 export function ButtonsExtraSection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="variant x text size">
         {VARIANTS.map((variant) => (
           <CaseRow key={variant}>
@@ -96,7 +97,9 @@ export function ButtonsExtraSection() {
         </Case>
         <Case name="button-sized-svg">
           <Button aria-label="Star">
-            <StarIcon className="size-6" />
+            <StarIcon
+              className={[stylex.props(galleryStyles.case1).className, 'size-explicit'].join(' ')}
+            />
           </Button>
         </Case>
       </CaseGroup>
@@ -379,3 +382,11 @@ export function ButtonsExtraSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: { width: '1.5rem', height: '1.5rem' },
+})

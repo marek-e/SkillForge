@@ -1,3 +1,5 @@
+import { radius, typography } from '@/styles/tokens.stylex'
+import * as stylex from '@stylexjs/stylex'
 import { CalendarIcon, SettingsIcon, TrashIcon } from 'lucide-react'
 import {
   AlertDialog,
@@ -145,7 +147,7 @@ const COMBOBOX_ITEMS = ['Cursor', 'VS Code', 'Zed', 'Sublime Text', 'Windsurf']
 
 export function OverlaysSection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="dialog triggers">
         <CaseRow>
           <Case name="dialog-trigger">
@@ -294,7 +296,7 @@ export function OverlaysSection() {
                   Open menu
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="min-w-56">
+              <DropdownMenuContent align="start" sx={galleryStyles.case1} className="w-explicit">
                 <DropdownMenuLabel>Appearance</DropdownMenuLabel>
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
@@ -325,7 +327,7 @@ export function OverlaysSection() {
 
           <Case name="context-menu-trigger">
             <ContextMenu>
-              <ContextMenuTrigger className="flex h-16 w-48 items-center justify-center rounded-lg border border-dashed text-sm">
+              <ContextMenuTrigger sx={galleryStyles.case2} className="w-explicit">
                 Right click here
               </ContextMenuTrigger>
               <ContextMenuContent>
@@ -389,7 +391,11 @@ export function OverlaysSection() {
               <NavigationMenuItem>
                 <NavigationMenuTrigger>Tools</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <div className="grid w-64 gap-1 p-2">
+                  <div
+                    className={[stylex.props(galleryStyles.case3).className, 'w-explicit'].join(
+                      ' '
+                    )}
+                  >
                     <NavigationMenuLink href="#">Claude Code</NavigationMenuLink>
                     <NavigationMenuLink href="#">Cursor</NavigationMenuLink>
                   </div>
@@ -407,7 +413,7 @@ export function OverlaysSection() {
         <CaseRow>
           <Case name="select-closed" width={240}>
             <Select defaultValue="cursor">
-              <SelectTrigger className="w-full">
+              <SelectTrigger sx={galleryStyles.case4} className="w-explicit">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -426,7 +432,7 @@ export function OverlaysSection() {
           </Case>
           <Case name="select-placeholder" width={240}>
             <Select>
-              <SelectTrigger className="w-full">
+              <SelectTrigger sx={galleryStyles.case5} className="w-explicit">
                 <SelectValue placeholder="Pick an editor" />
               </SelectTrigger>
               <SelectContent>
@@ -436,7 +442,7 @@ export function OverlaysSection() {
           </Case>
           <Case name="select-disabled" width={240}>
             <Select disabled defaultValue="cursor">
-              <SelectTrigger className="w-full">
+              <SelectTrigger sx={galleryStyles.case6} className="w-explicit">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -446,7 +452,7 @@ export function OverlaysSection() {
           </Case>
           <Case name="select-invalid" width={240}>
             <Select defaultValue="cursor">
-              <SelectTrigger className="w-full" aria-invalid>
+              <SelectTrigger sx={galleryStyles.case7} className="w-explicit" aria-invalid>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -459,7 +465,7 @@ export function OverlaysSection() {
 
       <CaseGroup title="command">
         <Case name="command-inline" width={360}>
-          <div className="rounded-xl ring-1 ring-foreground/10">
+          <div {...stylex.props(galleryStyles.case8)}>
             <Command>
               <CommandInput placeholder="Search commands…" />
               <CommandList>
@@ -483,7 +489,7 @@ export function OverlaysSection() {
           </div>
         </Case>
         <Case name="command-empty" width={360}>
-          <div className="rounded-xl ring-1 ring-foreground/10">
+          <div {...stylex.props(galleryStyles.case9)}>
             <Command>
               <CommandInput placeholder="Search commands…" value="zzzz" onValueChange={() => {}} />
               <CommandList>
@@ -527,7 +533,7 @@ export function OverlaysSection() {
                   Pick a date
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent sx={galleryStyles.case10} className="w-explicit">
                 <Calendar mode="single" selected={FIXED_DAY} month={FIXED_MONTH} />
               </PopoverContent>
             </Popover>
@@ -624,3 +630,39 @@ export function OverlaysSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: { minWidth: '14rem' },
+  case2: {
+    display: 'flex',
+    height: '4rem',
+    width: '12rem',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: radius.lg,
+    borderWidth: '1px',
+    borderStyle: 'dashed',
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+  },
+  case3: { display: 'grid', width: '16rem', gap: '0.25rem', padding: '0.5rem' },
+  case4: { width: '100%' },
+  case5: { width: '100%' },
+  case6: { width: '100%' },
+  case7: { width: '100%' },
+  case8: {
+    borderRadius: radius.xl,
+    boxShadow:
+      '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent), 0 0 #0000',
+  },
+  case9: {
+    borderRadius: radius.xl,
+    boxShadow:
+      '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent), 0 0 #0000',
+  },
+  case10: { width: 'auto', padding: '0rem' },
+})

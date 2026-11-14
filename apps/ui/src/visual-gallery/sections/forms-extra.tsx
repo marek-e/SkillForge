@@ -1,3 +1,5 @@
+import { fonts, typography } from '@/styles/tokens.stylex'
+import * as stylex from '@stylexjs/stylex'
 import { AtSignIcon, SearchIcon, SquareTerminal, XIcon } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -46,7 +48,7 @@ import { Case, CaseGroup, CaseRow } from '../Case'
  */
 export function FormsExtraSection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="input states">
         <CaseRow>
           <Case name="input-invalid-focus-target" width={240}>
@@ -71,14 +73,14 @@ export function FormsExtraSection() {
               adds no specificity but is emitted later in the utility layer. The
               desktop shot is therefore 14px and the mobile one 24px. */}
           <Case name="quirk-input-caller-text-2xl" width={260}>
-            <Input className="text-2xl font-bold" defaultValue="Skill name" />
+            <Input sx={galleryStyles.case1} defaultValue="Skill name" />
           </Case>
           <Case name="input-caller-text-sm" width={240}>
-            <Input className="text-sm" defaultValue="editor command" />
+            <Input sx={galleryStyles.case2} defaultValue="editor command" />
           </Case>
           <Case name="input-caller-flex-1" width={240}>
-            <div className="flex">
-              <Input className="flex-1" defaultValue="grows to fill" />
+            <div {...stylex.props(galleryStyles.case3)}>
+              <Input sx={galleryStyles.case4} defaultValue="grows to fill" />
             </div>
           </Case>
         </CaseRow>
@@ -94,12 +96,12 @@ export function FormsExtraSection() {
           </Case>
           {/* Same breakpoint quirk as `quirk-input-caller-text-2xl`. */}
           <Case name="quirk-textarea-caller-text-xs" width={320}>
-            <Textarea className="font-mono text-xs" defaultValue={'---\nname: fixture\n---\n'} />
+            <Textarea sx={galleryStyles.case5} defaultValue={'---\nname: fixture\n---\n'} />
           </Case>
         </CaseRow>
         <CaseRow>
           <Case name="label-caller-text-base">
-            <Label className="text-base font-semibold">Color Mode</Label>
+            <Label sx={galleryStyles.case6}>Color Mode</Label>
           </Case>
           <Case name="label-in-disabled-group" width={240}>
             <div className="group" data-disabled="true">
@@ -107,8 +109,10 @@ export function FormsExtraSection() {
             </div>
           </Case>
           <Case name="label-flex-row">
-            <Label className="flex-1 cursor-pointer flex items-center gap-2">
-              <AtSignIcon className="size-4" />
+            <Label sx={galleryStyles.case8}>
+              <AtSignIcon
+                className={[stylex.props(galleryStyles.case9).className, 'size-explicit'].join(' ')}
+              />
               Label with an icon
             </Label>
           </Case>
@@ -193,7 +197,7 @@ export function FormsExtraSection() {
             <FieldSet>
               <FieldLegend>Default view</FieldLegend>
               <RadioGroup defaultValue="list">
-                <div className="flex items-center gap-3">
+                <div {...stylex.props(galleryStyles.case10)}>
                   <RadioGroupItem value="list" id="fx-radio-list" />
                   <Label htmlFor="fx-radio-list">List</Label>
                 </div>
@@ -363,7 +367,7 @@ export function FormsExtraSection() {
         <CaseRow>
           <Case name="input-group-addon-border-b" width={320}>
             <InputGroup>
-              <InputGroupAddon align="block-start" className="border-b">
+              <InputGroupAddon align="block-start" sx={galleryStyles.case11} className="border-b">
                 <InputGroupText>Bordered addon</InputGroupText>
               </InputGroupAddon>
               <InputGroupTextarea defaultValue="Body" />
@@ -379,3 +383,40 @@ export function FormsExtraSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: {
+    fontSize: { default: '1.5rem', '@media (width >= 48rem)': '0.875rem' },
+    lineHeight: {
+      default: typography.xxlLineHeight,
+      '@media (width >= 48rem)': typography.smLineHeight,
+    },
+    fontWeight: 700,
+  },
+  case2: {
+    fontSize: { default: '0.875rem', '@media (width >= 48rem)': '0.875rem' },
+    lineHeight: {
+      default: typography.smLineHeight,
+      '@media (width >= 48rem)': typography.smLineHeight,
+    },
+  },
+  case3: { display: 'flex' },
+  case4: { flex: 1 },
+  case5: {
+    fontFamily: fonts.mono,
+    fontSize: { default: '0.75rem', '@media (width >= 48rem)': '0.875rem' },
+    lineHeight: {
+      default: typography.xsLineHeight,
+      '@media (width >= 48rem)': typography.smLineHeight,
+    },
+  },
+  case6: { fontSize: '1rem', lineHeight: 1.5, fontWeight: 600 },
+  case8: { flex: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' },
+  case9: { width: '1rem', height: '1rem' },
+  case10: { display: 'flex', alignItems: 'center', gap: '0.75rem' },
+  case11: { borderBottomWidth: '1px', borderBottomStyle: 'solid' },
+})

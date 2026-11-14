@@ -4,7 +4,6 @@ import { Separator as SeparatorPrimitive } from 'radix-ui'
 
 import { colors } from '@/styles/tokens.stylex'
 import type { Sx } from '@/lib/sx'
-import { cn } from '@/lib/utils'
 
 /**
  * `data-horizontal:` / `data-vertical:`, the `shadcn/tailwind.css` custom
@@ -52,7 +51,7 @@ function Separator({
       data-slot="separator"
       decorative={decorative}
       orientation={orientation}
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />

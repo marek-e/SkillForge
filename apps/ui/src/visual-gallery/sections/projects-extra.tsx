@@ -1,3 +1,4 @@
+import * as stylex from '@stylexjs/stylex'
 import { useState } from 'react'
 import type { Project, SkillItem } from '@skillforge/core'
 import type { SortingState } from '@tanstack/react-table'
@@ -183,7 +184,7 @@ export function ProjectsExtraSection() {
   }
 
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="projects table">
         <Case name="projectsx-table-sorted-name-desc" width={900}>
           <ProjectsTable
@@ -388,3 +389,10 @@ export function ProjectsExtraSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+})

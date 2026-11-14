@@ -32,6 +32,7 @@ const SECTIONS = [
   'menubar-nav-extra',
   'select-combobox-extra',
   'command-calendar-extra',
+  'sidebar-extra',
   'nav-bits-extra',
   'tools-filters-extra',
   'skills-extra',
@@ -1261,6 +1262,103 @@ test.describe('cartoast carousel', () => {
       await page.keyboard.press('ArrowRight')
       await settleCarousel(page, caseName)
       await expectCaseShot(page, caseName, `state-cartoast-carousel-arrow-right-${theme}.png`)
+    })
+  }
+})
+
+/**
+ * Sidebar shell and menu interactions (PR 17).
+ *
+ * Every shell case renders its mobile branch below 48rem — a `Sheet` that is
+ * closed until something opens it — so the shell interactions are desktop
+ * only; `overlays.spec.ts` opens the mobile one. The flow-positioned menu
+ * cases run in both viewports.
+ */
+test.describe('sidebar-extra interactions', () => {
+  for (const theme of THEMES) {
+    test(`sidebarx menu states ${theme}`, async ({ page }) => {
+      await gotoGallery(page, 'sidebar-extra', { theme })
+
+      const matrix = '[data-gallery-case="sidebarx-menu-matrix"]'
+      const first = page.locator(`${matrix} [data-slot="sidebar-menu-button"]`).first()
+      await first.hover()
+      await expectCaseShot(page, 'sidebarx-menu-matrix', `state-sidebarx-menu-hover-${theme}.png`)
+
+      await first.focus()
+      await expectCaseShot(page, 'sidebarx-menu-matrix', `state-sidebarx-menu-focus-${theme}.png`)
+
+      const outline = page.locator(`${matrix} [data-slot="sidebar-menu-button"]`).nth(3)
+      await outline.hover()
+      await expectCaseShot(
+        page,
+        'sidebarx-menu-matrix',
+        `state-sidebarx-menu-outline-hover-${theme}.png`
+      )
+
+      // `showOnHover` is `md:opacity-0` plus `group-hover/menu-item:opacity-100`,
+      // so the action only appears while the *item* is hovered; hovering the
+      // button also colours the action through `peer-hover/menu-button:`.
+      const hoverItem = page
+        .locator('[data-gallery-case="sidebarx-menu-actions"] [data-slot="sidebar-menu-item"]')
+        .nth(1)
+      await hoverItem.hover()
+      await expectCaseShot(
+        page,
+        'sidebarx-menu-actions',
+        `state-sidebarx-action-hover-${theme}.png`
+      )
+
+      const badgeButton = page
+        .locator('[data-gallery-case="sidebarx-menu-badges"] [data-slot="sidebar-menu-button"]')
+        .first()
+      await badgeButton.hover()
+      await expectCaseShot(
+        page,
+        'sidebarx-menu-badges',
+        `state-sidebarx-badge-peer-hover-${theme}.png`
+      )
+    })
+
+    test(`sidebarx rail hover ${theme}`, async ({ page }, testInfo) => {
+      test.skip(testInfo.project.name !== 'desktop', 'The shell renders its mobile sheet at 390.')
+      await gotoGallery(page, 'sidebar-extra', { theme })
+
+      await page.locator('[data-gallery-case="sidebarx-rail"] [data-slot="sidebar-rail"]').hover()
+      await expectCaseShot(page, 'sidebarx-rail', `state-sidebarx-rail-hover-${theme}.png`)
+
+      await page
+        .locator('[data-gallery-case="sidebarx-rail-offcanvas"] [data-slot="sidebar-rail"]')
+        .hover()
+      await expectCaseShot(
+        page,
+        'sidebarx-rail-offcanvas',
+        `state-sidebarx-rail-offcanvas-hover-${theme}.png`
+      )
+    })
+
+    test(`sidebarx toggle ${theme}`, async ({ page }, testInfo) => {
+      test.skip(testInfo.project.name !== 'desktop', 'The shell renders its mobile sheet at 390.')
+      await gotoGallery(page, 'sidebar-extra', { theme })
+
+      await page
+        .locator('[data-gallery-case="sidebarx-expanded-icon"] [data-slot="sidebar-trigger"]')
+        .click()
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'sidebarx-expanded-icon',
+        `state-sidebarx-trigger-collapsed-${theme}.png`
+      )
+
+      // The shortcut is a window listener, so it toggles every provider on the
+      // page, this case back to expanded among them.
+      await page.keyboard.press('ControlOrMeta+b')
+      await settle(page)
+      await expectCaseShot(
+        page,
+        'sidebarx-expanded-icon',
+        `state-sidebarx-shortcut-expanded-${theme}.png`
+      )
     })
   }
 })

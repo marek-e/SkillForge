@@ -1,3 +1,5 @@
+import { radius } from '@/styles/tokens.stylex'
+import * as stylex from '@stylexjs/stylex'
 import { CheckIcon, SlashIcon, UserIcon, UsersIcon } from 'lucide-react'
 import {
   Avatar,
@@ -41,7 +43,7 @@ const AVATAR_IMAGE =
 
 export function NavBitsExtraSection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="avatar images and sizes">
         <CaseRow>
           <Case name="navbits-avatar-image-lg">
@@ -65,7 +67,11 @@ export function NavBitsExtraSection() {
           <Case name="navbits-avatar-fallback-icon">
             <Avatar>
               <AvatarFallback>
-                <UserIcon className="size-4" />
+                <UserIcon
+                  className={[stylex.props(galleryStyles.case1).className, 'size-explicit'].join(
+                    ' '
+                  )}
+                />
               </AvatarFallback>
             </Avatar>
           </Case>
@@ -136,15 +142,15 @@ export function NavBitsExtraSection() {
           {/* The two shapes `project-avatar.tsx` passes: a caller utility that
               contests the component's own radius and `::after` border. */}
           <Case name="navbits-avatar-rounded-override">
-            <Avatar size="lg" className="rounded-lg after:rounded-lg">
-              <AvatarImage src={AVATAR_IMAGE} alt="Rounded" className="rounded-lg" />
-              <AvatarFallback className="rounded-lg">R</AvatarFallback>
+            <Avatar size="lg" sx={galleryStyles.case2}>
+              <AvatarImage src={AVATAR_IMAGE} alt="Rounded" sx={galleryStyles.case3} />
+              <AvatarFallback sx={galleryStyles.case4}>R</AvatarFallback>
             </Avatar>
           </Case>
           <Case name="navbits-avatar-squared-override">
-            <Avatar size="lg" className="rounded-none after:border-0 after:rounded-none">
-              <AvatarImage src={AVATAR_IMAGE} alt="Squared" className="rounded-none" />
-              <AvatarFallback className="rounded-none">Q</AvatarFallback>
+            <Avatar size="lg" sx={galleryStyles.case5}>
+              <AvatarImage src={AVATAR_IMAGE} alt="Squared" sx={galleryStyles.case6} />
+              <AvatarFallback sx={galleryStyles.case7}>Q</AvatarFallback>
             </Avatar>
           </Case>
         </CaseRow>
@@ -230,17 +236,28 @@ export function NavBitsExtraSection() {
         <Case name="navbits-breadcrumb-aschild" width={480}>
           <Breadcrumb>
             <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
+              <BreadcrumbItem sx={galleryStyles.case8}>
                 <BreadcrumbLink asChild>
-                  <a href="#" className="flex items-center gap-2">
-                    <UserIcon className="size-4" /> Home
+                  <a href="#" {...stylex.props(galleryStyles.case9)}>
+                    <UserIcon
+                      className={[
+                        stylex.props(galleryStyles.case10).className,
+                        'size-explicit',
+                      ].join(' ')}
+                    />{' '}
+                    Home
                   </a>
                 </BreadcrumbLink>
               </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbSeparator sx={galleryStyles.case11} />
               <BreadcrumbItem>
-                <BreadcrumbPage className="flex items-center gap-2">
-                  <UsersIcon className="size-4" /> Team
+                <BreadcrumbPage sx={galleryStyles.case12}>
+                  <UsersIcon
+                    className={[stylex.props(galleryStyles.case13).className, 'size-explicit'].join(
+                      ' '
+                    )}
+                  />{' '}
+                  Team
                 </BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
@@ -304,11 +321,7 @@ export function NavBitsExtraSection() {
           <Pagination>
             <PaginationContent>
               <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  aria-disabled="true"
-                  className="pointer-events-none opacity-50"
-                />
+                <PaginationPrevious href="#" aria-disabled="true" sx={galleryStyles.case14} />
               </PaginationItem>
               <PaginationItem>
                 <PaginationLink href="#" isActive>
@@ -369,3 +382,27 @@ export function NavBitsExtraSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: { width: '1rem', height: '1rem' },
+  case2: { borderRadius: radius.lg, '::after': { content: '""', borderRadius: radius.lg } },
+  case3: { borderRadius: radius.lg },
+  case4: { borderRadius: radius.lg },
+  case5: {
+    borderRadius: '0px',
+    '::after': { content: '""', borderWidth: '0px', borderStyle: 'solid', borderRadius: '0px' },
+  },
+  case6: { borderRadius: '0px' },
+  case7: { borderRadius: '0px' },
+  case8: { display: { default: 'none', '@media (width >= 48rem)': 'block' } },
+  case9: { display: 'flex', alignItems: 'center', gap: '0.5rem' },
+  case10: { width: '1rem', height: '1rem' },
+  case11: { display: { default: 'none', '@media (width >= 48rem)': 'block' } },
+  case12: { display: 'flex', alignItems: 'center', gap: '0.5rem' },
+  case13: { width: '1rem', height: '1rem' },
+  case14: { pointerEvents: 'none', opacity: 0.5 },
+})

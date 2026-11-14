@@ -7,7 +7,6 @@ import { getToolConfig } from '@/lib/tool-config'
 import { ToolCard } from '../components/ToolCard'
 import { ErrorContainer } from '../components/ErrorContainer'
 import { Skeleton } from '../components/ui/skeleton'
-import { cn } from '@/lib/utils'
 import { radius } from '@/styles/tokens.stylex'
 import type { SkillItem } from '@skillforge/core'
 import { H1 } from '@/components/typography'
@@ -56,14 +55,6 @@ const styles = stylex.create({
   },
 })
 
-/**
- * The loading placeholders' classes stay Tailwind (removed in PR 32).
- *
- * `Skeleton` has no `sx` prop, so `className` is the only channel into it.
- */
-const TITLE_SKELETON_CLASSES = 'h-8 w-48'
-const BODY_SKELETON_CLASSES = 'h-64 w-full'
-
 const skillsQueryMap: Record<string, () => Promise<SkillItem[]>> = {
   'claude-code': api.tools.claudeCodeSkills,
   cursor: api.tools.cursorSkills,
@@ -101,8 +92,8 @@ function ToolDetailPage() {
   if (toolsLoading) {
     return (
       <div {...stylex.props(styles.page)}>
-        <Skeleton className={TITLE_SKELETON_CLASSES} />
-        <Skeleton className={BODY_SKELETON_CLASSES} />
+        <Skeleton sx={overrideStyles.TITLE_SKELETON_CLASSES} />
+        <Skeleton sx={overrideStyles.BODY_SKELETON_CLASSES} />
       </div>
     )
   }
@@ -121,12 +112,12 @@ function ToolDetailPage() {
   // `config.accent` (e.g. `bg-orange-500/15`) is a class name chosen in
   // `lib/tool-config.ts`, which this row does not touch, so it stays a utility
   // on the logo box alongside the StyleX class (as in `ToolCardCompact`).
-  const logoSx = stylex.props(styles.logo)
+  const logoSx = stylex.props(styles.logo, config.accent)
 
   return (
     <div {...stylex.props(styles.page)}>
       <div {...stylex.props(styles.header)}>
-        <div className={cn(logoSx.className, config.accent)}>
+        <div className={logoSx.className}>
           <img
             src={config.logo}
             alt={config.displayName}
@@ -151,4 +142,9 @@ export const toolDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/tools/$name',
   component: ToolDetailPage,
+})
+
+const overrideStyles = stylex.create({
+  TITLE_SKELETON_CLASSES: { height: '2rem', width: '12rem' },
+  BODY_SKELETON_CLASSES: { height: '16rem', width: '100%' },
 })

@@ -1,9 +1,9 @@
 import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
+import type { Sx } from '@/lib/sx'
 import { ContextMenu as ContextMenuPrimitive } from 'radix-ui'
 
 import { colors, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
 import { ChevronRightIcon, CheckIcon } from 'lucide-react'
 
 /** `data-open:` / `data-closed:` / `data-disabled:`, the `shadcn/tailwind.css` custom variants. */
@@ -75,15 +75,26 @@ const SHADOW_MD_RING =
 const SHADOW_LG =
   '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 #0000, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)'
 
-/**
- * Rules that style an element this file does not own stay Tailwind classes
- * until PR 32 (`conventions.md`, "A rule that styles a foreign element stays
- * Tailwind"), and `[&_svg:not([class*='size-'])]:size-4` also reads the literal
- * text of the child's `class` attribute, so it keeps sizing both a caller's
- * icon and the `CheckIcon` / `ChevronRightIcon` this file renders.
- */
-const ITEM_ICONS =
-  "[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0"
+const descendantStyles = stylex.create({
+  icons: {
+    width: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+    height: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+    pointerEvents: { default: null, ':is(*) svg': 'none' },
+    flexShrink: { default: null, ':is(*) svg': 0 },
+  },
+  focusDescendants: {
+    color: { default: null, ':is(*):focus *': colors.accentForeground },
+  },
+  rowDescendants: {
+    color: {
+      default: null,
+      ':is([data-variant="destructive"])>svg': colors.destructive,
+      ':is(*):not([data-variant="destructive"]):focus>svg': colors.accentForeground,
+    },
+  },
+})
+const ITEM_ICONS = stylex.props(descendantStyles.icons).className
+const ROW_DESCENDANTS = stylex.props(descendantStyles.rowDescendants).className
 
 const styles = stylex.create({
   // Shared by `ContextMenuContent` and `ContextMenuSubContent`:
@@ -292,14 +303,15 @@ function ContextMenu({ ...props }: React.ComponentProps<typeof ContextMenuPrimit
 function ContextMenuTrigger({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof ContextMenuPrimitive.Trigger>) {
-  const sx = stylex.props(styles.trigger)
+}: React.ComponentProps<typeof ContextMenuPrimitive.Trigger> & { sx?: Sx }) {
+  const sx = stylex.props(styles.trigger, sxProp)
 
   return (
     <ContextMenuPrimitive.Trigger
       data-slot="context-menu-trigger"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -327,17 +339,18 @@ function ContextMenuRadioGroup({
 function ContextMenuContent({
   className,
   style,
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.Content> & {
   side?: 'top' | 'right' | 'bottom' | 'left'
-}) {
-  const sx = stylex.props(styles.surface, styles.content)
+} & { sx?: Sx }) {
+  const sx = stylex.props(styles.surface, styles.content, sxProp)
 
   return (
     <ContextMenuPrimitive.Portal>
       <ContextMenuPrimitive.Content
         data-slot="context-menu-content"
-        className={cn(sx.className, className)}
+        className={[sx.className, className].filter(Boolean).join(' ')}
         style={sx.style || style ? { ...sx.style, ...style } : undefined}
         {...props}
       />
@@ -350,16 +363,18 @@ function ContextMenuItem({
   style,
   inset,
   variant = 'default',
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.Item> & {
   inset?: boolean
   variant?: 'default' | 'destructive'
-}) {
+} & { sx?: Sx }) {
   const sx = stylex.props(
     styles.row,
     styles.rowPadding,
     styles.rowDestructive,
-    styles.rowSelectable
+    styles.rowSelectable,
+    sxProp
   )
 
   return (
@@ -367,16 +382,19 @@ function ContextMenuItem({
       data-slot="context-menu-item"
       data-inset={inset}
       data-variant={variant}
-      className={cn(
+      className={[
         // `data-[variant=destructive]:*:[svg]:text-destructive` and
         // `focus:*:[svg]:text-accent-foreground` colour the caller's children;
         // `group/context-menu-item` is what `ContextMenuShortcut` selects
         // through. Removed in PR 32.
-        'data-[variant=destructive]:*:[svg]:text-destructive focus:*:[svg]:text-accent-foreground group/context-menu-item',
+        'group/context-menu-item',
+        ROW_DESCENDANTS,
         ITEM_ICONS,
         sx.className,
-        className
-      )}
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -388,18 +406,19 @@ function ContextMenuSubTrigger({
   style,
   inset,
   children,
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.SubTrigger> & {
   inset?: boolean
-}) {
-  const sx = stylex.props(styles.row, styles.rowPadding, styles.subTriggerOpen)
+} & { sx?: Sx }) {
+  const sx = stylex.props(styles.row, styles.rowPadding, styles.subTriggerOpen, sxProp)
   const icon = stylex.props(styles.subTriggerIcon)
 
   return (
     <ContextMenuPrimitive.SubTrigger
       data-slot="context-menu-sub-trigger"
       data-inset={inset}
-      className={cn(ITEM_ICONS, sx.className, className)}
+      className={[ITEM_ICONS, sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >
@@ -412,14 +431,15 @@ function ContextMenuSubTrigger({
 function ContextMenuSubContent({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof ContextMenuPrimitive.SubContent>) {
-  const sx = stylex.props(styles.surface, styles.subContent)
+}: React.ComponentProps<typeof ContextMenuPrimitive.SubContent> & { sx?: Sx }) {
+  const sx = stylex.props(styles.surface, styles.subContent, sxProp)
 
   return (
     <ContextMenuPrimitive.SubContent
       data-slot="context-menu-sub-content"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -432,15 +452,17 @@ function ContextMenuCheckboxItem({
   children,
   checked,
   inset,
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.CheckboxItem> & {
   inset?: boolean
-}) {
+} & { sx?: Sx }) {
   const sx = stylex.props(
     styles.row,
     styles.rowPaddingIndicator,
     styles.rowFocus,
-    styles.rowSelectable
+    styles.rowSelectable,
+    sxProp
   )
   const indicator = stylex.props(styles.indicator)
 
@@ -448,7 +470,7 @@ function ContextMenuCheckboxItem({
     <ContextMenuPrimitive.CheckboxItem
       data-slot="context-menu-checkbox-item"
       data-inset={inset}
-      className={cn(ITEM_ICONS, sx.className, className)}
+      className={[ITEM_ICONS, sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       checked={checked}
       {...props}
@@ -468,15 +490,17 @@ function ContextMenuRadioItem({
   style,
   children,
   inset,
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.RadioItem> & {
   inset?: boolean
-}) {
+} & { sx?: Sx }) {
   const sx = stylex.props(
     styles.row,
     styles.rowPaddingIndicator,
     styles.rowFocus,
-    styles.rowSelectable
+    styles.rowSelectable,
+    sxProp
   )
   const indicator = stylex.props(styles.indicator)
 
@@ -484,7 +508,7 @@ function ContextMenuRadioItem({
     <ContextMenuPrimitive.RadioItem
       data-slot="context-menu-radio-item"
       data-inset={inset}
-      className={cn(ITEM_ICONS, sx.className, className)}
+      className={[ITEM_ICONS, sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >
@@ -502,17 +526,18 @@ function ContextMenuLabel({
   className,
   style,
   inset,
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.Label> & {
   inset?: boolean
-}) {
-  const sx = stylex.props(styles.label)
+} & { sx?: Sx }) {
+  const sx = stylex.props(styles.label, sxProp)
 
   return (
     <ContextMenuPrimitive.Label
       data-slot="context-menu-label"
       data-inset={inset}
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -522,27 +547,33 @@ function ContextMenuLabel({
 function ContextMenuSeparator({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof ContextMenuPrimitive.Separator>) {
-  const sx = stylex.props(styles.separator)
+}: React.ComponentProps<typeof ContextMenuPrimitive.Separator> & { sx?: Sx }) {
+  const sx = stylex.props(styles.separator, sxProp)
 
   return (
     <ContextMenuPrimitive.Separator
       data-slot="context-menu-separator"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function ContextMenuShortcut({ className, style, ...props }: React.ComponentProps<'span'>) {
-  const sx = stylex.props(styles.shortcut)
+function ContextMenuShortcut({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'span'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.shortcut, sxProp)
 
   return (
     <span
       data-slot="context-menu-shortcut"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />

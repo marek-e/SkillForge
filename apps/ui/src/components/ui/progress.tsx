@@ -3,7 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import { Progress as ProgressPrimitive } from 'radix-ui'
 
 import { colors, motion } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import type { Sx } from '@/lib/sx'
 
 const styles = stylex.create({
   // `bg-muted h-1 rounded-full relative flex w-full items-center overflow-x-hidden`
@@ -36,16 +36,17 @@ const styles = stylex.create({
 function Progress({
   className,
   style,
+  sx: sxProp,
   value,
   ...props
-}: React.ComponentProps<typeof ProgressPrimitive.Root>) {
-  const sx = stylex.props(styles.root)
+}: React.ComponentProps<typeof ProgressPrimitive.Root> & { sx?: Sx }) {
+  const sx = stylex.props(styles.root, sxProp)
   const indicator = stylex.props(styles.indicator)
 
   return (
     <ProgressPrimitive.Root
       data-slot="progress"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >

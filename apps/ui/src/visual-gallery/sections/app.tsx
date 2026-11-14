@@ -1,3 +1,5 @@
+import { fonts, typography } from '@/styles/tokens.stylex'
+import * as stylex from '@stylexjs/stylex'
 import { useRef, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { EditorSelect } from '@/components/EditorSelect'
@@ -37,7 +39,7 @@ export function AppSection() {
   const loadedFileContentsRef = useRef<Record<string, string>>({})
 
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="tool cards">
         <CaseRow>
           <Case name="tool-card-compact-detected" width={320}>
@@ -91,10 +93,10 @@ export function AppSection() {
               description={LONG_TEXT}
               badges={
                 <>
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge variant="secondary" sx={galleryStyles.case1}>
                     imported
                   </Badge>
-                  <Badge variant="secondary" className="font-mono text-xs">
+                  <Badge variant="secondary" sx={galleryStyles.case2}>
                     #review
                   </Badge>
                 </>
@@ -111,7 +113,7 @@ export function AppSection() {
               name="summarize-pull-request"
               description={LONG_TEXT}
               badges={
-                <Badge variant="secondary" className="text-xs">
+                <Badge variant="secondary" sx={galleryStyles.case3}>
                   imported
                 </Badge>
               }
@@ -147,14 +149,19 @@ export function AppSection() {
       <CaseGroup title="editor select">
         <CaseRow>
           <Case name="editor-select-auto" width={280}>
-            <EditorSelect value="auto" customCmd="" onChange={noop} triggerClassName="w-[160px]" />
+            <EditorSelect
+              value="auto"
+              customCmd=""
+              onChange={noop}
+              triggerSx={galleryStyles.editorTrigger}
+            />
           </Case>
           <Case name="editor-select-cursor" width={280}>
             <EditorSelect
               value="cursor"
               customCmd=""
               onChange={noop}
-              triggerClassName="w-[160px]"
+              triggerSx={galleryStyles.editorTrigger}
             />
           </Case>
           <Case name="editor-select-custom" width={420}>
@@ -162,8 +169,8 @@ export function AppSection() {
               value="custom"
               customCmd="windsurf"
               onChange={noop}
-              triggerClassName="w-[160px]"
-              inputClassName="h-7 w-[140px]"
+              triggerSx={galleryStyles.editorTrigger}
+              inputSx={galleryStyles.editorInput}
             />
           </Case>
         </CaseRow>
@@ -327,3 +334,15 @@ export function AppSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  editorTrigger: { width: '160px' },
+  editorInput: { width: '140px', height: '1.75rem' },
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: { fontSize: '0.75rem', lineHeight: typography.xsLineHeight },
+  case2: { fontFamily: fonts.mono, fontSize: '0.75rem', lineHeight: typography.xsLineHeight },
+  case3: { fontSize: '0.75rem', lineHeight: typography.xsLineHeight },
+})

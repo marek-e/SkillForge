@@ -9,7 +9,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu'
-import { cn } from '@/lib/utils'
 import { colors, motion, radius } from '@/styles/tokens.stylex'
 import { getToolConfig } from '@/lib/tool-config'
 
@@ -154,22 +153,6 @@ const styles = stylex.create({
   },
 })
 
-/**
- * The `Card` classes that stay Tailwind (removed in PR 32).
- *
- * `Card` has no `sx` prop, so `className` is the only channel into it — and two
- * of these could not move even if it had one: `Card` keeps
- * `ring-1 ring-foreground/10` as a utility precisely because
- * `hover:ring-foreground/20` and `hover:shadow-md` write `--tw-ring-color` and
- * `--tw-shadow`, which that utility's composed `box-shadow` reads. A StyleX
- * declaration writes the property, never the variable, so the card would stop
- * changing on hover (`card.tsx`, PR 07, names this file).
- */
-const CARD_CLASSES = 'relative w-full select-none transition-all duration-200'
-const CARD_DETECTED_CLASSES =
-  'cursor-pointer hover:-translate-y-0.5 hover:ring-foreground/20 hover:shadow-md'
-const CARD_UNDETECTED_CLASSES = 'opacity-60'
-
 interface ToolCardCompactProps {
   tool: ToolStatus
 }
@@ -188,7 +171,7 @@ export function ToolCardCompact({ tool }: ToolCardCompactProps) {
   // `config.accent` (e.g. `bg-orange-500/15`) is a class name chosen in
   // `lib/tool-config.ts`, which this row does not touch, so it stays a utility
   // on the logo box alongside the StyleX class.
-  const logoSx = stylex.props(styles.logo)
+  const logoSx = stylex.props(styles.logo, config.accent)
 
   return (
     <Card
@@ -204,10 +187,13 @@ export function ToolCardCompact({ tool }: ToolCardCompactProps) {
           }
         },
       })}
-      className={cn(CARD_CLASSES, detected ? CARD_DETECTED_CLASSES : CARD_UNDETECTED_CLASSES)}
+      sx={[
+        overrideStyles.CARD_CLASSES,
+        detected ? overrideStyles.CARD_DETECTED_CLASSES : overrideStyles.CARD_UNDETECTED_CLASSES,
+      ]}
     >
       <div {...stylex.props(styles.head)}>
-        <div className={cn(logoSx.className, config.accent)}>
+        <div className={logoSx.className}>
           <img
             src={config.logo}
             alt={config.displayName}
@@ -259,3 +245,34 @@ export function ToolCardCompact({ tool }: ToolCardCompactProps) {
     </Card>
   )
 }
+
+const overrideStyles = stylex.create({
+  CARD_CLASSES: {
+    position: 'relative',
+    width: '100%',
+    userSelect: 'none',
+    transitionProperty: 'all',
+    transitionDuration: '200ms',
+    transitionTimingFunction: motion.ease,
+  },
+  CARD_DETECTED_CLASSES: {
+    cursor: 'pointer',
+    translate: {
+      default: null,
+      '@media (hover: hover)': {
+        default: null,
+        ':hover': 'var(--card-zero-translation, 0px) -0.125rem',
+      },
+    },
+    boxShadow: {
+      default:
+        '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent), 0 0 #0000',
+      '@media (hover: hover)': {
+        default: null,
+        ':hover':
+          '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 1px color-mix(in oklab, var(--foreground) 20%, transparent), 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+      },
+    },
+  },
+  CARD_UNDETECTED_CLASSES: { opacity: '60%' },
+})

@@ -1,12 +1,9 @@
 import { useMemo } from 'react'
 import * as stylex from '@stylexjs/stylex'
-import { cva, type VariantProps } from 'class-variance-authority'
-
 import { colors, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import type { Sx } from '@/lib/sx'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-
 /**
  * `has-data-checked:`, spelled out.
  *
@@ -17,17 +14,14 @@ import { Separator } from '@/components/ui/separator'
  */
 const HAS_CHECKED =
   ':has(:where([data-state="checked"]), :where([data-checked]:not([data-checked="false"])))'
-
 /** `group-data-[disabled=true]/field:` — an ancestor `Field` marked disabled. */
 const IN_DISABLED_FIELD = ':is(.group\\/field[data-disabled="true"] *)'
-
 /**
  * `@md/field-group:` — the `28rem` container query of the `FieldGroup` this
  * field sits in. The container is named by `containerName` on `FieldGroup`
  * below, so the query is on the container, not on the viewport.
  */
 const AT_MD_FIELD_GROUP = '@container field-group (min-width: 28rem)'
-
 const styles = stylex.create({
   // `gap-4 has-[>[data-slot=checkbox-group]]:gap-3
   //  has-[>[data-slot=radio-group]]:gap-3 flex flex-col`
@@ -40,7 +34,6 @@ const styles = stylex.create({
       ':has(>[data-slot="radio-group"])': '0.75rem',
     },
   },
-
   // `mb-1.5 font-medium`
   fieldLegend: {
     marginBottom: '0.375rem',
@@ -56,7 +49,6 @@ const styles = stylex.create({
     fontSize: '0.875rem',
     lineHeight: '1.25rem',
   },
-
   // `gap-5 data-[slot=checkbox-group]:gap-3 *:data-[slot=field-group]:gap-4
   //  @container/field-group flex w-full flex-col`
   fieldGroup: {
@@ -72,6 +64,11 @@ const styles = stylex.create({
       // always `field-group`, so the rule can never match. Kept because the
       // migration copies the cascade, dead rules included.
       '[data-slot="checkbox-group"]': '0.75rem',
+    },
+  },
+  fieldGroupChildren: {
+    gap: {
+      default: null,
       // `*:data-[slot=field-group]:gap-4` — a nested `FieldGroup`, which this
       // file owns, so the rule can be a StyleX descendant selector. It keeps
       // its advantage over the child's own gap because a conditional StyleX
@@ -79,7 +76,6 @@ const styles = stylex.create({
       ':is(*)>[data-slot="field-group"]': '1rem',
     },
   },
-
   // `data-[invalid=true]:text-destructive gap-2 flex w-full`
   field: {
     display: 'flex',
@@ -90,9 +86,18 @@ const styles = stylex.create({
       '[data-invalid="true"]': colors.destructive,
     },
   },
-  // `flex-col` (the two child rules of this variant stay Tailwind)
   fieldVertical: {
     flexDirection: 'column',
+    width: {
+      default: '100%',
+    },
+  },
+  fieldVerticalChildren: {
+    width: {
+      default: null,
+      ':is(*)>*': '100%',
+      ':is(*)>.sr-only': 'auto',
+    },
   },
   // `flex-row items-center has-[>[data-slot=field-content]]:items-start
   //  *:data-[slot=field-label]:flex-auto`
@@ -102,6 +107,13 @@ const styles = stylex.create({
       default: 'center',
       ':has(>[data-slot="field-content"])': 'flex-start',
     },
+  },
+  fieldHorizontalChildren: {
+    marginTop: {
+      default: null,
+      ':has(>[data-slot="field-content"])>[role="checkbox"]': '1px',
+      ':has(>[data-slot="field-content"]) [role="radio"]': '1px',
+    },
     // Targets `FieldLabel`/`FieldTitle`, which this file owns.
     flex: {
       default: null,
@@ -110,6 +122,9 @@ const styles = stylex.create({
   },
   // `flex-col` plus the `@md/field-group:` half of the responsive variant
   fieldResponsive: {
+    width: {
+      default: '100%',
+    },
     flexDirection: {
       default: 'column',
       [AT_MD_FIELD_GROUP]: 'row',
@@ -121,6 +136,25 @@ const styles = stylex.create({
         ':has(>[data-slot="field-content"])': 'flex-start',
       },
     },
+  },
+  fieldResponsiveChildren: {
+    width: {
+      default: null,
+      ':is(*)>*': '100%',
+      ':is(*)>.sr-only': 'auto',
+      [AT_MD_FIELD_GROUP]: {
+        default: null,
+        ':is(*)>*': 'auto',
+      },
+    },
+    marginTop: {
+      default: null,
+      [AT_MD_FIELD_GROUP]: {
+        default: null,
+        ':has(>[data-slot="field-content"])>[role="checkbox"]': '1px',
+        ':has(>[data-slot="field-content"]) [role="radio"]': '1px',
+      },
+    },
     flex: {
       default: null,
       [AT_MD_FIELD_GROUP]: {
@@ -129,7 +163,6 @@ const styles = stylex.create({
       },
     },
   },
-
   // `gap-0.5 flex flex-1 flex-col leading-snug`
   fieldContent: {
     display: 'flex',
@@ -138,7 +171,6 @@ const styles = stylex.create({
     gap: '0.125rem',
     lineHeight: 1.375,
   },
-
   // `has-data-checked:bg-primary/5 has-data-checked:border-primary/30
   //  dark:has-data-checked:border-primary/20 dark:has-data-checked:bg-primary/10
   //  gap-2 group-data-[disabled=true]/field:opacity-50
@@ -146,6 +178,7 @@ const styles = stylex.create({
   //  *:data-[slot=field]:p-2.5 flex w-fit
   //  has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col`
   fieldLabel: {
+    lineHeight: 1.375,
     display: 'flex',
     gap: '0.5rem',
     width: {
@@ -196,13 +229,14 @@ const styles = stylex.create({
       ':is(.group[data-disabled="true"] *)': '50%',
       ':is(.peer:disabled ~ *)': '50%',
     },
+  },
+  fieldLabelChildren: {
     // `*:data-[slot=field]:p-2.5` — the wrapped `Field`, which this file owns.
     paddingTop: { default: null, ':is(*)>[data-slot="field"]': '0.625rem' },
     paddingRight: { default: null, ':is(*)>[data-slot="field"]': '0.625rem' },
     paddingBottom: { default: null, ':is(*)>[data-slot="field"]': '0.625rem' },
     paddingLeft: { default: null, ':is(*)>[data-slot="field"]': '0.625rem' },
   },
-
   // `gap-2 text-sm font-medium group-data-[disabled=true]/field:opacity-50
   //  flex w-fit items-center leading-snug`
   fieldTitle: {
@@ -219,12 +253,13 @@ const styles = stylex.create({
       [IN_DISABLED_FIELD]: '50%',
     },
   },
-
   // `text-muted-foreground text-left text-sm [[data-variant=legend]+&]:-mt-1.5
   //  leading-normal font-normal group-has-data-horizontal/field:text-balance
   //  last:mt-0 nth-last-2:-mt-1`
   fieldDescription: {
-    color: colors.mutedForeground,
+    color: {
+      default: colors.mutedForeground,
+    },
     textAlign: 'left',
     fontSize: '0.875rem',
     // `leading-normal`
@@ -256,7 +291,14 @@ const styles = stylex.create({
       ':is(.group\\/field:has([data-orientation="horizontal"]) *)': 'balance',
     },
   },
-
+  fieldDescriptionChildren: {
+    textDecorationLine: { default: null, ':is(*)>a': 'underline' },
+    textUnderlineOffset: { default: null, ':is(*)>a': '4px' },
+    color: {
+      default: null,
+      ':is(*)>a:hover': colors.primary,
+    },
+  },
   // `-my-2 h-5 text-sm group-data-[variant=outline]/field-group:-mb-2 relative`
   fieldSeparator: {
     position: 'relative',
@@ -294,7 +336,6 @@ const styles = stylex.create({
     backgroundColor: colors.background,
     color: colors.mutedForeground,
   },
-
   // `text-destructive text-sm font-normal`
   fieldError: {
     color: colors.destructive,
@@ -311,128 +352,93 @@ const styles = stylex.create({
     listStyleType: 'disc',
   },
 })
-
-/**
- * Rules that reach an element this file does not own, kept as Tailwind classes.
- *
- * A StyleX rule sits in a `priorityN` layer, below `utilities`, and layer order
- * beats specificity — so a rule that styles a foreign child would lose to any
- * utility on that child, where today it wins on specificity. Each entry names
- * the PR that removes it.
- */
-const CHILD_CLASSES = {
-  /** `*:w-full [&>.sr-only]:w-auto` — every direct child, whatever it is. */
-  vertical: '*:w-full [&>.sr-only]:w-auto',
-  /**
-   * `has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px`
-   * — whatever control the caller put inside the field, which is why it stays
-   * a class even though `Checkbox` and `RadioGroupItem` are themselves StyleX
-   * now: the rule has to keep beating a utility on that child. It goes when
-   * the utility layer does (PR 32). (The compiled selector matches
-   * `>[role=checkbox]` but any descendant `[role=radio]`; that asymmetry is
-   * Tailwind's and is kept.)
-   */
-  horizontalChildren: 'has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px',
-  /**
-   * The same two rules inside the container query, plus the one that widens
-   * every direct child there.
-   */
-  responsiveChildren:
-    '@md/field-group:*:w-auto @md/field-group:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px',
-} as const
-
-function FieldSet({ className, style, ...props }: React.ComponentProps<'fieldset'>) {
-  const sx = stylex.props(styles.fieldSet)
-
+function FieldSet({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'fieldset'> & {
+  sx?: Sx
+}) {
+  const sx = stylex.props(styles.fieldSet, sxProp)
   return (
     <fieldset
       data-slot="field-set"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
-
 function FieldLegend({
   className,
   style,
+  sx: sxProp,
   variant = 'legend',
   ...props
-}: React.ComponentProps<'legend'> & { variant?: 'legend' | 'label' }) {
+}: React.ComponentProps<'legend'> & {
+  variant?: 'legend' | 'label'
+  sx?: Sx
+}) {
   const sx = stylex.props(
     styles.fieldLegend,
-    variant === 'label' ? styles.fieldLegendLabel : styles.fieldLegendLegend
+    variant === 'label' ? styles.fieldLegendLabel : styles.fieldLegendLegend,
+    sxProp
   )
-
   return (
     <legend
       data-slot="field-legend"
       data-variant={variant}
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
-
-function FieldGroup({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.fieldGroup)
-
+function FieldGroup({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & {
+  sx?: Sx
+}) {
+  const sx = stylex.props(styles.fieldGroup, sxProp)
   return (
     <div
       data-slot="field-group"
       // `group/field-group` carries no styling of its own, but `FieldSeparator`
       // and the responsive `Field` still select through it.
-      className={cn('group/field-group', sx.className, className)}
+      className={[
+        'group/field-group',
+        sx.className,
+        stylex.props(styles.fieldGroupChildren).className,
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
-
-/**
- * Kept **unchanged** so Tailwind keeps emitting every class it names and so the
- * `orientation` prop keeps its type. `Field` itself no longer calls it; the
- * equivalent StyleX styles are above and every class has a comment there.
- * Removed with `cva` in PR 32.
- */
-const fieldVariants = cva('data-[invalid=true]:text-destructive gap-2 group/field flex w-full', {
-  variants: {
-    orientation: {
-      vertical: 'flex-col *:w-full [&>.sr-only]:w-auto',
-      horizontal:
-        'flex-row items-center *:data-[slot=field-label]:flex-auto has-[>[data-slot=field-content]]:items-start has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px',
-      responsive:
-        'flex-col *:w-full [&>.sr-only]:w-auto @md/field-group:flex-row @md/field-group:items-center @md/field-group:*:w-auto @md/field-group:*:data-[slot=field-label]:flex-auto @md/field-group:has-[>[data-slot=field-content]]:items-start @md/field-group:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px',
-    },
-  },
-  defaultVariants: {
-    orientation: 'vertical',
-  },
-})
-
 const ORIENTATION_STYLES = {
   vertical: styles.fieldVertical,
   horizontal: styles.fieldHorizontal,
   responsive: styles.fieldResponsive,
 } as const
-
-const ORIENTATION_CLASSES = {
-  vertical: CHILD_CLASSES.vertical,
-  horizontal: CHILD_CLASSES.horizontalChildren,
-  responsive: `${CHILD_CLASSES.vertical} ${CHILD_CLASSES.responsiveChildren}`,
-} as const
-
 function Field({
   className,
   style,
+  sx: sxProp,
   orientation = 'vertical',
   ...props
-}: React.ComponentProps<'div'> & VariantProps<typeof fieldVariants>) {
-  const resolved = orientation ?? 'vertical'
-  const sx = stylex.props(styles.field, ORIENTATION_STYLES[resolved])
-
+}: React.ComponentProps<'div'> & {
+  orientation?: 'vertical' | 'horizontal' | 'responsive' | null
+  sx?: Sx
+}) {
+  const resolved = orientation
+  const sx = stylex.props(styles.field, resolved && ORIENTATION_STYLES[resolved], sxProp)
   return (
     <div
       role="group"
@@ -440,91 +446,118 @@ function Field({
       data-orientation={resolved}
       // `group/field` is selected through by `FieldLabel`, `FieldTitle` and
       // `FieldDescription`.
-      className={cn('group/field', ORIENTATION_CLASSES[resolved], sx.className, className)}
+      className={[
+        'group/field',
+        sx.className,
+        stylex.props(
+          resolved === 'vertical'
+            ? styles.fieldVerticalChildren
+            : resolved === 'horizontal'
+              ? styles.fieldHorizontalChildren
+              : resolved === 'responsive'
+                ? styles.fieldResponsiveChildren
+                : null
+        ).className,
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
-
-function FieldContent({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.fieldContent)
-
+function FieldContent({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & {
+  sx?: Sx
+}) {
+  const sx = stylex.props(styles.fieldContent, sxProp)
   return (
     <div
       data-slot="field-content"
-      className={cn('group/field-content', sx.className, className)}
+      className={['group/field-content', sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
-
-function FieldLabel({ className, ...props }: React.ComponentProps<typeof Label>) {
+function FieldLabel({ className, sx: sxProp, ...props }: React.ComponentProps<typeof Label>) {
   return (
     <Label
       data-slot="field-label"
-      sx={styles.fieldLabel}
-      // `leading-snug` has to stay a class: it is what `twMerge` removes
-      // `Label`'s own `leading-none` with, and it also writes `--tw-leading`
-      // for any `text-*` a caller adds. `group/field-label` and
-      // `peer/field-label` carry no styling of their own.
-      className={cn('group/field-label peer/field-label leading-snug', className)}
+      sx={[styles.fieldLabel, sxProp]}
+      className={[
+        'group/field-label peer/field-label',
+        stylex.props(styles.fieldLabelChildren).className,
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
       {...props}
     />
   )
 }
-
-function FieldTitle({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.fieldTitle)
-
+function FieldTitle({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & {
+  sx?: Sx
+}) {
+  const sx = stylex.props(styles.fieldTitle, sxProp)
   return (
     <div
       // `data-slot="field-label"`, not `field-title`: the horizontal `Field`
       // and the `FieldLabel` box both select on it. Left as it is.
       data-slot="field-label"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
-
-function FieldDescription({ className, style, ...props }: React.ComponentProps<'p'>) {
-  const sx = stylex.props(styles.fieldDescription)
-
+function FieldDescription({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'p'> & {
+  sx?: Sx
+}) {
+  const sx = stylex.props(styles.fieldDescription, sxProp)
   return (
     <p
       data-slot="field-description"
-      // The three anchor rules style a link the caller wrote, so they stay
-      // Tailwind until every caller of `FieldDescription` is StyleX (PR 32).
-      className={cn(
-        '[&>a:hover]:text-primary [&>a]:underline [&>a]:underline-offset-4',
-        sx.className,
-        className
-      )}
+      className={[sx.className, stylex.props(styles.fieldDescriptionChildren).className, className]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
-
 function FieldSeparator({
   children,
   className,
   style,
+  sx: sxProp,
   ...props
 }: React.ComponentProps<'div'> & {
+  sx?: Sx
   children?: React.ReactNode
 }) {
-  const sx = stylex.props(styles.fieldSeparator)
+  const sx = stylex.props(styles.fieldSeparator, sxProp)
   const content = stylex.props(styles.fieldSeparatorContent)
-
   return (
     <div
       data-slot="field-separator"
       data-content={!!children}
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >
@@ -541,50 +574,49 @@ function FieldSeparator({
     </div>
   )
 }
-
 function FieldError({
   className,
   style,
+  sx: sxProp,
   children,
   errors,
   ...props
 }: React.ComponentProps<'div'> & {
-  errors?: Array<{ message?: string } | undefined>
+  sx?: Sx
+  errors?: Array<
+    | {
+        message?: string
+      }
+    | undefined
+  >
 }) {
   const list = stylex.props(styles.fieldErrorList)
   const content = useMemo(() => {
     if (children) {
       return children
     }
-
     if (!errors?.length) {
       return null
     }
-
     const uniqueErrors = [...new Map(errors.map((error) => [error?.message, error])).values()]
-
     if (uniqueErrors?.length == 1) {
       return uniqueErrors[0]?.message
     }
-
     return (
       <ul className={list.className} style={list.style}>
         {uniqueErrors.map((error, index) => error?.message && <li key={index}>{error.message}</li>)}
       </ul>
     )
   }, [children, errors, list.className, list.style])
-
   if (!content) {
     return null
   }
-
-  const sx = stylex.props(styles.fieldError)
-
+  const sx = stylex.props(styles.fieldError, sxProp)
   return (
     <div
       role="alert"
       data-slot="field-error"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >
@@ -592,7 +624,6 @@ function FieldError({
     </div>
   )
 }
-
 export {
   Field,
   FieldLabel,

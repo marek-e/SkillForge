@@ -23,10 +23,13 @@ const problems = []
 
 function walk(dir) {
   if (!fs.existsSync(dir)) return []
-  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    const full = path.join(dir, entry.name)
-    return entry.isDirectory() ? walk(full) : [full]
-  })
+  return fs
+    .readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => entry.name !== '.DS_Store')
+    .flatMap((entry) => {
+      const full = path.join(dir, entry.name)
+      return entry.isDirectory() ? walk(full) : [full]
+    })
 }
 
 const artifacts = walk(resultsDir).filter((file) =>

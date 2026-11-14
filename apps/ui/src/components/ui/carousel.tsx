@@ -1,8 +1,8 @@
 import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
+import type { Sx } from '@/lib/sx'
 import useEmblaCarousel, { type UseEmblaCarouselType } from 'embla-carousel-react'
 
-import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 
@@ -158,8 +158,9 @@ function Carousel({
   className,
   style,
   children,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<'div'> & CarouselProps) {
+}: React.ComponentProps<'div'> & CarouselProps & { sx?: Sx }) {
   const [carouselRef, api] = useEmblaCarousel(
     {
       ...opts,
@@ -213,7 +214,7 @@ function Carousel({
     }
   }, [api, onSelect])
 
-  const sx = stylex.props(styles.root)
+  const sx = stylex.props(styles.root, sxProp)
 
   return (
     <CarouselContext.Provider
@@ -230,7 +231,7 @@ function Carousel({
     >
       <div
         onKeyDownCapture={handleKeyDown}
-        className={cn(sx.className, className)}
+        className={[sx.className, className].filter(Boolean).join(' ')}
         style={sx.style || style ? { ...sx.style, ...style } : undefined}
         role="region"
         aria-roledescription="carousel"
@@ -243,17 +244,23 @@ function Carousel({
   )
 }
 
-function CarouselContent({ className, style, ...props }: React.ComponentProps<'div'>) {
+function CarouselContent({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & { sx?: Sx }) {
   const { carouselRef, orientation } = useCarousel()
   const sx = stylex.props(
     styles.content,
-    orientation === 'horizontal' ? styles.contentHorizontal : styles.contentVertical
+    orientation === 'horizontal' ? styles.contentHorizontal : styles.contentVertical,
+    sxProp
   )
 
   return (
     <div ref={carouselRef} {...stylex.props(styles.viewport)} data-slot="carousel-content">
       <div
-        className={cn(sx.className, className)}
+        className={[sx.className, className].filter(Boolean).join(' ')}
         style={sx.style || style ? { ...sx.style, ...style } : undefined}
         {...props}
       />
@@ -261,11 +268,17 @@ function CarouselContent({ className, style, ...props }: React.ComponentProps<'d
   )
 }
 
-function CarouselItem({ className, style, ...props }: React.ComponentProps<'div'>) {
+function CarouselItem({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & { sx?: Sx }) {
   const { orientation } = useCarousel()
   const sx = stylex.props(
     styles.item,
-    orientation === 'horizontal' ? styles.itemHorizontal : styles.itemVertical
+    orientation === 'horizontal' ? styles.itemHorizontal : styles.itemVertical,
+    sxProp
   )
 
   return (
@@ -273,7 +286,7 @@ function CarouselItem({ className, style, ...props }: React.ComponentProps<'div'
       role="group"
       aria-roledescription="slide"
       data-slot="carousel-item"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />

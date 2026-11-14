@@ -1,14 +1,13 @@
+import { colors } from '@/styles/tokens.stylex'
 import type { HTMLAttributes, ReactNode } from 'react'
 import * as stylex from '@stylexjs/stylex'
 import { ZapIcon } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { Case, CaseGroup, CaseRow } from '../Case'
 
 /**
  * StyleX canary (PR 01).
  *
- * The only StyleX-styled code in the tree. It exists to prove, in the visual
- * suite and by hand in dev and production, that:
+ * The original integration probe remains in the visual suite to verify that:
  *
  * - the unplugin compiles `stylex.create` ahead of the React plugin,
  * - the emitted `@layer priorityN` blocks land between Tailwind's `base` and
@@ -112,9 +111,7 @@ interface CanaryBoxProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 /**
- * Mirrors the coexistence pattern from `docs/stylex-migration/conventions.md`:
- * StyleX classes first, the caller's `className` last through `cn`, so a
- * Tailwind utility the caller passes still overrides.
+ * Caller styles compose after the base declarations through the standard sx prop.
  */
 function CanaryBox({ sx, className, style, children, ...props }: CanaryBoxProps) {
   const styleProps = stylex.props(styles.base, sx)
@@ -122,7 +119,7 @@ function CanaryBox({ sx, className, style, children, ...props }: CanaryBoxProps)
     <div
       data-slot="canary"
       {...props}
-      className={cn(styleProps.className, className)}
+      className={[styleProps.className, className].filter(Boolean).join(' ')}
       style={styleProps.style || style ? { ...styleProps.style, ...style } : undefined}
     >
       {children}
@@ -132,7 +129,7 @@ function CanaryBox({ sx, className, style, children, ...props }: CanaryBoxProps)
 
 export function CanarySection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="stylex canary">
         <CaseRow>
           <Case name="canary-base">
@@ -156,7 +153,7 @@ export function CanarySection() {
             </CanaryBox>
           </Case>
           <Case name="canary-override">
-            <CanaryBox className="p-8 bg-destructive">override</CanaryBox>
+            <CanaryBox sx={galleryStyles.case1}>override</CanaryBox>
           </Case>
           <Case name="canary-dynamic">
             <CanaryBox sx={dynamicStyles.width('220px')}>dynamic</CanaryBox>
@@ -166,3 +163,17 @@ export function CanarySection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: {
+    paddingTop: '2rem',
+    paddingRight: '2rem',
+    paddingBottom: '2rem',
+    paddingLeft: '2rem',
+    backgroundColor: colors.destructive,
+  },
+})

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import * as stylex from '@stylexjs/stylex'
 import { FileIcon, FileTextIcon } from 'lucide-react'
 import { colors, fonts, motion, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useSkillFile } from '@/hooks/use-skill-detail'
@@ -13,21 +12,6 @@ const TRANSITION_COLORS =
 
 /** `bg-muted/50`, shared by the hover rule and the selected row. */
 const MUTED_50 = 'color-mix(in oklab, var(--muted) 50%, transparent)'
-
-/**
- * The three class lists that stay Tailwind (PR 32).
- *
- * `space-y-2` and `divide-y` are child rules — `:where(& > :not(:last-child))` —
- * over elements this component wraps rather than styles, so they keep the
- * specificity they have today. The `Textarea` list is a caller override on a
- * component that takes no `sx` prop, and `text-xs` is the live half of it:
- * `textarea.tsx` keeps its own `md:text-sm` as a utility precisely so this
- * class keeps losing to it above 48rem, which is why the editor renders at 14px
- * on desktop and 12px below (`textarea.tsx`, `CONTESTED_CLASSES`).
- */
-const SECTION_CLASSES = 'space-y-2'
-const LIST_CLASSES = 'divide-y'
-const TEXTAREA_CLASSES = 'font-mono text-xs min-h-48'
 
 const styles = stylex.create({
   // `border rounded-md`
@@ -117,7 +101,7 @@ export function SkillDetailResourceFiles({
   onFileDraftChange,
 }: SkillDetailResourceFilesProps) {
   const [selectedFile, setSelectedFile] = useState<string | null>(null)
-  const list = stylex.props(styles.list)
+  const list = stylex.props(styles.list, overrideStyles.LIST_CLASSES)
 
   const { data: selectedFileData } = useSkillFile(skillId, selectedFile)
 
@@ -131,9 +115,9 @@ export function SkillDetailResourceFiles({
   }
 
   return (
-    <div className={SECTION_CLASSES}>
+    <div {...stylex.props(overrideStyles.SECTION_CLASSES)}>
       <Label>Resource files</Label>
-      <div className={cn(LIST_CLASSES, list.className)} style={list.style}>
+      <div className={list.className} style={list.style}>
         {files.map((file) => {
           const Icon = getFileIcon(file)
           const isSelected = selectedFile === file
@@ -152,7 +136,7 @@ export function SkillDetailResourceFiles({
                   <Textarea
                     value={fileDrafts[file] ?? selectedFileData?.content ?? ''}
                     onChange={(e) => onFileDraftChange(file, e.target.value)}
-                    className={TEXTAREA_CLASSES}
+                    sx={overrideStyles.TEXTAREA_CLASSES}
                   />
                 </div>
               )}
@@ -163,3 +147,21 @@ export function SkillDetailResourceFiles({
     </div>
   )
 }
+
+const overrideStyles = stylex.create({
+  SECTION_CLASSES: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '0.5rem' },
+  },
+  LIST_CLASSES: {
+    borderTopWidth: { default: null, ':is(*)>:not(:last-child)': '0px' },
+    borderBottomWidth: { default: null, ':is(*)>:not(:last-child)': '1px' },
+    borderBottomStyle: { default: null, ':is(*)>:not(:last-child)': 'solid' },
+  },
+  TEXTAREA_CLASSES: {
+    fontFamily: fonts.mono,
+    fontSize: { default: '0.75rem', '@media (width >= 48rem)': '0.875rem' },
+    lineHeight: { default: '1rem', '@media (width >= 48rem)': '1.25rem' },
+    minHeight: '12rem',
+  },
+})

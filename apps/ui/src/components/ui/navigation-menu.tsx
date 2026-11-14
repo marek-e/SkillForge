@@ -1,10 +1,9 @@
 import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
-import { cva } from 'class-variance-authority'
+import type { Sx } from '@/lib/sx'
 import { NavigationMenu as NavigationMenuPrimitive } from 'radix-ui'
 
 import { colors, motion, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
 import { ChevronDownIcon } from 'lucide-react'
 
 /**
@@ -502,41 +501,36 @@ const styles = stylex.create({
   },
 })
 
-/**
- * Classes that stay Tailwind until **PR 32** removes Tailwind itself.
- *
- * Cascade layers outrank specificity, so a StyleX rule in a `priorityN` layer
- * loses to any utility class on the target. That is wrong for a rule that
- * reaches out to an element this component does not style directly:
- *
- * - `**:data-[slot=navigation-menu-link]:focus:ring-0` and its `outline-none`
- *   twin compile to `:is(.content *)[data-slot=navigation-menu-link]:focus`,
- *   `(0,3,0)`, and exist to beat `NavigationMenuLink`'s own focus ring. Kept as
- *   utilities, they still do, whichever layer the link's own rules sit in.
- * - `[&_svg:not([class*='size-'])]:size-4` matches on the *literal text* of the
- *   child's `class` attribute, so it is a naming contract, not a measurement.
- *
- * `origin-top-center` is in the list for a different reason: Tailwind's
- * transform-origin scale has no such step, so the class compiles to **no CSS
- * at all** and the viewport keeps the initial `50% 50%` origin.
- * Translating it would invent a transform origin the frozen UI does not have,
- * so it stays exactly as dead as it is today.
- */
-const CONTENT_LINK_RESET_CLASSES =
-  '**:data-[slot=navigation-menu-link]:focus:ring-0 **:data-[slot=navigation-menu-link]:focus:outline-none'
-const ICON_SIZE_CLASS = "[&_svg:not([class*='size-'])]:size-4"
-const VIEWPORT_ORIGIN_CLASS = 'origin-top-center'
+const descendantStyles = stylex.create({
+  icons: {
+    width: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+    height: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+    pointerEvents: { default: null, ':is(*) svg': 'none' },
+    flexShrink: { default: null, ':is(*) svg': 0 },
+  },
+  contentLinks: {
+    boxShadow: {
+      default: null,
+      ':is(*) [data-slot="navigation-menu-link"]:focus':
+        '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 0px currentColor, 0 0 #0000',
+    },
+    outlineStyle: { default: null, ':is(*) [data-slot="navigation-menu-link"]:focus': 'none' },
+  },
+})
+const CONTENT_LINK_RESET_CLASSES = stylex.props(descendantStyles.contentLinks).className
+const ICON_SIZE_CLASS = stylex.props(descendantStyles.icons).className
 
 function NavigationMenu({
   className,
   style,
   children,
   viewport = true,
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof NavigationMenuPrimitive.Root> & {
   viewport?: boolean
-}) {
-  const sx = stylex.props(styles.root)
+} & { sx?: Sx }) {
+  const sx = stylex.props(styles.root, sxProp)
 
   return (
     <NavigationMenuPrimitive.Root
@@ -544,7 +538,7 @@ function NavigationMenu({
       data-viewport={viewport}
       // `group/navigation-menu` carries no styling of its own, but
       // `NavigationMenuContent` still selects through it.
-      className={cn('group/navigation-menu', sx.className, className)}
+      className={['group/navigation-menu', sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >
@@ -557,14 +551,15 @@ function NavigationMenu({
 function NavigationMenuList({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof NavigationMenuPrimitive.List>) {
-  const sx = stylex.props(styles.list)
+}: React.ComponentProps<typeof NavigationMenuPrimitive.List> & { sx?: Sx }) {
+  const sx = stylex.props(styles.list, sxProp)
 
   return (
     <NavigationMenuPrimitive.List
       data-slot="navigation-menu-list"
-      className={cn('group', sx.className, className)}
+      className={['group', sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -574,39 +569,29 @@ function NavigationMenuList({
 function NavigationMenuItem({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof NavigationMenuPrimitive.Item>) {
-  const sx = stylex.props(styles.item)
+}: React.ComponentProps<typeof NavigationMenuPrimitive.Item> & { sx?: Sx }) {
+  const sx = stylex.props(styles.item, sxProp)
 
   return (
     <NavigationMenuPrimitive.Item
       data-slot="navigation-menu-item"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-/**
- * Kept **byte-identical** and still exported: an exported `cva` helper only
- * goes once every call site has moved, and removing it is PR 32's job together
- * with `cva`, `cn` and `tailwind-merge`. No file outside this one calls it
- * today (`grep -rn navigationMenuTriggerStyle apps/ui/src`), and
- * `NavigationMenuTrigger` no longer does either — every class in this string
- * has a comment against its StyleX equivalent in `styles.trigger` above.
- */
-const navigationMenuTriggerStyle = cva(
-  'bg-background hover:bg-muted focus:bg-muted data-open:hover:bg-muted data-open:focus:bg-muted data-open:bg-muted/50 focus-visible:ring-ring/50 data-popup-open:bg-muted/50 data-popup-open:hover:bg-muted rounded-lg px-2.5 py-1.5 text-sm font-medium transition-all focus-visible:ring-3 focus-visible:outline-1 disabled:opacity-50 group/navigation-menu-trigger inline-flex h-9 w-max items-center justify-center disabled:pointer-events-none outline-none'
-)
-
 function NavigationMenuTrigger({
   className,
   style,
   children,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof NavigationMenuPrimitive.Trigger>) {
-  const sx = stylex.props(styles.trigger)
+}: React.ComponentProps<typeof NavigationMenuPrimitive.Trigger> & { sx?: Sx }) {
+  const sx = stylex.props(styles.trigger, sxProp)
   const icon = stylex.props(styles.triggerIcon)
 
   return (
@@ -614,7 +599,9 @@ function NavigationMenuTrigger({
       data-slot="navigation-menu-trigger"
       // `group/navigation-menu-trigger` is what the chevron's rotation selects
       // through, and the bare `group` was already on the element.
-      className={cn('group/navigation-menu-trigger', 'group', sx.className, className)}
+      className={['group/navigation-menu-trigger', 'group', sx.className, className]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >
@@ -631,14 +618,15 @@ function NavigationMenuTrigger({
 function NavigationMenuContent({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof NavigationMenuPrimitive.Content>) {
-  const sx = stylex.props(styles.content)
+}: React.ComponentProps<typeof NavigationMenuPrimitive.Content> & { sx?: Sx }) {
+  const sx = stylex.props(styles.content, sxProp)
 
   return (
     <NavigationMenuPrimitive.Content
       data-slot="navigation-menu-content"
-      className={cn(CONTENT_LINK_RESET_CLASSES, sx.className, className)}
+      className={[CONTENT_LINK_RESET_CLASSES, sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -648,16 +636,17 @@ function NavigationMenuContent({
 function NavigationMenuViewport({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof NavigationMenuPrimitive.Viewport>) {
+}: React.ComponentProps<typeof NavigationMenuPrimitive.Viewport> & { sx?: Sx }) {
   const track = stylex.props(styles.viewportTrack)
-  const sx = stylex.props(styles.viewport)
+  const sx = stylex.props(styles.viewport, sxProp)
 
   return (
-    <div className={cn(track.className)} style={track.style || undefined}>
+    <div className={[track.className].filter(Boolean).join(' ')} style={track.style || undefined}>
       <NavigationMenuPrimitive.Viewport
         data-slot="navigation-menu-viewport"
-        className={cn(VIEWPORT_ORIGIN_CLASS, sx.className, className)}
+        className={[sx.className, className].filter(Boolean).join(' ')}
         style={sx.style || style ? { ...sx.style, ...style } : undefined}
         {...props}
       />
@@ -668,14 +657,15 @@ function NavigationMenuViewport({
 function NavigationMenuLink({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof NavigationMenuPrimitive.Link>) {
-  const sx = stylex.props(styles.link)
+}: React.ComponentProps<typeof NavigationMenuPrimitive.Link> & { sx?: Sx }) {
+  const sx = stylex.props(styles.link, sxProp)
 
   return (
     <NavigationMenuPrimitive.Link
       data-slot="navigation-menu-link"
-      className={cn(ICON_SIZE_CLASS, sx.className, className)}
+      className={[ICON_SIZE_CLASS, sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -685,19 +675,23 @@ function NavigationMenuLink({
 function NavigationMenuIndicator({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof NavigationMenuPrimitive.Indicator>) {
-  const sx = stylex.props(styles.indicator)
+}: React.ComponentProps<typeof NavigationMenuPrimitive.Indicator> & { sx?: Sx }) {
+  const sx = stylex.props(styles.indicator, sxProp)
   const arrow = stylex.props(styles.indicatorArrow)
 
   return (
     <NavigationMenuPrimitive.Indicator
       data-slot="navigation-menu-indicator"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >
-      <div className={cn(arrow.className)} style={arrow.style || undefined} />
+      <div
+        className={[arrow.className].filter(Boolean).join(' ')}
+        style={arrow.style || undefined}
+      />
     </NavigationMenuPrimitive.Indicator>
   )
 }
@@ -711,5 +705,4 @@ export {
   NavigationMenuLink,
   NavigationMenuIndicator,
   NavigationMenuViewport,
-  navigationMenuTriggerStyle,
 }

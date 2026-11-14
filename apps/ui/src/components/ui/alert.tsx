@@ -1,15 +1,16 @@
 import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
-import { cva, type VariantProps } from 'class-variance-authority'
 
-import { colors, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import { colors, radius, typography } from '@/styles/tokens.stylex'
+import type { Sx } from '@/lib/sx'
 
 const styles = stylex.create({
   // `grid w-full relative gap-0.5 rounded-lg border px-2.5 py-2 text-left
   //  has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18
   //  has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2`
   alert: {
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
     display: 'grid',
     // `relative` is unconditional here; `has-data-[slot=alert-action]:relative`
     // says the same thing a second time.
@@ -65,115 +66,117 @@ const styles = stylex.create({
   },
 })
 
-/**
- * The classes that stay Tailwind, and why.
- *
- * - **the four `*:[svg]:` rules** — they style the `<svg>` the *caller* puts
- *   inside the alert. A StyleX rule sits in a `priorityN` layer and would lose
- *   to any utility on that icon, where the component's selector wins today.
- *   (`*:[svg]:text-current` is written twice in the original, once in the base
- *   and once in `destructive`; both are kept.)
- * - **`*:data-[slot=alert-description]:text-destructive/90`** — it styles a
- *   child this file *does* own, but the condition it depends on lives on the
- *   parent as a **class**, not as an attribute: `Alert` has no `data-variant`,
- *   and adding one would be a DOM change. So the rule stays where it is.
- * - **`text-sm`** — a paired `text-*` on a container. `AlertTitle` has no font
- *   size of its own and an `AlertAction` holds a `Button`, whose `sm` size
- *   computes `line-height: inherit`; a StyleX `1.25rem` would pass 20px down
- *   instead of the ratio.
- * - **`group/alert`** — the title's `:has(>svg)` rule still selects through it.
- * - **the `[&_a]` rules** — a caller's link, same story as the svg.
- *
- * All of them go with the utility layer in PR 32.
- */
-const ALERT_CLASSES =
-  "group/alert text-sm *:[svg]:row-span-2 *:[svg]:translate-y-0.5 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-4"
-const ALERT_DESTRUCTIVE_CLASSES =
-  '*:data-[slot=alert-description]:text-destructive/90 *:[svg]:text-current'
-const LINK_CLASSES = '[&_a]:hover:text-foreground [&_a]:underline [&_a]:underline-offset-3'
-const DESCRIPTION_PARAGRAPH_CLASS = '[&_p:not(:last-child)]:mb-4'
-
-/**
- * Kept for the prop type only (PR 08), the way `buttonGroupVariants` is in
- * `button-group.tsx`: `VariantProps<typeof alertVariants>` is what types
- * `variant`, down to accepting `null`. PR 32 removes it.
- */
-const alertVariants = cva(
-  "grid gap-0.5 rounded-lg border px-2.5 py-2 text-left text-sm has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2 *:[svg]:row-span-2 *:[svg]:translate-y-0.5 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-4 w-full relative group/alert",
-  {
-    variants: {
-      variant: {
-        default: 'bg-card text-card-foreground',
-        destructive:
-          'text-destructive bg-card *:data-[slot=alert-description]:text-destructive/90 *:[svg]:text-current',
-      },
+const remainingStyles = stylex.create({
+  uncolored: { backgroundColor: 'transparent', color: 'inherit' },
+  root: {
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+    gridRow: { default: null, ':is(*)>svg': 'span 2 / span 2' },
+    translate: { default: null, ':is(*)>svg': 'var(--alert-zero-translation, 0px) 0.125rem' },
+    color: { default: null, ':is(*)>svg': 'currentColor' },
+    width: { default: null, ':is(*)>svg:not([class*="size-"])': '1rem' },
+    height: { default: null, ':is(*)>svg:not([class*="size-"])': '1rem' },
+  },
+  destructive: {
+    color: {
+      default: null,
+      ':is(*)>[data-slot="alert-description"]':
+        'color-mix(in oklab, var(--destructive) 90%, transparent)',
     },
-    defaultVariants: {
-      variant: 'default',
-    },
-  }
-)
+  },
+  links: {
+    textDecorationLine: { default: null, ':is(*) a': 'underline' },
+    textUnderlineOffset: { default: null, ':is(*) a': '3px' },
+    color: { default: null, ':is(*) a:hover': colors.foreground },
+  },
+  description: { marginBottom: { default: null, ':is(*) p:not(:last-child)': '1rem' } },
+})
 
 function Alert({
   className,
   style,
+  sx: sxProp,
   variant,
   ...props
-}: React.ComponentProps<'div'> & VariantProps<typeof alertVariants>) {
+}: React.ComponentProps<'div'> & { variant?: 'default' | 'destructive' | null; sx?: Sx }) {
   const sx = stylex.props(
     styles.alert,
-    variant === 'destructive' ? styles.alertDestructive : styles.alertDefault
+    variant === 'destructive' ? styles.alertDestructive : styles.alertDefault,
+    variant === null && remainingStyles.uncolored,
+    sxProp
   )
 
   return (
     <div
       data-slot="alert"
       role="alert"
-      className={cn(
-        ALERT_CLASSES,
-        variant === 'destructive' && ALERT_DESTRUCTIVE_CLASSES,
+      className={[
+        'group/alert',
+        stylex.props(remainingStyles.root).className,
+        variant === 'destructive' && stylex.props(remainingStyles.destructive).className,
         sx.className,
-        className
-      )}
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function AlertTitle({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.title)
+function AlertTitle({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.title, sxProp)
 
   return (
     <div
       data-slot="alert-title"
-      className={cn(LINK_CLASSES, sx.className, className)}
+      className={[stylex.props(remainingStyles.links).className, sx.className, className]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function AlertDescription({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.description)
+function AlertDescription({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.description, remainingStyles.description, sxProp)
 
   return (
     <div
       data-slot="alert-description"
-      className={cn(DESCRIPTION_PARAGRAPH_CLASS, LINK_CLASSES, sx.className, className)}
+      className={[stylex.props(remainingStyles.links).className, sx.className, className]
+        .filter(Boolean)
+        .join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function AlertAction({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.action)
+function AlertAction({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.action, sxProp)
 
   return (
     <div
       data-slot="alert-action"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />

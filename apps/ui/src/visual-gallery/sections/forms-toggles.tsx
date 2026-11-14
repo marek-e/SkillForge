@@ -1,3 +1,4 @@
+import * as stylex from '@stylexjs/stylex'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Field, FieldLabel, FieldTitle } from '@/components/ui/field'
 import { Label } from '@/components/ui/label'
@@ -21,7 +22,7 @@ import { Case, CaseGroup, CaseRow } from '../Case'
  */
 export function FormsTogglesSection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="checkbox states">
         <CaseRow>
           <Case name="checkbox-invalid-checked">
@@ -53,7 +54,7 @@ export function FormsTogglesSection() {
             </Field>
           </Case>
           <Case name="checkbox-with-disabled-peer" width={320}>
-            <div className="flex items-center gap-2">
+            <div {...stylex.props(galleryStyles.case1)}>
               <Checkbox id="ft-peer" disabled />
               <Label htmlFor="ft-peer">Label after a disabled peer</Label>
             </div>
@@ -73,7 +74,7 @@ export function FormsTogglesSection() {
         <CaseRow>
           <Case name="radio-group-focus-target" width={200}>
             <RadioGroup defaultValue="a">
-              <div className="flex items-center gap-3">
+              <div {...stylex.props(galleryStyles.case2)}>
                 <RadioGroupItem value="a" id="ft-radio-focus" />
                 <Label htmlFor="ft-radio-focus">Selected</Label>
               </div>
@@ -81,7 +82,7 @@ export function FormsTogglesSection() {
           </Case>
           <Case name="radio-group-hover-target" width={200}>
             <RadioGroup defaultValue="a">
-              <div className="flex items-center gap-3">
+              <div {...stylex.props(galleryStyles.case3)}>
                 <RadioGroupItem value="b" id="ft-radio-hover" />
                 <Label htmlFor="ft-radio-hover">Not selected</Label>
               </div>
@@ -91,7 +92,7 @@ export function FormsTogglesSection() {
         <CaseRow>
           <Case name="radio-group-invalid-checked" width={240}>
             <RadioGroup defaultValue="a">
-              <div className="flex items-center gap-3">
+              <div {...stylex.props(galleryStyles.case4)}>
                 <RadioGroupItem value="a" id="ft-radio-invalid" aria-invalid />
                 <Label htmlFor="ft-radio-invalid">Invalid and selected</Label>
               </div>
@@ -99,11 +100,11 @@ export function FormsTogglesSection() {
           </Case>
           <Case name="radio-group-disabled-item" width={240}>
             <RadioGroup defaultValue="a">
-              <div className="flex items-center gap-3">
+              <div {...stylex.props(galleryStyles.case5)}>
                 <RadioGroupItem value="a" id="ft-radio-disabled-on" disabled />
                 <Label htmlFor="ft-radio-disabled-on">One item disabled</Label>
               </div>
-              <div className="flex items-center gap-3">
+              <div {...stylex.props(galleryStyles.case6)}>
                 <RadioGroupItem value="b" id="ft-radio-enabled" />
                 <Label htmlFor="ft-radio-enabled">The other enabled</Label>
               </div>
@@ -135,7 +136,7 @@ export function FormsTogglesSection() {
         </CaseRow>
         <CaseRow>
           <Case name="switch-with-disabled-peer" width={320}>
-            <div className="flex items-center gap-2">
+            <div {...stylex.props(galleryStyles.case7)}>
               <Switch id="ft-switch-peer" disabled />
               <Label htmlFor="ft-switch-peer">Label after a disabled switch</Label>
             </div>
@@ -154,7 +155,7 @@ export function FormsTogglesSection() {
           <Slider value={[20, 70]} />
         </Case>
         <Case name="slider-vertical-range" width={80}>
-          <div className="h-40">
+          <div {...stylex.props(galleryStyles.case8)}>
             <Slider value={[20, 70]} orientation="vertical" />
           </div>
         </Case>
@@ -168,3 +169,18 @@ export function FormsTogglesSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: { display: 'flex', alignItems: 'center', gap: '0.5rem' },
+  case2: { display: 'flex', alignItems: 'center', gap: '0.75rem' },
+  case3: { display: 'flex', alignItems: 'center', gap: '0.75rem' },
+  case4: { display: 'flex', alignItems: 'center', gap: '0.75rem' },
+  case5: { display: 'flex', alignItems: 'center', gap: '0.75rem' },
+  case6: { display: 'flex', alignItems: 'center', gap: '0.75rem' },
+  case7: { display: 'flex', alignItems: 'center', gap: '0.5rem' },
+  case8: { height: '10rem' },
+})

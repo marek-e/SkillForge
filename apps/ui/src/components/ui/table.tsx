@@ -1,8 +1,8 @@
 import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
 
-import { colors, motion } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import { colors, motion, typography } from '@/styles/tokens.stylex'
+import type { Sx } from '@/lib/sx'
 
 /**
  * `transition-colors`, spelled out (see `input.tsx`; the three
@@ -27,6 +27,8 @@ const styles = stylex.create({
 
   // `w-full caption-bottom`
   table: {
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
     width: '100%',
     captionSide: 'bottom',
   },
@@ -121,28 +123,20 @@ const styles = stylex.create({
   },
 })
 
-/**
- * `text-sm` stays a Tailwind class on the `<table>`.
- *
- * It is a paired `text-*` on a container: Tailwind passes the unitless
- * `calc(1.25 / 0.875)` down to every descendant that has a font size but no
- * line height of its own, and `ProjectsTable` puts a `Button size="sm"` in two
- * of its `TableHead`s — a size whose `text-[0.8rem]` has no paired line height
- * and therefore computes to `inherit`. A StyleX `line-height: 1.25rem` would
- * pass 20px down instead of 18.29px and grow both sort buttons. The class goes
- * when the utility layer does (PR 32).
- */
-const TABLE_CLASSES = 'text-sm'
-
-function Table({ className, style, ...props }: React.ComponentProps<'table'>) {
+function Table({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'table'> & { sx?: Sx }) {
   const container = stylex.props(styles.container)
-  const sx = stylex.props(styles.table)
+  const sx = stylex.props(styles.table, sxProp)
 
   return (
     <div data-slot="table-container" className={container.className} style={container.style}>
       <table
         data-slot="table"
-        className={cn(TABLE_CLASSES, sx.className, className)}
+        className={[sx.className, className].filter(Boolean).join(' ')}
         style={sx.style || style ? { ...sx.style, ...style } : undefined}
         {...props}
       />
@@ -150,91 +144,126 @@ function Table({ className, style, ...props }: React.ComponentProps<'table'>) {
   )
 }
 
-function TableHeader({ className, style, ...props }: React.ComponentProps<'thead'>) {
-  const sx = stylex.props(styles.header)
+function TableHeader({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'thead'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.header, sxProp)
 
   return (
     <thead
       data-slot="table-header"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function TableBody({ className, style, ...props }: React.ComponentProps<'tbody'>) {
-  const sx = stylex.props(styles.body)
+function TableBody({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'tbody'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.body, sxProp)
 
   return (
     <tbody
       data-slot="table-body"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function TableFooter({ className, style, ...props }: React.ComponentProps<'tfoot'>) {
-  const sx = stylex.props(styles.footer)
+function TableFooter({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'tfoot'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.footer, sxProp)
 
   return (
     <tfoot
       data-slot="table-footer"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function TableRow({ className, style, ...props }: React.ComponentProps<'tr'>) {
-  const sx = stylex.props(styles.row)
+function TableRow({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'tr'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.row, sxProp)
 
   return (
     <tr
       data-slot="table-row"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function TableHead({ className, style, ...props }: React.ComponentProps<'th'>) {
-  const sx = stylex.props(styles.head)
+function TableHead({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'th'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.head, sxProp)
 
   return (
     <th
       data-slot="table-head"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function TableCell({ className, style, ...props }: React.ComponentProps<'td'>) {
-  const sx = stylex.props(styles.cell)
+function TableCell({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'td'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.cell, sxProp)
 
   return (
     <td
       data-slot="table-cell"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function TableCaption({ className, style, ...props }: React.ComponentProps<'caption'>) {
-  const sx = stylex.props(styles.caption)
+function TableCaption({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'caption'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.caption, sxProp)
 
   return (
     <caption
       data-slot="table-caption"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />

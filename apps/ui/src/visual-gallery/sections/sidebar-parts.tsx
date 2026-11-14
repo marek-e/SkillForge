@@ -1,3 +1,5 @@
+import { colors, fonts, radius, typography } from '@/styles/tokens.stylex'
+import * as stylex from '@stylexjs/stylex'
 import { FolderOpenIcon, MoreHorizontalIcon, PlusIcon, WrenchIcon } from 'lucide-react'
 import {
   SidebarContent,
@@ -29,10 +31,10 @@ import { Case, CaseGroup, CaseRow } from '../Case'
  */
 export function SidebarPartsSection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="menu">
         <Case name="sidebar-menu" width={220}>
-          <div className="rounded-lg bg-sidebar p-2 text-sidebar-foreground">
+          <div {...stylex.props(galleryStyles.case1)}>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton>
@@ -80,7 +82,7 @@ export function SidebarPartsSection() {
         </Case>
 
         <Case name="sidebar-menu-sub" width={220}>
-          <div className="rounded-lg bg-sidebar p-2 text-sidebar-foreground">
+          <div {...stylex.props(galleryStyles.case2)}>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton>
@@ -103,7 +105,7 @@ export function SidebarPartsSection() {
         </Case>
 
         <Case name="quirk-sidebar-menu-skeleton" width={220}>
-          <div className="rounded-lg bg-sidebar p-2 text-sidebar-foreground">
+          <div {...stylex.props(galleryStyles.case3)}>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuSkeleton showIcon />
@@ -121,9 +123,9 @@ export function SidebarPartsSection() {
 
       <CaseGroup title="structure">
         <Case name="sidebar-structure" width={220}>
-          <div className="rounded-lg bg-sidebar text-sidebar-foreground">
+          <div {...stylex.props(galleryStyles.case4)}>
             <SidebarHeader>
-              <span className="font-serif text-lg font-semibold">SkillForge</span>
+              <span {...stylex.props(galleryStyles.case5)}>SkillForge</span>
             </SidebarHeader>
             <SidebarSeparator />
             <SidebarContent>
@@ -161,3 +163,39 @@ export function SidebarPartsSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: {
+    borderRadius: radius.lg,
+    backgroundColor: colors.sidebar,
+    padding: '0.5rem',
+    color: colors.sidebarForeground,
+  },
+  case2: {
+    borderRadius: radius.lg,
+    backgroundColor: colors.sidebar,
+    padding: '0.5rem',
+    color: colors.sidebarForeground,
+  },
+  case3: {
+    borderRadius: radius.lg,
+    backgroundColor: colors.sidebar,
+    padding: '0.5rem',
+    color: colors.sidebarForeground,
+  },
+  case4: {
+    borderRadius: radius.lg,
+    backgroundColor: colors.sidebar,
+    color: colors.sidebarForeground,
+  },
+  case5: {
+    fontFamily: fonts.serif,
+    fontSize: '1.125rem',
+    lineHeight: typography.lgLineHeight,
+    fontWeight: 600,
+  },
+})

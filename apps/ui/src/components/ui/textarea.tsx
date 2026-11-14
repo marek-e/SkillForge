@@ -2,7 +2,7 @@ import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
 
 import { colors, motion, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import type { Sx } from '@/lib/sx'
 
 /** `transition-colors`, copied verbatim (`tailwind-values.md` §8). */
 const TRANSITION_COLORS =
@@ -60,10 +60,28 @@ const styles = stylex.create({
         ':disabled': 'color-mix(in oklab, var(--input) 80%, transparent)',
       },
     },
-    // `text-base`, as the pair of lengths it resolves to. `md:text-sm` stays a
-    // Tailwind class; see `CONTESTED_CLASSES`.
-    fontSize: '1rem',
-    lineHeight: '1.5rem',
+    fontSize: { default: '1rem', '@media (width >= 48rem)': '0.875rem' },
+    lineHeight: { default: '1.5rem', '@media (width >= 48rem)': '1.25rem' },
+    boxShadow: {
+      default: null,
+      ':focus-visible':
+        '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent), 0 0 #0000',
+      ':is([aria-invalid="true"])': {
+        default:
+          '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 3px color-mix(in oklab, var(--destructive) 20%, transparent), 0 0 #0000',
+        ':focus-visible':
+          '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 3px color-mix(in oklab, var(--destructive) 20%, transparent), 0 0 #0000',
+      },
+      ':is(.dark *)': {
+        default: null,
+        ':is([aria-invalid="true"])': {
+          default:
+            '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 3px color-mix(in oklab, var(--destructive) 40%, transparent), 0 0 #0000',
+          ':focus-visible':
+            '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 3px color-mix(in oklab, var(--destructive) 40%, transparent), 0 0 #0000',
+        },
+      },
+    },
     // `transition-colors`
     transitionProperty: TRANSITION_COLORS,
     transitionTimingFunction: motion.ease,
@@ -87,31 +105,18 @@ const styles = stylex.create({
   },
 })
 
-/**
- * Six classes that stay Tailwind, for the reasons spelled out in `input.tsx`.
- *
- * - `md:text-sm` sits in a media query, which adds no specificity but is
- *   emitted later in `@layer utilities`, so above 48rem it still wins over a
- *   caller's own `text-*`. Three callers pass `text-xs`
- *   (`routes/skill-detail.tsx`, `skills/SkillDetailResourceFiles.tsx` and the
- *   `textarea-mono` gallery case) and all three render at 14px on desktop
- *   today; as a StyleX rule it would lose to them and they would render at
- *   12px. Removed with those callers (PR 22, PR 23, PR 28).
- * - The five ring classes keep `--tw-ring-color` on the element, which
- *   `InputGroupTextarea`'s `ring-0` composes its zero-width ring colour from,
- *   and they keep a caller's `shadow-none` from winning. Kept in step with
- *   `Input`'s (PR 17).
- */
-const CONTESTED_CLASSES =
-  'focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 focus-visible:ring-3 aria-invalid:ring-3 md:text-sm'
-
-function Textarea({ className, style, ...props }: React.ComponentProps<'textarea'>) {
-  const sx = stylex.props(styles.base)
+function Textarea({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'textarea'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.base, sxProp)
 
   return (
     <textarea
       data-slot="textarea"
-      className={cn(CONTESTED_CLASSES, sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />

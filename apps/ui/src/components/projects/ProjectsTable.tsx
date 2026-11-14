@@ -1,3 +1,4 @@
+import { projectActions } from '@/styles/project-actions.stylex'
 import {
   flexRender,
   getCoreRowModel,
@@ -22,10 +23,10 @@ import {
   TableHead,
   TableCell,
 } from '@/components/ui/table'
-import { cn } from '@/lib/utils'
 import { colors, fonts } from '@/styles/tokens.stylex'
 
 const styles = stylex.create({
+  clickableRow: { cursor: 'pointer' },
   // `flex items-center gap-2`
   nameCell: {
     display: 'flex',
@@ -110,51 +111,6 @@ const buttonStyles = stylex.create({
   },
 })
 
-/**
- * The favourite star's colours, kept as Tailwind classes (removed in PR 32).
- *
- * Two reasons, both of which outlive this row:
- *
- * 1. `yellow-400` is a **Tailwind palette** colour. `text-yellow-400` compiles
- *    to `color: var(--color-yellow-400)` and the two opacity-modified ones to a
- *    `color-mix(in oklab, var(--color-yellow-400) N%, transparent)` behind an
- *    `@supports` pair. A StyleX declaration may not reference a
- *    Tailwind-generated custom property (it disappears in PR 32), and the only
- *    alternative - the literal `oklch(85.2% 0.199 91.936)` - is folded by
- *    lightningcss into a hex/`lab()` pair, so the *computed* colour string
- *    would change (PR 22 measured that fold).
- * 2. `group-hover/button:fill-yellow-400/50` reaches the icon through the
- *    literal `group/button` class that `button.tsx` keeps **for this file and
- *    `routes/project-detail.tsx`**. Star and button therefore move together,
- *    once that class and the palette variables go.
- */
-const FAVORITE_BUTTON_CLASSES = 'text-yellow-400 hover:text-yellow-400'
-const UNFAVORITE_BUTTON_CLASSES =
-  'text-muted-foreground hover:text-yellow-400 hover:bg-yellow-400/10 dark:hover:bg-yellow-400/20'
-const FAVORITE_ICON_CLASSES = 'fill-yellow-400 group-hover/button:fill-yellow-400/50'
-
-/**
- * An icon rendered inside a `Button` keeps a literal `size-*` class.
- *
- * `Button` sizes the icons it contains with
- * `[&_svg:not([class*='size-'])]:size-N`, a selector that reads the child's
- * `class` **attribute text**, not its computed size (`button.tsx`, PR 04;
- * `conventions.md`, "A class name can itself be the contract"). Once a size
- * moved into `stylex.create` the attribute would stop matching and the button
- * would own the icon's width and height - 12px for these `icon-xs` buttons,
- * and 14px for
- * the `sm` header buttons. Both stay until PR 32 removes those rules.
- */
-const ICON_SIZE_CLASS = 'size-4'
-const SORT_ICON_SIZE_CLASS = 'size-3.5'
-
-/**
- * `cursor-pointer` on the body rows, kept as a Tailwind class (PR 32).
- *
- * `TableRow` takes no `sx` prop, so `className` is the only channel into it.
- */
-const ROW_CLASSES = 'cursor-pointer'
-
 interface ProjectsTableProps {
   projects: Project[]
   sorting: SortingState
@@ -181,17 +137,18 @@ export function ProjectsTable({
         <Button
           variant="ghost"
           size="icon-xs"
-          className={cn(
-            row.original.isFavorite && FAVORITE_BUTTON_CLASSES,
-            !row.original.isFavorite && UNFAVORITE_BUTTON_CLASSES
-          )}
+          sx={row.original.isFavorite ? projectActions.favorite : projectActions.unfavorite}
           onClick={(e) => {
             e.stopPropagation()
             onFavoriteToggle(row.original.id)
           }}
         >
           <StarIcon
-            className={cn(ICON_SIZE_CLASS, row.original.isFavorite && FAVORITE_ICON_CLASSES)}
+            className={[
+              'size-explicit',
+              stylex.props(projectActions.icon, row.original.isFavorite && projectActions.star)
+                .className,
+            ].join(' ')}
           />
         </Button>
       ),
@@ -206,7 +163,9 @@ export function ProjectsTable({
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Name
-          <ArrowUpDownIcon className={SORT_ICON_SIZE_CLASS} />
+          <ArrowUpDownIcon
+            className={['size-explicit', stylex.props(projectActions.sortIcon).className].join(' ')}
+          />
         </Button>
       ),
       cell: ({ row }) => (
@@ -226,7 +185,9 @@ export function ProjectsTable({
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Path
-          <ArrowUpDownIcon className={SORT_ICON_SIZE_CLASS} />
+          <ArrowUpDownIcon
+            className={['size-explicit', stylex.props(projectActions.sortIcon).className].join(' ')}
+          />
         </Button>
       ),
       cell: ({ row }) => <span {...stylex.props(styles.pathText)}>{row.original.path}</span>,
@@ -263,7 +224,9 @@ export function ProjectsTable({
             onDeleteClick(row.original)
           }}
         >
-          <Trash2Icon className={ICON_SIZE_CLASS} />
+          <Trash2Icon
+            className={['size-explicit', stylex.props(projectActions.icon).className].join(' ')}
+          />
         </Button>
       ),
     },
@@ -295,7 +258,7 @@ export function ProjectsTable({
       </TableHeader>
       <TableBody>
         {table.getRowModel().rows.map((row) => (
-          <TableRow key={row.id} className={ROW_CLASSES} onClick={() => onRowClick(row.original)}>
+          <TableRow key={row.id} sx={styles.clickableRow} onClick={() => onRowClick(row.original)}>
             {row.getVisibleCells().map((cell) => (
               <TableCell key={cell.id}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}

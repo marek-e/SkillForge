@@ -18,7 +18,7 @@ packages/
 
 ## Tech Stack
 
-**UI:** Vite, React, TypeScript, TanStack Router, TanStack Query, Tailwind CSS, Monaco Editor, shadcn/ui (Radix Nova)
+**UI:** Vite, React, TypeScript, TanStack Router, TanStack Query, StyleX, Monaco Editor, shadcn/ui (Radix Nova)
 
 **Runtime:** Node.js 20, TypeScript, Hono, Zod, chokidar
 
@@ -117,13 +117,15 @@ The Electron app uses a **hidden native titlebar** (`titleBarStyle: 'hidden'`) w
 
 ### Sidebar Offset
 
-The UI's sidebar uses `fixed` positioning that normally spans `inset-y-0 h-svh` (full viewport). In Electron, CSS rules offset the sidebar:
+The UI's sidebar uses `fixed` positioning that normally spans `inset-y-0 h-svh` (full viewport). In Electron, StyleX conditions on the sidebar elements offset the sidebar:
 
-```css
-.electron-app [data-slot='sidebar-container'] {
-  top: 2.25rem;
-  height: calc(100svh - 2.25rem);
-}
+```tsx
+const styles = stylex.create({
+  container: {
+    top: { default: 0, ':is(.electron-app *)': '2.25rem' },
+    height: { default: '100svh', ':is(.electron-app *)': 'calc(100svh - 2.25rem)' },
+  },
+})
 ```
 
 This prevents the sidebar from overlapping the Electron titlebar and traffic lights.

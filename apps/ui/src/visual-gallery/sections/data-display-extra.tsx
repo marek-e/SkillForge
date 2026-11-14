@@ -1,3 +1,5 @@
+import { colors, fonts, radius, typography } from '@/styles/tokens.stylex'
+import * as stylex from '@stylexjs/stylex'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
@@ -51,12 +53,12 @@ const SQUARE_IMAGE =
 
 export function DataDisplayExtraSection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="card headers, actions and images">
         <CaseRow>
           <Case name="card-header-border" width={320}>
             <Card>
-              <CardHeader className="border-b">
+              <CardHeader sx={galleryStyles.case1} className="border-b">
                 <CardTitle>Bordered header</CardTitle>
                 <CardDescription>The header pads itself differently.</CardDescription>
               </CardHeader>
@@ -65,7 +67,7 @@ export function DataDisplayExtraSection() {
           </Case>
           <Case name="card-sm-header-border" width={320}>
             <Card size="sm">
-              <CardHeader className="border-b">
+              <CardHeader sx={galleryStyles.case2} className="border-b">
                 <CardTitle>Bordered header, compact</CardTitle>
                 <CardDescription>Three rather than four.</CardDescription>
               </CardHeader>
@@ -156,7 +158,7 @@ export function DataDisplayExtraSection() {
               150 ms box-shadow transition is what a hover screenshot would
               race against, and the point of the case is the composed ring.
             */}
-            <Card size="sm" className="cursor-pointer hover:ring-foreground/20">
+            <Card size="sm" sx={galleryStyles.case3}>
               <CardHeader>
                 <CardTitle>Hover target</CardTitle>
                 <CardDescription>A caller-supplied hover ring.</CardDescription>
@@ -251,7 +253,11 @@ export function DataDisplayExtraSection() {
                 <TableCell>1</TableCell>
                 <TableCell>Alpha Platform</TableCell>
                 <TableCell>
-                  <span className="text-muted-foreground font-mono text-xs truncate max-w-[300px] block">
+                  <span
+                    className={[stylex.props(galleryStyles.case4).className, 'w-explicit'].join(
+                      ' '
+                    )}
+                  >
                     /Users/fixture/projects/alpha/packages/runtime/src
                   </span>
                 </TableCell>
@@ -260,7 +266,11 @@ export function DataDisplayExtraSection() {
                 <TableCell>2</TableCell>
                 <TableCell>A project name long enough to be squeezed</TableCell>
                 <TableCell>
-                  <span className="text-muted-foreground font-mono text-xs truncate max-w-[300px] block">
+                  <span
+                    className={[stylex.props(galleryStyles.case5).className, 'w-explicit'].join(
+                      ' '
+                    )}
+                  >
                     /Users/fixture/projects/beta
                   </span>
                 </TableCell>
@@ -295,31 +305,31 @@ export function DataDisplayExtraSection() {
 
       <CaseGroup title="separator orientations">
         <Case name="separator-in-flex-row">
-          <div className="flex h-10 items-center gap-2">
-            <span className="text-sm">One</span>
+          <div {...stylex.props(galleryStyles.case6)}>
+            <span {...stylex.props(galleryStyles.case7)}>One</span>
             <Separator orientation="vertical" />
-            <span className="text-sm">Two</span>
+            <span {...stylex.props(galleryStyles.case8)}>Two</span>
             <Separator orientation="vertical" />
-            <span className="text-sm">Three</span>
+            <span {...stylex.props(galleryStyles.case9)}>Three</span>
           </div>
         </Case>
         <Case name="separator-in-flex-column" width={240}>
-          <div className="flex flex-col gap-2">
-            <span className="text-sm">One</span>
+          <div {...stylex.props(galleryStyles.case10)}>
+            <span {...stylex.props(galleryStyles.case11)}>One</span>
             <Separator />
-            <span className="text-sm">Two</span>
+            <span {...stylex.props(galleryStyles.case12)}>Two</span>
             <Separator />
-            <span className="text-sm">Three</span>
+            <span {...stylex.props(galleryStyles.case13)}>Three</span>
           </div>
         </Case>
         <Case name="separator-semantic" width={240}>
           <Separator decorative={false} />
         </Case>
         <Case name="separator-vertical-stretch">
-          <div className="flex h-16 items-stretch gap-2">
-            <span className="text-sm">Left</span>
+          <div {...stylex.props(galleryStyles.case14)}>
+            <span {...stylex.props(galleryStyles.case15)}>Left</span>
             <Separator orientation="vertical" />
-            <span className="text-sm">Right</span>
+            <span {...stylex.props(galleryStyles.case16)}>Right</span>
           </div>
         </Case>
       </CaseGroup>
@@ -328,31 +338,31 @@ export function DataDisplayExtraSection() {
         <CaseRow>
           <Case name="aspect-ratio-16-9-image" width={240}>
             <AspectRatio ratio={16 / 9}>
-              <img src={SQUARE_IMAGE} alt="" className="size-full rounded-lg object-cover" />
+              <img src={SQUARE_IMAGE} alt="" {...stylex.props(galleryStyles.case17)} />
             </AspectRatio>
           </Case>
           <Case name="aspect-ratio-4-3-image" width={240}>
             <AspectRatio ratio={4 / 3}>
-              <img src={SQUARE_IMAGE} alt="" className="size-full rounded-lg object-cover" />
+              <img src={SQUARE_IMAGE} alt="" {...stylex.props(galleryStyles.case18)} />
             </AspectRatio>
           </Case>
           <Case name="aspect-ratio-1-1-image" width={160}>
             <AspectRatio ratio={1}>
-              <img src={SQUARE_IMAGE} alt="" className="size-full rounded-lg object-cover" />
+              <img src={SQUARE_IMAGE} alt="" {...stylex.props(galleryStyles.case19)} />
             </AspectRatio>
           </Case>
         </CaseRow>
         <CaseRow>
           <Case name="aspect-ratio-4-3" width={240}>
             <AspectRatio ratio={4 / 3}>
-              <div className="size-full rounded-lg bg-muted" />
+              <div {...stylex.props(galleryStyles.case20)} />
             </AspectRatio>
           </Case>
           <Case name="aspect-ratio-in-card" width={320}>
             <Card size="sm">
               <CardContent>
                 <AspectRatio ratio={16 / 9}>
-                  <img src={SQUARE_IMAGE} alt="" className="size-full rounded-lg object-cover" />
+                  <img src={SQUARE_IMAGE} alt="" {...stylex.props(galleryStyles.case21)} />
                 </AspectRatio>
               </CardContent>
             </Card>
@@ -362,3 +372,62 @@ export function DataDisplayExtraSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: { borderBottomWidth: '1px', borderBottomStyle: 'solid' },
+  case2: { borderBottomWidth: '1px', borderBottomStyle: 'solid' },
+  case3: {
+    cursor: 'pointer',
+    boxShadow: {
+      default:
+        '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent), 0 0 #0000',
+      '@media (hover: hover)': {
+        default: null,
+        ':hover':
+          '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 1px color-mix(in oklab, var(--foreground) 20%, transparent), 0 0 #0000',
+      },
+    },
+  },
+  case4: {
+    color: colors.mutedForeground,
+    fontFamily: fonts.mono,
+    fontSize: '0.75rem',
+    lineHeight: typography.xsLineHeight,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    maxWidth: '300px',
+    display: 'block',
+  },
+  case5: {
+    color: colors.mutedForeground,
+    fontFamily: fonts.mono,
+    fontSize: '0.75rem',
+    lineHeight: typography.xsLineHeight,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    maxWidth: '300px',
+    display: 'block',
+  },
+  case6: { display: 'flex', height: '2.5rem', alignItems: 'center', gap: '0.5rem' },
+  case7: { fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case8: { fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case9: { fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case10: { display: 'flex', flexDirection: 'column', gap: '0.5rem' },
+  case11: { fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case12: { fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case13: { fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case14: { display: 'flex', height: '4rem', alignItems: 'stretch', gap: '0.5rem' },
+  case15: { fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case16: { fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case17: { width: '100%', height: '100%', borderRadius: radius.lg, objectFit: 'cover' },
+  case18: { width: '100%', height: '100%', borderRadius: radius.lg, objectFit: 'cover' },
+  case19: { width: '100%', height: '100%', borderRadius: radius.lg, objectFit: 'cover' },
+  case20: { width: '100%', height: '100%', borderRadius: radius.lg, backgroundColor: colors.muted },
+  case21: { width: '100%', height: '100%', borderRadius: radius.lg, objectFit: 'cover' },
+})

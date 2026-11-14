@@ -1,7 +1,6 @@
 import * as stylex from '@stylexjs/stylex'
 import { sileo, Toaster as SileoToaster } from 'sileo'
 
-import { cn } from '@/lib/utils'
 import { colors } from '@/styles/tokens.stylex'
 
 /**
@@ -11,7 +10,6 @@ import { colors } from '@/styles/tokens.stylex'
  * change to the rendered `class` attribute for no reason; it goes with the rest
  * of the bridge in PR 32.
  */
-const TITLE_NO_OP_CLASS = 'text-md'
 
 /**
  * Sileo injects its own stylesheet into `<head>` at import time, **unlayered**,
@@ -57,7 +55,7 @@ const Toaster = () => {
       options={{
         styles: {
           description: description.className,
-          title: cn(TITLE_NO_OP_CLASS, title.className),
+          title: title.className,
         },
         // `var(--toaster-background)`, now through the token module. Sileo puts
         // this on the SVG `fill` *presentation attribute* of the two rects it

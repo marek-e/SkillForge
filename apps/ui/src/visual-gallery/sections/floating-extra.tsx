@@ -1,3 +1,5 @@
+import { colors } from '@/styles/tokens.stylex'
+import * as stylex from '@stylexjs/stylex'
 import { Button } from '@/components/ui/button'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
 import {
@@ -35,7 +37,7 @@ const SIDES = ['top', 'right', 'bottom', 'left'] as const
  */
 export function FloatingExtraSection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="popover sides">
         <CaseRow>
           {SIDES.map((side) => (
@@ -59,7 +61,7 @@ export function FloatingExtraSection() {
       </CaseGroup>
 
       <CaseGroup title="popover collision edges and keyboard">
-        <div className="flex w-full items-start justify-between gap-6">
+        <div className={[stylex.props(galleryStyles.case1).className, 'w-explicit'].join(' ')}>
           <Case name="popover-collision-start-trigger">
             <Popover>
               <PopoverTrigger asChild>
@@ -149,7 +151,7 @@ export function FloatingExtraSection() {
       </CaseGroup>
 
       <CaseGroup title="hover card">
-        <div className="flex w-full items-start justify-between gap-6">
+        <div className={[stylex.props(galleryStyles.case2).className, 'w-explicit'].join(' ')}>
           <Case name="hover-card-side-right-trigger">
             <HoverCard openDelay={0} closeDelay={0}>
               <HoverCardTrigger asChild>
@@ -167,9 +169,9 @@ export function FloatingExtraSection() {
                 <Button variant="link">Hover card content</Button>
               </HoverCardTrigger>
               <HoverCardContent>
-                <div className="space-y-1">
-                  <p className="font-medium">Alpha Platform</p>
-                  <p className="text-muted-foreground">
+                <div {...stylex.props(galleryStyles.case3)}>
+                  <p {...stylex.props(galleryStyles.case4)}>Alpha Platform</p>
+                  <p {...stylex.props(galleryStyles.case5)}>
                     Twelve detected skills across two tools, last scanned an hour ago.
                   </p>
                 </div>
@@ -192,3 +194,30 @@ export function FloatingExtraSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: {
+    display: 'flex',
+    width: '100%',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: '1.5rem',
+  },
+  case2: {
+    display: 'flex',
+    width: '100%',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: '1.5rem',
+  },
+  case3: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '0.25rem' },
+  },
+  case4: { fontWeight: 500 },
+  case5: { color: colors.mutedForeground },
+})

@@ -2,8 +2,8 @@ import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
 import { Dialog as DialogPrimitive } from 'radix-ui'
 
-import { colors, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import { colors, radius, typography } from '@/styles/tokens.stylex'
+import type { Sx } from '@/lib/sx'
 import { Button } from '@/components/ui/button'
 import { XIcon } from 'lucide-react'
 
@@ -27,7 +27,7 @@ const SM = '@media (min-width: 40rem)'
  * asks only whether the property exists.
  */
 const BACKDROP_FILTER_SUPPORTED =
-  '@supports ((-webkit-backdrop-filter: var(--tw)) or (backdrop-filter: var(--tw)))'
+  '@supports ((-webkit-backdrop-filter: var(--supported-filter)) or (backdrop-filter: var(--supported-filter)))'
 
 /**
  * The one-pixel ring, written as the whole five-layer chain Tailwind composes
@@ -51,7 +51,7 @@ const RING_1 =
  * correct if `--color-black` stops being emitted, which happens as soon as no
  * utility names it (`sheet.tsx` and `drawer.tsx` still do).
  */
-const OVERLAY_BLACK_10 = 'color-mix(in oklab, var(--color-black, #000) 10%, transparent)'
+const OVERLAY_BLACK_10 = 'color-mix(in oklab, var(--overlay-black, #000) 10%, transparent)'
 
 /**
  * `duration-100` sets `--tw-duration`, which the enter/exit `animate-…`
@@ -151,6 +151,9 @@ const styles = stylex.create({
   //  w-full outline-none`, plus the enter/exit pair. `text-sm` and the two
   // translate utilities stay Tailwind; see the notes below.
   content: {
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+    translate: '-50% -50%',
     position: 'fixed',
     top: '50%',
     left: '50%',
@@ -231,68 +234,25 @@ const styles = stylex.create({
     backgroundColor: 'color-mix(in oklab, var(--muted) 50%, transparent)',
   },
 
-  // `text-base font-medium` — the paired line height comes from the
-  // `leading-none` class that stays behind; see `TITLE_LEADING_CLASS`.
+  // Title retains its original unitless line height.
   title: {
+    lineHeight: 1,
     fontSize: '1rem',
     fontWeight: 500,
   },
 
   // `text-muted-foreground`
   description: {
-    color: colors.mutedForeground,
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+    textDecorationLine: { default: null, ':is(*)>a': 'underline' },
+    textUnderlineOffset: { default: null, ':is(*)>a': '3px' },
+    color: {
+      default: colors.mutedForeground,
+      '@media (hover: hover)': { default: null, ':is(*)>a:hover': colors.foreground },
+    },
   },
 })
-
-/**
- * `leading-none` on the title, kept as a Tailwind class (PR 10).
- *
- * It sets `line-height: 1` *and* `--tw-leading: 1`, and that variable is what a
- * caller's own `text-*` utility on a descendant resolves its line height
- * through. Writing `lineHeight: 1` in StyleX reproduces the first half exactly
- * and drops the second, which would move a sized child's line box —
- * `conventions.md`, "a `--tw-*` variable one utility writes and another reads".
- * The `dialog-inherited-leading` gallery case is the probe. PR 32.
- */
-const TITLE_LEADING_CLASS = 'leading-none'
-
-/**
- * `text-sm` on the content and on the description, also kept as Tailwind
- * (PR 10).
- *
- * The paired-line-height trap: Tailwind passes the *ratio* `calc(1.25 / 0.875)`
- * down to a descendant that has a font size of its own and no line height,
- * while a StyleX `1.25rem` passes a *length* and `lightningcss` folds the ratio
- * to five decimals. Everything inside a dialog is caller-supplied, and the
- * `dialog-inherited-leading` case measures it. PR 32.
- */
-const TEXT_SM_CLASS = 'text-sm'
-
-/**
- * The rules that style links the **caller** puts inside the description, kept
- * as Tailwind classes (PR 10).
- *
- * A StyleX rule lives in a `priorityN` layer, below `utilities`, so a utility on
- * the caller's own anchor would outrank it — the opposite of today. PR 32.
- */
-const DESCRIPTION_LINK_CLASSES =
-  '*:[a]:hover:text-foreground *:[a]:underline *:[a]:underline-offset-3'
-
-/**
- * `-translate-x-1/2 -translate-y-1/2` on the content, kept as Tailwind classes
- * (PR 10).
- *
- * The pair is the `--tw-*` composition trap in its purest form: each utility
- * writes one axis into a variable and both read `translate: var(--tw-translate-x)
- * var(--tw-translate-y)`. `CommandDialog` relies on exactly that — it passes
- * `translate-y-0`, which `twMerge` lets through because it belongs to a
- * different group, and the two compose into `-50% 0`. A StyleX `translate`
- * declaration writes the whole property at once and sits below `utilities`, so
- * the caller's single-axis utility would replace both halves and move the panel
- * to the middle of the viewport. The `command-dialog` gallery case is the proof.
- * PR 32, together with the variables themselves.
- */
-const CONTENT_TRANSLATE_CLASSES = '-translate-x-1/2 -translate-y-1/2'
 
 function Dialog({ ...props }: React.ComponentProps<typeof DialogPrimitive.Root>) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />
@@ -313,13 +273,14 @@ function DialogClose({ ...props }: React.ComponentProps<typeof DialogPrimitive.C
 function DialogOverlay({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
-  const sx = stylex.props(styles.overlay)
+}: React.ComponentProps<typeof DialogPrimitive.Overlay> & { sx?: Sx }) {
+  const sx = stylex.props(styles.overlay, sxProp)
   return (
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -331,17 +292,19 @@ function DialogContent({
   style,
   children,
   showCloseButton = true,
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
+  sx?: Sx
 }) {
-  const sx = stylex.props(styles.content)
+  const sx = stylex.props(styles.content, sxProp)
   return (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
         data-slot="dialog-content"
-        className={cn(CONTENT_TRANSLATE_CLASSES, TEXT_SM_CLASS, sx.className, className)}
+        className={[sx.className, className].filter(Boolean).join(' ')}
         style={sx.style || style ? { ...sx.style, ...style } : undefined}
         {...props}
       >
@@ -359,12 +322,17 @@ function DialogContent({
   )
 }
 
-function DialogHeader({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.header)
+function DialogHeader({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.header, sxProp)
   return (
     <div
       data-slot="dialog-header"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -376,15 +344,16 @@ function DialogFooter({
   style,
   showCloseButton = false,
   children,
+  sx: sxProp,
   ...props
 }: React.ComponentProps<'div'> & {
   showCloseButton?: boolean
-}) {
-  const sx = stylex.props(styles.footer)
+} & { sx?: Sx }) {
+  const sx = stylex.props(styles.footer, sxProp)
   return (
     <div
       data-slot="dialog-footer"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >
@@ -401,13 +370,14 @@ function DialogFooter({
 function DialogTitle({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Title>) {
-  const sx = stylex.props(styles.title)
+}: React.ComponentProps<typeof DialogPrimitive.Title> & { sx?: Sx }) {
+  const sx = stylex.props(styles.title, sxProp)
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn(TITLE_LEADING_CLASS, sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -417,13 +387,14 @@ function DialogTitle({
 function DialogDescription({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Description>) {
-  const sx = stylex.props(styles.description)
+}: React.ComponentProps<typeof DialogPrimitive.Description> & { sx?: Sx }) {
+  const sx = stylex.props(styles.description, sxProp)
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn(DESCRIPTION_LINK_CLASSES, TEXT_SM_CLASS, sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />

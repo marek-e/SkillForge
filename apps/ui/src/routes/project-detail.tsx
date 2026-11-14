@@ -1,3 +1,4 @@
+import { projectActions } from '@/styles/project-actions.stylex'
 import { useState, useEffect } from 'react'
 import { createRoute, useNavigate } from '@tanstack/react-router'
 import * as stylex from '@stylexjs/stylex'
@@ -24,7 +25,6 @@ import { RenameProjectDialog } from '@/components/project-detail/RenameProjectDi
 import { ProjectOverviewCard } from '@/components/project-detail/ProjectOverviewCard'
 import { ProjectSkillsSection } from '@/components/project-detail/ProjectSkillsSection'
 import { DeleteProjectDialog } from '@/components/projects/DeleteProjectDialog'
-import { cn } from '@/lib/utils'
 import { colors } from '@/styles/tokens.stylex'
 import { useBreadcrumb } from '@/lib/breadcrumbs'
 import { useSkills } from '@/hooks/use-skill-library'
@@ -138,20 +138,6 @@ const buttonStyles = stylex.create({
 })
 
 /**
- * The class lists this route hands to components it does not own, kept as
- * Tailwind for now (PR 32 removes every one of them).
- *
- * `Skeleton` is StyleX already but takes no `sx` prop, so a caller's size still
- * arrives as a `className` its `cn` appends — which is also what keeps the
- * override winning, since a utility outranks a `priorityN` rule.
- */
-const SKELETON_TITLE_CLASSES = 'h-8 w-48'
-const SKELETON_LEAD_CLASSES = 'h-4 w-96'
-const SKELETON_SKILLS_LABEL_CLASSES = 'h-4 w-24'
-const SKELETON_SKILLS_WIDE_CLASSES = 'h-4 w-64'
-const SKELETON_SKILLS_NARROW_CLASSES = 'h-4 w-48'
-
-/**
  * The three header actions whose colours come from the **Tailwind palette**,
  * kept as classes for the reason `ProjectsTable` spelled out in PR 24.
  *
@@ -170,31 +156,6 @@ const SKELETON_SKILLS_NARROW_CLASSES = 'h-4 w-48'
  * go. The delete action is the one of the four whose colours are theme tokens,
  * so it is the one that moves to `sx` above.
  */
-const FAVORITE_BUTTON_CLASSES = 'text-yellow-400 hover:text-yellow-400'
-const UNFAVORITE_BUTTON_CLASSES =
-  'text-muted-foreground hover:text-yellow-400 hover:bg-yellow-400/10 dark:hover:bg-yellow-400/20'
-const FAVORITE_ICON_CLASSES = 'fill-yellow-400 group-hover/button:fill-yellow-400/50'
-const RENAME_BUTTON_CLASSES =
-  'text-muted-foreground hover:text-blue-500 hover:bg-blue-500/10 dark:hover:bg-blue-500/25'
-const REFRESH_BUTTON_CLASSES =
-  'text-muted-foreground hover:text-green-500 hover:bg-green-500/10 dark:hover:bg-green-500/20'
-
-/**
- * An icon rendered inside a `Button` keeps a literal `size-*` class.
- *
- * `Button` sizes the icons it contains with
- * `[&_svg:not([class*='size-'])]:size-N`, a selector that reads the child's
- * `class` **attribute text**, not its computed size (`button.tsx`, PR 04). Once
- * a size moved into `stylex.create` the attribute would stop matching and the
- * button would own the icon's width and height — 12px for these `icon-xs`
- * buttons instead of 16px. It stays until PR 32 removes that rule.
- *
- * `animate-spin` rides in the same string. It resolves to
- * `animation: var(--animate-spin)`, a Tailwind theme variable PR 32 deletes, and
- * it is applied to the icon rather than to anything this route styles itself.
- */
-const ICON_SIZE_CLASS = 'size-4'
-const SPINNING_ICON_CLASS = 'animate-spin'
 
 const toolMap: Record<string, Skill['originalTool']> = {
   'claude-code': 'claude',
@@ -275,8 +236,8 @@ function ProjectDetailPage() {
   if (isPending) {
     return (
       <div {...stylex.props(styles.loading)}>
-        <Skeleton className={SKELETON_TITLE_CLASSES} />
-        <Skeleton className={SKELETON_LEAD_CLASSES} />
+        <Skeleton sx={overrideStyles.SKELETON_TITLE_CLASSES} />
+        <Skeleton sx={overrideStyles.SKELETON_LEAD_CLASSES} />
       </div>
     )
   }
@@ -293,26 +254,31 @@ function ProjectDetailPage() {
               <Button
                 variant="ghost"
                 size="icon-xs"
-                className={cn(
-                  project.isFavorite && FAVORITE_BUTTON_CLASSES,
-                  !project.isFavorite && UNFAVORITE_BUTTON_CLASSES
-                )}
+                sx={project.isFavorite ? projectActions.favorite : projectActions.unfavorite}
                 onClick={() => favoriteMutation.mutate()}
               >
                 <StarIcon
-                  className={cn(ICON_SIZE_CLASS, project.isFavorite && FAVORITE_ICON_CLASSES)}
+                  className={[
+                    'size-explicit',
+                    stylex.props(projectActions.icon, project.isFavorite && projectActions.star)
+                      .className,
+                  ].join(' ')}
                 />
               </Button>
               <Button
                 variant="ghost"
                 size="icon-xs"
-                className={RENAME_BUTTON_CLASSES}
+                sx={projectActions.rename}
                 onClick={() => {
                   setRenameDraft(project.name)
                   setRenameOpen(true)
                 }}
               >
-                <PencilIcon className={ICON_SIZE_CLASS} />
+                <PencilIcon
+                  className={['size-explicit', stylex.props(projectActions.icon).className].join(
+                    ' '
+                  )}
+                />
               </Button>
               <Button
                 variant="ghost"
@@ -323,19 +289,27 @@ function ProjectDetailPage() {
                   setDeleteDialogOpen(true)
                 }}
               >
-                <Trash2Icon className={ICON_SIZE_CLASS} />
+                <Trash2Icon
+                  className={['size-explicit', stylex.props(projectActions.icon).className].join(
+                    ' '
+                  )}
+                />
               </Button>
               <Tooltip delayDuration={400}>
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon-xs"
-                    className={REFRESH_BUTTON_CLASSES}
+                    sx={projectActions.refresh}
                     onClick={() => refetchSkills()}
                     disabled={skillsFetching}
                   >
                     <RefreshCwIcon
-                      className={cn(ICON_SIZE_CLASS, skillsFetching && SPINNING_ICON_CLASS)}
+                      className={[
+                        'size-explicit',
+                        stylex.props(projectActions.icon, skillsFetching && projectActions.spinning)
+                          .className,
+                      ].join(' ')}
                     />
                   </Button>
                 </TooltipTrigger>
@@ -371,9 +345,9 @@ function ProjectDetailPage() {
 
       {skillsPending ? (
         <div {...stylex.props(styles.skillsLoading)}>
-          <Skeleton className={SKELETON_SKILLS_LABEL_CLASSES} />
-          <Skeleton className={SKELETON_SKILLS_WIDE_CLASSES} />
-          <Skeleton className={SKELETON_SKILLS_NARROW_CLASSES} />
+          <Skeleton sx={overrideStyles.SKELETON_SKILLS_LABEL_CLASSES} />
+          <Skeleton sx={overrideStyles.SKELETON_SKILLS_WIDE_CLASSES} />
+          <Skeleton sx={overrideStyles.SKELETON_SKILLS_NARROW_CLASSES} />
         </div>
       ) : skillsByTool ? (
         <ProjectSkillsSection
@@ -403,3 +377,11 @@ function ProjectDetailPage() {
     </div>
   )
 }
+
+const overrideStyles = stylex.create({
+  SKELETON_TITLE_CLASSES: { height: '2rem', width: '12rem' },
+  SKELETON_LEAD_CLASSES: { height: '1rem', width: '24rem' },
+  SKELETON_SKILLS_LABEL_CLASSES: { height: '1rem', width: '6rem' },
+  SKELETON_SKILLS_WIDE_CLASSES: { height: '1rem', width: '16rem' },
+  SKELETON_SKILLS_NARROW_CLASSES: { height: '1rem', width: '12rem' },
+})

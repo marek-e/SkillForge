@@ -2,8 +2,8 @@ import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
 import { Dialog as SheetPrimitive } from 'radix-ui'
 
-import { colors } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import { colors, typography } from '@/styles/tokens.stylex'
+import type { Sx } from '@/lib/sx'
 import { Button } from '@/components/ui/button'
 import { XIcon } from 'lucide-react'
 
@@ -131,7 +131,7 @@ const styles = stylex.create({
   },
 
   // `bg-background fixed z-50 flex flex-col gap-4 bg-clip-padding shadow-lg`.
-  // The three `transition*` utilities stay classes; see `CONTENT_CLASSES`.
+  // Preserve the original inherited font metrics and transition property list.
   content: {
     position: 'fixed',
     zIndex: 50,
@@ -140,6 +140,13 @@ const styles = stylex.create({
     gap: '1rem',
     backgroundColor: colors.background,
     backgroundClip: 'padding-box',
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+    '--sheet-transition-properties':
+      'color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter, display, content-visibility, overlay, pointer-events',
+    transitionProperty: 'var(--sheet-transition-properties)',
+    transitionDuration: '200ms',
+    transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
     boxShadow: SHADOW_LG,
     // Unconditional, where Tailwind writes them inside the enter/exit
     // animation shorthand: Radix keeps a `data-state` on this element for
@@ -156,6 +163,7 @@ const styles = stylex.create({
   // The `side` prop and the `data-side` attribute are written from the same
   // value, so selecting the style object by prop matches the same elements.
   sideRight: {
+    width: '75%',
     insetBlock: 0,
     right: 0,
     height: '100%',
@@ -165,6 +173,7 @@ const styles = stylex.create({
     animationName: { default: null, [OPEN]: enterFromRight, [CLOSED]: exitToRight },
   },
   sideLeft: {
+    width: '75%',
     insetBlock: 0,
     left: 0,
     height: '100%',
@@ -215,6 +224,7 @@ const styles = stylex.create({
 
   // `gap-0.5 flex flex-col`
   header: {
+    padding: '1rem',
     display: 'flex',
     flexDirection: 'column',
     gap: '0.125rem',
@@ -252,46 +262,6 @@ const styles = stylex.create({
   },
 })
 
-/**
- * The classes that stay Tailwind, and why.
- *
- * - **`text-sm`** — a paired `text-*` on a container. `SheetContent` takes
- *   arbitrary children (`sidebar.tsx` puts the whole mobile sidebar in one),
- *   and a StyleX `1.25rem` would pass 20px down to a descendant with a
- *   different font size where the ratio `calc(1.25 / 0.875)` passes 1.42857.
- *   Same reasoning as `alert.tsx`.
- * - **`data-[side=left]:w-3/4` / `data-[side=right]:w-3/4`** — contested.
- *   `sidebar.tsx` passes `w-(--sidebar-width)` to `SheetContent`; today that
- *   utility is (0,1,0) and loses to the component's (0,2,0) attribute rule, so
- *   the mobile sidebar sheet is 75% wide and *not* `--sidebar-width`. As a
- *   StyleX rule it would sit in a `priorityN` layer and the caller would start
- *   winning, which is a visible change on `/` at 390px.
- * - **`transition duration-200 ease-in-out`** — the one declaration this
- *   migration cannot express from inside `apps/ui`. `transition`'s property
- *   list names two properties whose names are also Tailwind utilities, and
- *   Tailwind's scanner reads every text file under the Vite root, so writing
- *   the list in a `stylex.create` makes the build emit two utility rules no
- *   element uses. `lightningcss` also drops the `-webkit-` alias from a StyleX
- *   value, which shortens the computed `transition-property` string. Keeping
- *   the three utilities keeps both the emitted CSS and the computed value
- *   exactly as they are; `duration-200` and `ease-in-out` have to come along,
- *   because `transition` reads its duration and easing out of the two
- *   `--tw-*` variables they set.
- *
- * All of them go when the utility layer does — the width one no earlier than
- * PR 17, which migrates `sidebar.tsx`; verify the 75% there.
- */
-const CONTENT_CLASSES =
-  'text-sm data-[side=left]:w-3/4 data-[side=right]:w-3/4 transition duration-200 ease-in-out'
-
-/**
- * `p-4`, contested: `sidebar.tsx` renders `<SheetHeader className="sr-only">`,
- * and `sr-only` writes `padding: 0`. Today `.p-4` is emitted after `.sr-only`
- * in `@layer utilities` and wins on source order; a StyleX `padding` would lose
- * to both. Removed with `sidebar.tsx` in PR 17.
- */
-const HEADER_CLASSES = 'p-4'
-
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />
 }
@@ -318,7 +288,7 @@ function SheetOverlay({
   return (
     <SheetPrimitive.Overlay
       data-slot="sheet-overlay"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -338,12 +308,14 @@ function SheetContent({
   children,
   side = 'right',
   showCloseButton = true,
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> & {
   side?: 'top' | 'right' | 'bottom' | 'left'
   showCloseButton?: boolean
+  sx?: Sx
 }) {
-  const sx = stylex.props(styles.content, sideStyles[side])
+  const sx = stylex.props(styles.content, sideStyles[side], sxProp)
 
   return (
     <SheetPortal>
@@ -351,7 +323,7 @@ function SheetContent({
       <SheetPrimitive.Content
         data-slot="sheet-content"
         data-side={side}
-        className={cn(CONTENT_CLASSES, sx.className, className)}
+        className={[sx.className, className].filter(Boolean).join(' ')}
         style={sx.style || style ? { ...sx.style, ...style } : undefined}
         {...props}
       >
@@ -369,13 +341,18 @@ function SheetContent({
   )
 }
 
-function SheetHeader({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.header)
+function SheetHeader({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.header, sxProp)
 
   return (
     <div
       data-slot="sheet-header"
-      className={cn(HEADER_CLASSES, sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -388,7 +365,7 @@ function SheetFooter({ className, style, ...props }: React.ComponentProps<'div'>
   return (
     <div
       data-slot="sheet-footer"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -405,7 +382,7 @@ function SheetTitle({
   return (
     <SheetPrimitive.Title
       data-slot="sheet-title"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -422,7 +399,7 @@ function SheetDescription({
   return (
     <SheetPrimitive.Description
       data-slot="sheet-description"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />

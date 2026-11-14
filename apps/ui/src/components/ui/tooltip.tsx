@@ -1,9 +1,9 @@
 import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
+import type { Sx } from '@/lib/sx'
 import { Tooltip as TooltipPrimitive } from 'radix-ui'
 
-import { colors, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import { colors, radius, typography } from '@/styles/tokens.stylex'
 
 /** `data-open:` / `data-closed:`, the `shadcn/tailwind.css` custom variants (§9). */
 const OPEN = ':is(:where([data-state="open"]), :where([data-open]:not([data-open="false"])))'
@@ -88,6 +88,8 @@ const styles = stylex.create({
   // `bg-foreground text-background rounded-md px-3 py-1.5 z-50 w-fit max-w-xs
   //  origin-(--radix-tooltip-content-transform-origin)`
   content: {
+    fontSize: '0.75rem',
+    lineHeight: typography.xsLineHeight,
     width: 'fit-content',
     maxWidth: '20rem',
     paddingInline: '0.75rem',
@@ -157,16 +159,6 @@ const styles = stylex.create({
   },
 })
 
-/**
- * `text-xs` stays a Tailwind class, the paired-line-height exception in
- * `conventions.md`: a tooltip's children come from the caller —
- * `sidebar.tsx` forwards a whole `TooltipContent` prop bag — and a descendant
- * with its own font size but no line height inherits the *ratio*
- * `calc(1 / 0.75)`, which a StyleX `1rem` cannot pass down. Removed with the
- * utility layer in PR 32.
- */
-const PAIRED_TEXT_CLASS = 'text-xs'
-
 function TooltipProvider({
   delayDuration = 0,
   ...props
@@ -193,16 +185,17 @@ function TooltipContent({
   style,
   sideOffset = 0,
   children,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Content>) {
-  const sx = stylex.props(styles.content)
+}: React.ComponentProps<typeof TooltipPrimitive.Content> & { sx?: Sx }) {
+  const sx = stylex.props(styles.content, sxProp)
 
   return (
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Content
         data-slot="tooltip-content"
         sideOffset={sideOffset}
-        className={cn(PAIRED_TEXT_CLASS, sx.className, className)}
+        className={[sx.className, className].filter(Boolean).join(' ')}
         style={sx.style || style ? { ...sx.style, ...style } : undefined}
         {...props}
       >

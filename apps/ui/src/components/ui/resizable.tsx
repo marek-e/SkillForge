@@ -2,7 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 import * as ResizablePrimitive from 'react-resizable-panels'
 
 import { colors, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import type { Sx } from '@/lib/sx'
 
 /**
  * `aria-[orientation=…]:` is Tailwind's arbitrary-variant form and compiles to
@@ -119,24 +119,17 @@ const styles = stylex.create({
   },
 })
 
-/**
- * The ring-offset colour class, kept as a Tailwind class (PR 09).
- *
- * It sets a Tailwind-owned custom property that only the ring-offset shadow
- * layer reads — and nothing here writes a ring offset *width*, so the layer it
- * feeds stays at `0 0 #0000` and the class paints nothing today. A StyleX
- * declaration writes a property, never a variable, so there is no equivalent to
- * translate it to; it is kept verbatim until the variable itself disappears in
- * PR 32.
- */
-const RING_OFFSET_COLOR_CLASS = 'ring-offset-background'
-
-function ResizablePanelGroup({ className, style, ...props }: ResizablePrimitive.GroupProps) {
-  const sx = stylex.props(styles.group)
+function ResizablePanelGroup({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: ResizablePrimitive.GroupProps & { sx?: Sx }) {
+  const sx = stylex.props(styles.group, sxProp)
   return (
     <ResizablePrimitive.Group
       data-slot="resizable-panel-group"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -159,7 +152,7 @@ function ResizableHandle({
   return (
     <ResizablePrimitive.Separator
       data-slot="resizable-handle"
-      className={cn(RING_OFFSET_COLOR_CLASS, sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >

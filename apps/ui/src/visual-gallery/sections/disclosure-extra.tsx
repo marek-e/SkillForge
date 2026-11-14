@@ -1,3 +1,5 @@
+import { colors, fonts, radius, typography } from '@/styles/tokens.stylex'
+import * as stylex from '@stylexjs/stylex'
 import { FolderIcon, SettingsIcon, TerminalIcon } from 'lucide-react'
 import {
   Accordion,
@@ -43,7 +45,7 @@ import { LONG_TEXT } from '../data'
  */
 export function DisclosureExtraSection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="tabs">
         <CaseRow>
           <Case name="tabs-default-focus-target" width={360}>
@@ -87,7 +89,11 @@ export function DisclosureExtraSection() {
                   Terminal
                 </TabsTrigger>
                 <TabsTrigger value="settings">
-                  <SettingsIcon className="size-5" />
+                  <SettingsIcon
+                    className={[stylex.props(galleryStyles.case1).className, 'size-explicit'].join(
+                      ' '
+                    )}
+                  />
                   Settings
                 </TabsTrigger>
               </TabsList>
@@ -147,12 +153,14 @@ export function DisclosureExtraSection() {
             <Tabs defaultValue="a" orientation="vertical">
               <TabsList>
                 <TabsTrigger value="a">
-                  <span className="text-[10px]">Ten-pixel label</span>
+                  <span {...stylex.props(galleryStyles.case2)}>Ten-pixel label</span>
                 </TabsTrigger>
                 <TabsTrigger value="b">Plain</TabsTrigger>
               </TabsList>
               <TabsContent value="a">
-                <p className="text-[10px]">A paragraph with no line height of its own.</p>
+                <p {...stylex.props(galleryStyles.case3)}>
+                  A paragraph with no line height of its own.
+                </p>
                 <Button size="sm">Panel button</Button>
               </TabsContent>
             </Tabs>
@@ -184,10 +192,15 @@ export function DisclosureExtraSection() {
             <Accordion type="single" collapsible defaultValue="one">
               <AccordionItem value="one">
                 <AccordionTrigger>
-                  <span className="flex items-center gap-2">
-                    <TerminalIcon className="size-4 text-muted-foreground" />
-                    <code className="text-sm font-mono">/review-pull-request</code>
-                    <span className="text-muted-foreground">- {LONG_TEXT}</span>
+                  <span {...stylex.props(galleryStyles.case4)}>
+                    <TerminalIcon
+                      className={[
+                        stylex.props(galleryStyles.case5).className,
+                        'size-explicit',
+                      ].join(' ')}
+                    />
+                    <code {...stylex.props(galleryStyles.case6)}>/review-pull-request</code>
+                    <span {...stylex.props(galleryStyles.case7)}>- {LONG_TEXT}</span>
                   </span>
                 </AccordionTrigger>
                 <AccordionContent>Body</AccordionContent>
@@ -211,10 +224,12 @@ export function DisclosureExtraSection() {
             <Accordion type="single" collapsible defaultValue="one">
               <AccordionItem value="one">
                 <AccordionTrigger>
-                  <span className="text-[10px]">Ten-pixel label</span>
+                  <span {...stylex.props(galleryStyles.case8)}>Ten-pixel label</span>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <p className="text-[10px]">A paragraph with no line height of its own.</p>
+                  <p {...stylex.props(galleryStyles.case9)}>
+                    A paragraph with no line height of its own.
+                  </p>
                   <Button size="sm">Compact</Button>
                 </AccordionContent>
               </AccordionItem>
@@ -230,7 +245,7 @@ export function DisclosureExtraSection() {
               <Button variant="outline">Toggle</Button>
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <div className="mt-2 rounded-lg border p-3 text-sm">
+              <div {...stylex.props(galleryStyles.case10)}>
                 A body the collapsible itself puts no styling on.
               </div>
             </CollapsibleContent>
@@ -242,7 +257,7 @@ export function DisclosureExtraSection() {
               <Button variant="outline">Toggle</Button>
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <div className="mt-2 rounded-lg border p-3 text-sm">Hidden body</div>
+              <div {...stylex.props(galleryStyles.case11)}>Hidden body</div>
             </CollapsibleContent>
           </Collapsible>
         </Case>
@@ -251,8 +266,8 @@ export function DisclosureExtraSection() {
       <CaseGroup title="scroll area">
         <CaseRow>
           <Case name="scroll-area-always-vertical" width={280}>
-            <ScrollArea type="always" className="h-40 rounded-lg border p-3">
-              <div className="space-y-2 text-sm">
+            <ScrollArea type="always" sx={galleryStyles.case12}>
+              <div {...stylex.props(galleryStyles.case13)}>
                 {Array.from({ length: 16 }, (_, index) => (
                   <p key={index}>Row {index + 1}</p>
                 ))}
@@ -260,15 +275,19 @@ export function DisclosureExtraSection() {
             </ScrollArea>
           </Case>
           <Case name="scroll-area-always-horizontal" width={280}>
-            <ScrollArea type="always" className="rounded-lg border p-3">
-              <div className="w-[520px] text-sm">
+            <ScrollArea type="always" sx={galleryStyles.case14}>
+              <div
+                className={[stylex.props(galleryStyles.case15).className, 'w-explicit'].join(' ')}
+              >
                 A single line of content that is much wider than the area holding it.
               </div>
             </ScrollArea>
           </Case>
           <Case name="scroll-area-always-both" width={280}>
-            <ScrollArea type="always" className="h-40 rounded-lg border p-3">
-              <div className="w-[520px] space-y-2 text-sm">
+            <ScrollArea type="always" sx={galleryStyles.case16}>
+              <div
+                className={[stylex.props(galleryStyles.case17).className, 'w-explicit'].join(' ')}
+              >
                 {Array.from({ length: 16 }, (_, index) => (
                   <p key={index}>A wide row number {index + 1} that does not wrap</p>
                 ))}
@@ -278,8 +297,8 @@ export function DisclosureExtraSection() {
         </CaseRow>
         <CaseRow>
           <Case name="scroll-area-focus-target" width={280}>
-            <ScrollArea type="always" className="h-24 rounded-lg border p-3">
-              <div className="space-y-2 text-sm">
+            <ScrollArea type="always" sx={galleryStyles.case18}>
+              <div {...stylex.props(galleryStyles.case19)}>
                 {Array.from({ length: 10 }, (_, index) => (
                   <p key={index}>Row {index + 1}</p>
                 ))}
@@ -287,8 +306,8 @@ export function DisclosureExtraSection() {
             </ScrollArea>
           </Case>
           <Case name="scroll-area-inherited-radius" width={280}>
-            <ScrollArea type="always" className="h-24 rounded-3xl border">
-              <div className="space-y-2 bg-muted p-3 text-sm">
+            <ScrollArea type="always" sx={galleryStyles.case20}>
+              <div {...stylex.props(galleryStyles.case21)}>
                 {Array.from({ length: 10 }, (_, index) => (
                   <p key={index}>Row {index + 1}</p>
                 ))}
@@ -300,56 +319,56 @@ export function DisclosureExtraSection() {
 
       <CaseGroup title="resizable">
         <Case name="resizable-vertical-handle" width={480}>
-          <ResizablePanelGroup orientation="vertical" className="h-40 rounded-lg border">
+          <ResizablePanelGroup orientation="vertical" sx={galleryStyles.case22}>
             <ResizablePanel defaultSize={40}>
-              <div className="p-3 text-sm">Top</div>
+              <div {...stylex.props(galleryStyles.case23)}>Top</div>
             </ResizablePanel>
             <ResizableHandle withHandle />
             <ResizablePanel defaultSize={60}>
-              <div className="p-3 text-sm">Bottom</div>
+              <div {...stylex.props(galleryStyles.case24)}>Bottom</div>
             </ResizablePanel>
           </ResizablePanelGroup>
         </Case>
         <Case name="resizable-handle-focus-target" width={480}>
-          <ResizablePanelGroup orientation="horizontal" className="h-40 rounded-lg border">
+          <ResizablePanelGroup orientation="horizontal" sx={galleryStyles.case25}>
             <ResizablePanel defaultSize={50}>
-              <div className="p-3 text-sm">Left</div>
+              <div {...stylex.props(galleryStyles.case26)}>Left</div>
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel defaultSize={50}>
-              <div className="p-3 text-sm">Right</div>
+              <div {...stylex.props(galleryStyles.case27)}>Right</div>
             </ResizablePanel>
           </ResizablePanelGroup>
         </Case>
         <Case name="resizable-three-panels" width={480}>
-          <ResizablePanelGroup orientation="horizontal" className="h-40 rounded-lg border">
+          <ResizablePanelGroup orientation="horizontal" sx={galleryStyles.case28}>
             <ResizablePanel defaultSize={25}>
-              <div className="p-3 text-sm">One</div>
+              <div {...stylex.props(galleryStyles.case29)}>One</div>
             </ResizablePanel>
             <ResizableHandle withHandle />
             <ResizablePanel defaultSize={50}>
-              <div className="p-3 text-sm">Two</div>
+              <div {...stylex.props(galleryStyles.case30)}>Two</div>
             </ResizablePanel>
             <ResizableHandle withHandle />
             <ResizablePanel defaultSize={25}>
-              <div className="p-3 text-sm">Three</div>
+              <div {...stylex.props(galleryStyles.case31)}>Three</div>
             </ResizablePanel>
           </ResizablePanelGroup>
         </Case>
         <Case name="resizable-nested" width={480}>
-          <ResizablePanelGroup orientation="horizontal" className="h-40 rounded-lg border">
+          <ResizablePanelGroup orientation="horizontal" sx={galleryStyles.case32}>
             <ResizablePanel defaultSize={40}>
-              <div className="p-3 text-sm">Side</div>
+              <div {...stylex.props(galleryStyles.case33)}>Side</div>
             </ResizablePanel>
             <ResizableHandle withHandle />
             <ResizablePanel defaultSize={60}>
               <ResizablePanelGroup orientation="vertical">
                 <ResizablePanel defaultSize={50}>
-                  <div className="p-3 text-sm">Inner top</div>
+                  <div {...stylex.props(galleryStyles.case34)}>Inner top</div>
                 </ResizablePanel>
                 <ResizableHandle withHandle />
                 <ResizablePanel defaultSize={50}>
-                  <div className="p-3 text-sm">Inner bottom</div>
+                  <div {...stylex.props(galleryStyles.case35)}>Inner bottom</div>
                 </ResizablePanel>
               </ResizablePanelGroup>
             </ResizablePanel>
@@ -359,3 +378,102 @@ export function DisclosureExtraSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: { width: '1.25rem', height: '1.25rem' },
+  case2: { fontSize: '10px', lineHeight: 'inherit' },
+  case3: { fontSize: '10px', lineHeight: 'inherit' },
+  case4: { display: 'flex', alignItems: 'center', gap: '0.5rem' },
+  case5: { width: '1rem', height: '1rem', color: colors.mutedForeground },
+  case6: { fontSize: '0.875rem', lineHeight: typography.smLineHeight, fontFamily: fonts.mono },
+  case7: { color: colors.mutedForeground },
+  case8: { fontSize: '10px', lineHeight: 'inherit' },
+  case9: { fontSize: '10px', lineHeight: 'inherit' },
+  case10: {
+    marginTop: '0.5rem',
+    borderRadius: radius.lg,
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    padding: '0.75rem',
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+  },
+  case11: {
+    marginTop: '0.5rem',
+    borderRadius: radius.lg,
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    padding: '0.75rem',
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+  },
+  case12: {
+    height: '10rem',
+    borderRadius: radius.lg,
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    padding: '0.75rem',
+  },
+  case13: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '0.5rem' },
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+  },
+  case14: { borderRadius: radius.lg, borderWidth: '1px', borderStyle: 'solid', padding: '0.75rem' },
+  case15: { width: '520px', fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case16: {
+    height: '10rem',
+    borderRadius: radius.lg,
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    padding: '0.75rem',
+  },
+  case17: {
+    width: '520px',
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '0.5rem' },
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+  },
+  case18: {
+    height: '6rem',
+    borderRadius: radius.lg,
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    padding: '0.75rem',
+  },
+  case19: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '0.5rem' },
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+  },
+  case20: { height: '6rem', borderRadius: radius['3xl'], borderWidth: '1px', borderStyle: 'solid' },
+  case21: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '0.5rem' },
+    backgroundColor: colors.muted,
+    padding: '0.75rem',
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+  },
+  case22: { height: '10rem', borderRadius: radius.lg, borderWidth: '1px', borderStyle: 'solid' },
+  case23: { padding: '0.75rem', fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case24: { padding: '0.75rem', fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case25: { height: '10rem', borderRadius: radius.lg, borderWidth: '1px', borderStyle: 'solid' },
+  case26: { padding: '0.75rem', fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case27: { padding: '0.75rem', fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case28: { height: '10rem', borderRadius: radius.lg, borderWidth: '1px', borderStyle: 'solid' },
+  case29: { padding: '0.75rem', fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case30: { padding: '0.75rem', fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case31: { padding: '0.75rem', fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case32: { height: '10rem', borderRadius: radius.lg, borderWidth: '1px', borderStyle: 'solid' },
+  case33: { padding: '0.75rem', fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case34: { padding: '0.75rem', fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case35: { padding: '0.75rem', fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+})

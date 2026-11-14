@@ -1,9 +1,9 @@
 import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
+import type { Sx } from '@/lib/sx'
 import { Combobox as ComboboxPrimitive } from '@base-ui/react'
 
 import { colors, motion, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
   InputGroup,
@@ -105,55 +105,63 @@ const exit = stylex.keyframes({
   },
 })
 
-/**
- * `[&_svg:not([class*='size-'])]:size-4` on the trigger, and the `size-4` of
- * the chevron it renders — both stay Tailwind classes (PR 32).
- *
- * The first styles a `lucide` icon the call site supplies. The second is the
- * `[class*='size-']` contract seen from the child's side: `ComboboxInput`
- * renders this trigger inside an `InputGroupButton size="icon-xs"`, whose own
- * `[&_svg:not([class*='size-'])]:size-3` would start matching — and take the
- * chevron from 16px down to 12px — the moment the class became a StyleX hash
- * (`conventions.md`, "A class name can itself be the contract").
- */
-const TRIGGER_ICON_CLASSES = "[&_svg:not([class*='size-'])]:size-4"
-const CHEVRON_SIZE_CLASS = 'size-4'
-
-/**
- * `w-auto` on the `InputGroup`, and the two classes on the trigger's
- * `InputGroupButton`, kept as Tailwind.
- *
- * All three sit on an element `input-group.tsx` owns: `w-auto` overrides that
- * component's own `w-full`, and
- * `group-has-data-[slot=combobox-clear]/input-group:hidden` selects through the
- * `group/input-group` marker class it writes. They go with `input-group.tsx`'s
- * own bridge in PR 32.
- */
-const INPUT_GROUP_CLASS = 'w-auto'
-const INPUT_GROUP_BUTTON_CLASSES =
-  'group-has-data-[slot=combobox-clear]/input-group:hidden data-pressed:bg-transparent'
-
-/**
- * The popup's six `*:data-[slot=input-group]:…` rules, kept as Tailwind
- * classes: they style the `InputGroup` a caller nests inside the popup, an
- * element this component does not own (PR 32).
- */
-const CONTENT_INPUT_GROUP_CLASSES =
-  '*:data-[slot=input-group]:bg-input/30 *:data-[slot=input-group]:border-input/30 *:data-[slot=input-group]:m-1 *:data-[slot=input-group]:mb-0 *:data-[slot=input-group]:h-8 *:data-[slot=input-group]:shadow-none'
-
-/**
- * The `ComboboxItem` classes that stay Tailwind (PR 32):
- * `not-data-[variant=destructive]:data-highlighted:**:text-accent-foreground`
- * colours every descendant, and the two `[&_svg…]` rules style the caller's
- * icon.
- */
-const ITEM_CLASSES =
-  "not-data-[variant=destructive]:data-highlighted:**:text-accent-foreground [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0"
+const descendantStyles = stylex.create({
+  icons: {
+    width: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+    height: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+    pointerEvents: { default: null, ':is(*) svg': 'none' },
+    flexShrink: { default: null, ':is(*) svg': 0 },
+  },
+  item: {
+    color: {
+      default: null,
+      ':is(*):not([data-variant="destructive"])[data-highlighted] *': colors.accentForeground,
+    },
+  },
+  content: {
+    backgroundColor: {
+      default: null,
+      ':is(*)>[data-slot="input-group"]': 'color-mix(in oklab, var(--input) 30%, transparent)',
+    },
+    borderColor: {
+      default: null,
+      ':is(*)>[data-slot="input-group"]': 'color-mix(in oklab, var(--input) 30%, transparent)',
+    },
+    margin: { default: null, ':is(*)>[data-slot="input-group"]': '0.25rem' },
+    marginBottom: { default: null, ':is(*)>[data-slot="input-group"]': 0 },
+    height: { default: null, ':is(*)>[data-slot="input-group"]': '2rem' },
+    boxShadow: {
+      default: null,
+      ':is(*)>[data-slot="input-group"]': '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 #0000',
+    },
+  },
+})
+const TRIGGER_ICON_CLASSES = stylex.props(descendantStyles.icons).className
+const CONTENT_INPUT_GROUP_CLASSES = stylex.props(descendantStyles.content).className
+const ITEM_CLASSES = [
+  stylex.props(descendantStyles.icons).className,
+  stylex.props(descendantStyles.item).className,
+].join(' ')
 
 const styles = stylex.create({
+  inputGroup: { width: 'auto' },
+  inputGroupButton: {
+    display: {
+      default: 'flex',
+      ':is(.group\\/input-group:has([data-slot="combobox-clear"]) *)': 'none',
+    },
+    backgroundColor: {
+      default: null,
+      '@media (hover: hover)': { default: null, ':hover': colors.muted },
+      ':is([aria-expanded="true"])': colors.muted,
+      '[data-pressed]': 'transparent',
+    },
+  },
   // `text-muted-foreground pointer-events-none` on the chevron this component
   // renders itself; its `size-4` stays a class, see `CHEVRON_SIZE_CLASS`.
   chevron: {
+    width: '1rem',
+    height: '1rem',
     color: colors.mutedForeground,
     pointerEvents: 'none',
   },
@@ -431,29 +439,59 @@ function ComboboxValue({ ...props }: ComboboxPrimitive.Value.Props) {
   return <ComboboxPrimitive.Value data-slot="combobox-value" {...props} />
 }
 
-function ComboboxTrigger({ className, children, ...props }: ComboboxPrimitive.Trigger.Props) {
+function ComboboxTrigger({
+  className,
+  style,
+  children,
+  sx: sxProp,
+  ...props
+}: ComboboxPrimitive.Trigger.Props & { sx?: Sx }) {
+  const sx = stylex.props(sxProp)
   const icon = stylex.props(styles.chevron)
 
   return (
     <ComboboxPrimitive.Trigger
       data-slot="combobox-trigger"
-      className={cn(TRIGGER_ICON_CLASSES, className)}
+      className={[TRIGGER_ICON_CLASSES, sx.className, className].filter(Boolean).join(' ')}
+      style={
+        typeof style === 'function'
+          ? (state) => ({ ...sx.style, ...style(state) })
+          : sx.style || style
+            ? { ...sx.style, ...style }
+            : undefined
+      }
       {...props}
     >
       {children}
-      <ChevronDownIcon className={cn(CHEVRON_SIZE_CLASS, icon.className)} style={icon.style} />
+      <ChevronDownIcon
+        className={['size-explicit', icon.className].filter(Boolean).join(' ')}
+        style={icon.style}
+      />
     </ComboboxPrimitive.Trigger>
   )
 }
 
-function ComboboxClear({ className, ...props }: ComboboxPrimitive.Clear.Props) {
+function ComboboxClear({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: ComboboxPrimitive.Clear.Props & { sx?: Sx }) {
+  const sx = stylex.props(sxProp)
   const icon = stylex.props(styles.icon)
 
   return (
     <ComboboxPrimitive.Clear
       data-slot="combobox-clear"
       render={<InputGroupButton variant="ghost" size="icon-xs" />}
-      className={cn(className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
+      style={
+        typeof style === 'function'
+          ? (state) => ({ ...sx.style, ...style(state) })
+          : sx.style || style
+            ? { ...sx.style, ...style }
+            : undefined
+      }
       {...props}
     >
       <XIcon className={icon.className} style={icon.style} />
@@ -463,17 +501,22 @@ function ComboboxClear({ className, ...props }: ComboboxPrimitive.Clear.Props) {
 
 function ComboboxInput({
   className,
+  sx: sxProp,
   children,
   disabled = false,
   showTrigger = true,
   showClear = false,
   ...props
 }: ComboboxPrimitive.Input.Props & {
+  sx?: Sx
   showTrigger?: boolean
   showClear?: boolean
 }) {
   return (
-    <InputGroup className={cn(INPUT_GROUP_CLASS, className)}>
+    <InputGroup
+      sx={[styles.inputGroup, sxProp]}
+      className={typeof className === 'string' ? className : undefined}
+    >
       <ComboboxPrimitive.Input render={<InputGroupInput disabled={disabled} />} {...props} />
       <InputGroupAddon align="inline-end">
         {showTrigger && (
@@ -482,7 +525,7 @@ function ComboboxInput({
             variant="ghost"
             asChild
             data-slot="input-group-button"
-            className={INPUT_GROUP_BUTTON_CLASSES}
+            sx={styles.inputGroupButton}
             disabled={disabled}
           >
             <ComboboxTrigger />
@@ -503,14 +546,15 @@ function ComboboxContent({
   align = 'start',
   alignOffset = 0,
   anchor,
+  sx: sxProp,
   ...props
 }: ComboboxPrimitive.Popup.Props &
   Pick<
     ComboboxPrimitive.Positioner.Props,
     'side' | 'align' | 'sideOffset' | 'alignOffset' | 'anchor'
-  >) {
+  > & { sx?: Sx }) {
   const positioner = stylex.props(styles.positioner)
-  const sx = stylex.props(styles.content)
+  const sx = stylex.props(styles.content, sxProp)
 
   return (
     <ComboboxPrimitive.Portal>
@@ -526,7 +570,9 @@ function ComboboxContent({
         <ComboboxPrimitive.Popup
           data-slot="combobox-content"
           data-chips={!!anchor}
-          className={cn(CONTENT_INPUT_GROUP_CLASSES, sx.className, className)}
+          className={[CONTENT_INPUT_GROUP_CLASSES, sx.className, className]
+            .filter(Boolean)
+            .join(' ')}
           style={sx.style || style ? { ...sx.style, ...style } : undefined}
           {...props}
         />
@@ -535,28 +581,39 @@ function ComboboxContent({
   )
 }
 
-function ComboboxList({ className, style, ...props }: ComboboxPrimitive.List.Props) {
-  const sx = stylex.props(styles.list)
+function ComboboxList({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: ComboboxPrimitive.List.Props & { sx?: Sx }) {
+  const sx = stylex.props(styles.list, sxProp)
 
   return (
     <ComboboxPrimitive.List
       data-slot="combobox-list"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function ComboboxItem({ className, style, children, ...props }: ComboboxPrimitive.Item.Props) {
-  const sx = stylex.props(styles.item)
+function ComboboxItem({
+  className,
+  style,
+  children,
+  sx: sxProp,
+  ...props
+}: ComboboxPrimitive.Item.Props & { sx?: Sx }) {
+  const sx = stylex.props(styles.item, sxProp)
   const indicator = stylex.props(styles.itemIndicator)
   const icon = stylex.props(styles.icon)
 
   return (
     <ComboboxPrimitive.Item
       data-slot="combobox-item"
-      className={cn(ITEM_CLASSES, sx.className, className)}
+      className={[ITEM_CLASSES, sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >
@@ -570,17 +627,41 @@ function ComboboxItem({ className, style, children, ...props }: ComboboxPrimitiv
   )
 }
 
-function ComboboxGroup({ className, ...props }: ComboboxPrimitive.Group.Props) {
-  return <ComboboxPrimitive.Group data-slot="combobox-group" className={cn(className)} {...props} />
+function ComboboxGroup({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: ComboboxPrimitive.Group.Props & { sx?: Sx }) {
+  const sx = stylex.props(sxProp)
+  return (
+    <ComboboxPrimitive.Group
+      data-slot="combobox-group"
+      className={[sx.className, className].filter(Boolean).join(' ')}
+      style={
+        typeof style === 'function'
+          ? (state) => ({ ...sx.style, ...style(state) })
+          : sx.style || style
+            ? { ...sx.style, ...style }
+            : undefined
+      }
+      {...props}
+    />
+  )
 }
 
-function ComboboxLabel({ className, style, ...props }: ComboboxPrimitive.GroupLabel.Props) {
-  const sx = stylex.props(styles.label)
+function ComboboxLabel({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: ComboboxPrimitive.GroupLabel.Props & { sx?: Sx }) {
+  const sx = stylex.props(styles.label, sxProp)
 
   return (
     <ComboboxPrimitive.GroupLabel
       data-slot="combobox-label"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -591,26 +672,36 @@ function ComboboxCollection({ ...props }: ComboboxPrimitive.Collection.Props) {
   return <ComboboxPrimitive.Collection data-slot="combobox-collection" {...props} />
 }
 
-function ComboboxEmpty({ className, style, ...props }: ComboboxPrimitive.Empty.Props) {
-  const sx = stylex.props(styles.empty)
+function ComboboxEmpty({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: ComboboxPrimitive.Empty.Props & { sx?: Sx }) {
+  const sx = stylex.props(styles.empty, sxProp)
 
   return (
     <ComboboxPrimitive.Empty
       data-slot="combobox-empty"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function ComboboxSeparator({ className, style, ...props }: ComboboxPrimitive.Separator.Props) {
-  const sx = stylex.props(styles.separator)
+function ComboboxSeparator({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: ComboboxPrimitive.Separator.Props & { sx?: Sx }) {
+  const sx = stylex.props(styles.separator, sxProp)
 
   return (
     <ComboboxPrimitive.Separator
       data-slot="combobox-separator"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -620,14 +711,16 @@ function ComboboxSeparator({ className, style, ...props }: ComboboxPrimitive.Sep
 function ComboboxChips({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentPropsWithRef<typeof ComboboxPrimitive.Chips> & ComboboxPrimitive.Chips.Props) {
-  const sx = stylex.props(styles.chips)
+}: React.ComponentPropsWithRef<typeof ComboboxPrimitive.Chips> &
+  ComboboxPrimitive.Chips.Props & { sx?: Sx }) {
+  const sx = stylex.props(styles.chips, sxProp)
 
   return (
     <ComboboxPrimitive.Chips
       data-slot="combobox-chips"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -639,17 +732,18 @@ function ComboboxChip({
   style,
   children,
   showRemove = true,
+  sx: sxProp,
   ...props
 }: ComboboxPrimitive.Chip.Props & {
   showRemove?: boolean
-}) {
-  const sx = stylex.props(styles.chip)
+} & { sx?: Sx }) {
+  const sx = stylex.props(styles.chip, sxProp)
   const icon = stylex.props(styles.icon)
 
   return (
     <ComboboxPrimitive.Chip
       data-slot="combobox-chip"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >
@@ -666,13 +760,18 @@ function ComboboxChip({
   )
 }
 
-function ComboboxChipsInput({ className, style, ...props }: ComboboxPrimitive.Input.Props) {
-  const sx = stylex.props(styles.chipsInput)
+function ComboboxChipsInput({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: ComboboxPrimitive.Input.Props & { sx?: Sx }) {
+  const sx = stylex.props(styles.chipsInput, sxProp)
 
   return (
     <ComboboxPrimitive.Input
       data-slot="combobox-chip-input"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />

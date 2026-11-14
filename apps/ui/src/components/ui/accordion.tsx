@@ -2,8 +2,8 @@ import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
 import { Accordion as AccordionPrimitive } from 'radix-ui'
 
-import { colors, motion, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import { colors, motion, radius, typography } from '@/styles/tokens.stylex'
+import type { Sx } from '@/lib/sx'
 import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react'
 
 /**
@@ -72,6 +72,8 @@ const styles = stylex.create({
   },
 
   trigger: {
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
     // `rounded-lg`
     borderRadius: radius.lg,
     // `py-2.5` — logical, as Tailwind writes it
@@ -147,6 +149,8 @@ const styles = stylex.create({
   // `data-open:animate-accordion-down data-closed:animate-accordion-up
   //  overflow-hidden`
   content: {
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
     animationName: {
       default: null,
       ':is([data-state="open"])': accordionDown,
@@ -190,45 +194,30 @@ const styles = stylex.create({
 
   // `pt-0 pb-2.5 h-(--radix-accordion-content-height)`
   contentInner: {
+    textDecorationLine: { default: null, ':is(*) a': 'underline' },
+    textUnderlineOffset: { default: null, ':is(*) a': '3px' },
+    color: {
+      default: null,
+      '@media (hover: hover)': { default: null, ':is(*) a:hover': colors.foreground },
+    },
+    marginBottom: { default: null, ':is(*) p:not(:last-child)': '1rem' },
     paddingTop: '0rem',
     paddingBottom: '0.625rem',
     height: 'var(--radix-accordion-content-height)',
   },
 })
 
-/**
- * The rules that style content the **caller** puts inside the body, kept as
- * Tailwind classes (PR 09).
- *
- * A StyleX rule lives in a `priorityN` layer, below `utilities`, so any utility
- * on the caller's own link or paragraph would outrank it — the opposite of
- * today, where these win on specificity. They go in PR 32.
- */
-const CONTENT_BODY_CLASSES =
-  '[&_a]:hover:text-foreground [&_a]:underline [&_a]:underline-offset-3 [&_p:not(:last-child)]:mb-4'
-
-/**
- * `text-sm` on the trigger and on the body, also kept as Tailwind (PR 09).
- *
- * This is the paired-line-height trap: Tailwind passes the *ratio*
- * `calc(1.25 / 0.875)` down to a descendant that has a font size of its own and
- * no line height, while a StyleX `1.25rem` passes a *length*. Both elements are
- * sized by content the caller supplies, and the `accordion-inherited-leading`
- * case measures the difference — a trigger holding a ten-pixel span is 38px one
- * way and 42px the other. PR 32.
- */
-const TEXT_SM_CLASS = 'text-sm'
-
 function Accordion({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof AccordionPrimitive.Root>) {
-  const sx = stylex.props(styles.root)
+}: React.ComponentProps<typeof AccordionPrimitive.Root> & { sx?: Sx }) {
+  const sx = stylex.props(styles.root, sxProp)
   return (
     <AccordionPrimitive.Root
       data-slot="accordion"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -238,13 +227,14 @@ function Accordion({
 function AccordionItem({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof AccordionPrimitive.Item>) {
-  const sx = stylex.props(styles.item)
+}: React.ComponentProps<typeof AccordionPrimitive.Item> & { sx?: Sx }) {
+  const sx = stylex.props(styles.item, sxProp)
   return (
     <AccordionPrimitive.Item
       data-slot="accordion-item"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -255,15 +245,16 @@ function AccordionTrigger({
   className,
   style,
   children,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof AccordionPrimitive.Trigger>) {
+}: React.ComponentProps<typeof AccordionPrimitive.Trigger> & { sx?: Sx }) {
   const headerSx = stylex.props(styles.header)
-  const sx = stylex.props(styles.trigger)
+  const sx = stylex.props(styles.trigger, sxProp)
   return (
     <AccordionPrimitive.Header className={headerSx.className}>
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
-        className={cn(GROUP_ACCORDION_TRIGGER, TEXT_SM_CLASS, sx.className, className)}
+        className={[GROUP_ACCORDION_TRIGGER, sx.className, className].filter(Boolean).join(' ')}
         style={sx.style || style ? { ...sx.style, ...style } : undefined}
         {...props}
       >
@@ -284,20 +275,21 @@ function AccordionTrigger({
 function AccordionContent({
   className,
   children,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof AccordionPrimitive.Content>) {
+}: React.ComponentProps<typeof AccordionPrimitive.Content> & { sx?: Sx }) {
   const sx = stylex.props(styles.content)
-  const innerSx = stylex.props(styles.contentInner)
+  const innerSx = stylex.props(styles.contentInner, sxProp)
   // `style` is deliberately **not** destructured: it reached the Radix
   // `Content` element through the spread before this migration, and the inner
   // `<div>` only ever took `className`.
   return (
     <AccordionPrimitive.Content
       data-slot="accordion-content"
-      className={cn(TEXT_SM_CLASS, sx.className)}
+      className={[sx.className].filter(Boolean).join(' ')}
       {...props}
     >
-      <div className={cn(CONTENT_BODY_CLASSES, innerSx.className, className)}>{children}</div>
+      <div className={[innerSx.className, className].filter(Boolean).join(' ')}>{children}</div>
     </AccordionPrimitive.Content>
   )
 }

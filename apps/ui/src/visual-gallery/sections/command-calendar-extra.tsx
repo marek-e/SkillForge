@@ -1,3 +1,5 @@
+import { radius } from '@/styles/tokens.stylex'
+import * as stylex from '@stylexjs/stylex'
 import { useState } from 'react'
 import { GitCommitIcon, SearchIcon, SettingsIcon, SparklesIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -55,11 +57,11 @@ export function CommandCalendarExtraSection() {
   const [dialogOpen, setDialogOpen] = useState(false)
 
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="command palette">
         <CaseRow>
           <Case name="cmdcal-command-full" width={360}>
-            <div className="rounded-xl ring-1 ring-foreground/10">
+            <div {...stylex.props(galleryStyles.case1)}>
               <Command>
                 <CommandInput placeholder="Search commands…" />
                 <CommandList>
@@ -90,7 +92,7 @@ export function CommandCalendarExtraSection() {
           </Case>
 
           <Case name="cmdcal-command-selected" width={360}>
-            <div className="rounded-xl ring-1 ring-foreground/10">
+            <div {...stylex.props(galleryStyles.case2)}>
               <Command value="verify">
                 <CommandInput placeholder="Search commands…" />
                 <CommandList>
@@ -112,7 +114,7 @@ export function CommandCalendarExtraSection() {
           </Case>
 
           <Case name="cmdcal-command-checked" width={360}>
-            <div className="rounded-xl ring-1 ring-foreground/10">
+            <div {...stylex.props(galleryStyles.case3)}>
               <Command>
                 <CommandList>
                   <CommandGroup heading="Editors">
@@ -131,7 +133,7 @@ export function CommandCalendarExtraSection() {
           </Case>
 
           <Case name="cmdcal-command-empty" width={360}>
-            <div className="rounded-xl ring-1 ring-foreground/10">
+            <div {...stylex.props(galleryStyles.case4)}>
               <Command>
                 <CommandInput
                   placeholder="Search commands…"
@@ -235,3 +237,30 @@ export function CommandCalendarExtraSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: {
+    borderRadius: radius.xl,
+    boxShadow:
+      '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent), 0 0 #0000',
+  },
+  case2: {
+    borderRadius: radius.xl,
+    boxShadow:
+      '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent), 0 0 #0000',
+  },
+  case3: {
+    borderRadius: radius.xl,
+    boxShadow:
+      '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent), 0 0 #0000',
+  },
+  case4: {
+    borderRadius: radius.xl,
+    boxShadow:
+      '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent), 0 0 #0000',
+  },
+})

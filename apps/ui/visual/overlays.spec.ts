@@ -1234,3 +1234,70 @@ test.describe('cartoast toaster', () => {
     })
   }
 })
+
+/**
+ * The sidebar's two portalled surfaces (PR 17).
+ *
+ * Below 48rem `Sidebar` renders a `Sheet` instead of the fixed container, and
+ * the caller's `w-(--sidebar-width) p-0 [&>button]:hidden` overrides only exist
+ * while that sheet is open. On the desktop side, a collapsed `SidebarMenuButton`
+ * is the one place a tooltip is not `hidden`.
+ */
+test.describe('sidebar-extra overlays', () => {
+  for (const theme of THEMES) {
+    test(`sidebarx mobile sheet ${theme}`, async ({ page }, testInfo) => {
+      test.skip(testInfo.project.name !== 'mobile', 'The mobile branch needs a 390px viewport.')
+      await gotoGallery(page, 'sidebar-extra', { theme })
+
+      await page
+        .locator('[data-gallery-case="sidebarx-expanded-icon"] [data-slot="sidebar-trigger"]')
+        .click()
+      await page.locator('[data-slot="sidebar"][data-mobile="true"]').waitFor({ state: 'visible' })
+      await settle(page)
+      await expectShot(page, `sidebarx-mobile-sheet-${theme}.png`, { fullPage: true })
+
+      await page.keyboard.press('Escape')
+      await settle(page)
+      await expectShot(page, `sidebarx-mobile-sheet-closed-${theme}.png`, { fullPage: true })
+    })
+
+    test(`sidebarx mobile sheet right ${theme}`, async ({ page }, testInfo) => {
+      test.skip(testInfo.project.name !== 'mobile', 'The mobile branch needs a 390px viewport.')
+      await gotoGallery(page, 'sidebar-extra', { theme })
+
+      await page
+        .locator('[data-gallery-case="sidebarx-side-right"] [data-slot="sidebar-trigger"]')
+        .click()
+      await page.locator('[data-slot="sidebar"][data-mobile="true"]').waitFor({ state: 'visible' })
+      await settle(page)
+      await expectShot(page, `sidebarx-mobile-sheet-right-${theme}.png`, { fullPage: true })
+    })
+
+    test(`sidebarx collapsed tooltip ${theme}`, async ({ page }, testInfo) => {
+      test.skip(testInfo.project.name !== 'desktop', 'The shell renders its mobile sheet at 390.')
+      await gotoGallery(page, 'sidebar-extra', { theme })
+
+      await page
+        .locator('[data-gallery-case="sidebarx-collapsed-icon"] [data-slot="sidebar-menu-button"]')
+        .first()
+        .hover()
+      await page.locator('[data-slot="tooltip-content"]').first().waitFor({ state: 'visible' })
+      await settle(page)
+      await expectShot(page, `sidebarx-collapsed-tooltip-${theme}.png`, { fullPage: true })
+    })
+
+    test(`sidebarx expanded tooltip hidden ${theme}`, async ({ page }, testInfo) => {
+      test.skip(testInfo.project.name !== 'desktop', 'The shell renders its mobile sheet at 390.')
+      await gotoGallery(page, 'sidebar-extra', { theme })
+
+      // `hidden` is passed whenever the sidebar is expanded, so hovering an
+      // expanded item must portal nothing at all.
+      await page
+        .locator('[data-gallery-case="sidebarx-expanded-icon"] [data-slot="sidebar-menu-button"]')
+        .first()
+        .hover()
+      await settle(page)
+      await expectShot(page, `sidebarx-expanded-tooltip-${theme}.png`, { fullPage: true })
+    })
+  }
+})

@@ -212,11 +212,6 @@ const buttonStyles = stylex.create({
  *   render them at 12px (`button.tsx`, PR 04; `conventions.md`, "A class name
  *   can itself be the contract").
  */
-const EDITOR_TRIGGER_CLASSES = 'w-[160px]'
-const EDITOR_INPUT_CLASSES = 'h-7 w-[140px]'
-const BADGE_CLASSES = 'gap-1.5'
-const INPUT_CLASSES = 'flex-1'
-const ACTION_ICON_SIZE_CLASS = 'size-3.5'
 
 interface ProjectOverviewCardProps {
   project: Project
@@ -289,9 +284,19 @@ export function ProjectOverviewCard({
                 onClick={handleCopyPath}
               >
                 {copied ? (
-                  <CheckIcon className={ACTION_ICON_SIZE_CLASS} />
+                  <CheckIcon
+                    className={[
+                      'size-explicit',
+                      stylex.props(overrideStyles.ACTION_ICON_SIZE_CLASS).className,
+                    ].join(' ')}
+                  />
                 ) : (
-                  <CopyIcon className={ACTION_ICON_SIZE_CLASS} />
+                  <CopyIcon
+                    className={[
+                      'size-explicit',
+                      stylex.props(overrideStyles.ACTION_ICON_SIZE_CLASS).className,
+                    ].join(' ')}
+                  />
                 )}
               </Button>
             </TooltipTrigger>
@@ -307,7 +312,12 @@ export function ProjectOverviewCard({
                     size="icon-xs"
                     onClick={() => getElectronAPI()?.revealInFinder(project.path)}
                   >
-                    <FolderOpenIcon className={ACTION_ICON_SIZE_CLASS} />
+                    <FolderOpenIcon
+                      className={[
+                        'size-explicit',
+                        stylex.props(overrideStyles.ACTION_ICON_SIZE_CLASS).className,
+                      ].join(' ')}
+                    />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Reveal in Finder</TooltipContent>
@@ -316,7 +326,12 @@ export function ProjectOverviewCard({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button variant="ghost" size="icon-xs" onClick={handleOpenInEditor}>
-                    <ExternalLinkIcon className={ACTION_ICON_SIZE_CLASS} />
+                    <ExternalLinkIcon
+                      className={[
+                        'size-explicit',
+                        stylex.props(overrideStyles.ACTION_ICON_SIZE_CLASS).className,
+                      ].join(' ')}
+                    />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Open in editor</TooltipContent>
@@ -332,8 +347,8 @@ export function ProjectOverviewCard({
           value={project.preferredEditor}
           customCmd={project.customEditorCmd ?? ''}
           onChange={onEditorChange}
-          triggerClassName={EDITOR_TRIGGER_CLASSES}
-          inputClassName={EDITOR_INPUT_CLASSES}
+          triggerSx={overrideStyles.EDITOR_TRIGGER_CLASSES}
+          inputSx={overrideStyles.EDITOR_INPUT_CLASSES}
         />
       </div>
 
@@ -377,7 +392,7 @@ export function ProjectOverviewCard({
               onBlur={(e) => onApplyIcon(e.target.value.trim() || null)}
               placeholder="https://example.com/logo.svg"
               disabled={isIconPending}
-              className={INPUT_CLASSES}
+              sx={overrideStyles.INPUT_CLASSES}
             />
           )}
         </div>
@@ -396,7 +411,7 @@ export function ProjectOverviewCard({
             detectedTools.map((t) => {
               const config = getToolConfig(t.name)
               return (
-                <Badge key={t.name} variant="outline" className={BADGE_CLASSES}>
+                <Badge key={t.name} variant="outline" sx={overrideStyles.BADGE_CLASSES}>
                   {config.logo && (
                     <img
                       src={config.logo}
@@ -416,3 +431,11 @@ export function ProjectOverviewCard({
     </div>
   )
 }
+
+const overrideStyles = stylex.create({
+  EDITOR_TRIGGER_CLASSES: { width: '160px' },
+  EDITOR_INPUT_CLASSES: { height: '1.75rem', width: '140px' },
+  BADGE_CLASSES: { gap: '0.375rem' },
+  INPUT_CLASSES: { flexGrow: 1, flexShrink: 1, flexBasis: '0%' },
+  ACTION_ICON_SIZE_CLASS: { width: '0.875rem', height: '0.875rem' },
+})

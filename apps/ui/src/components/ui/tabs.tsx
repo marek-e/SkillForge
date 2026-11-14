@@ -1,10 +1,9 @@
 import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
-import { cva, type VariantProps } from 'class-variance-authority'
+import type { Sx } from '@/lib/sx'
 import { Tabs as TabsPrimitive } from 'radix-ui'
 
-import { colors, motion, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import { colors, motion, radius, typography } from '@/styles/tokens.stylex'
 
 /**
  * Group markers kept as literal class names (PR 09).
@@ -68,29 +67,6 @@ const RING_FOCUS_SHADOW_SM = `${NO_LAYER}, ${NO_LAYER}, ${NO_LAYER}, ${RING_FOCU
 /** the shadow reset a `line` list applies to its active trigger */
 const SHADOW_NONE = `${NO_LAYER}, ${NO_LAYER}, ${NO_LAYER}, ${NO_LAYER}, ${NO_LAYER}`
 
-/**
- * Kept **unchanged** for its `VariantProps` type, which is what lets `variant`
- * accept `null` (the same call `badge.tsx` and `alert.tsx` make). `TabsList` no
- * longer renders it; every class in the string has a comment on the StyleX
- * declaration that replaced it.
- *
- * Removing it is PR 32's job, together with `cva`, `cn` and `tailwind-merge`.
- */
-const tabsListVariants = cva(
-  'rounded-lg p-[3px] group-data-horizontal/tabs:h-8 data-[variant=line]:rounded-none group/tabs-list text-muted-foreground inline-flex w-fit items-center justify-center group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col',
-  {
-    variants: {
-      variant: {
-        default: 'bg-muted',
-        line: 'gap-1 bg-transparent',
-      },
-    },
-    defaultVariants: {
-      variant: 'default',
-    },
-  }
-)
-
 const styles = stylex.create({
   // `gap-2 flex data-horizontal:flex-col`
   root: {
@@ -144,6 +120,8 @@ const styles = stylex.create({
   },
 
   trigger: {
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
     // `gap-1.5`
     gap: '0.375rem',
     // `rounded-md`
@@ -294,6 +272,8 @@ const styles = stylex.create({
 
   // `flex-1 outline-none`
   content: {
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
     flex: 1,
     outlineStyle: 'none',
   },
@@ -304,46 +284,29 @@ const listVariantStyles = {
   line: styles.listLine,
 } as const
 
-/**
- * The classes that stay Tailwind on a trigger (PR 09).
- *
- * The three icon rules reach an element the trigger does not own, whose class
- * comes from the call site. A StyleX rule sits in a `priorityN` layer and layer
- * order beats specificity, so it would lose to any utility on the icon itself;
- * the last one does not even look at the icon's computed size, only at the
- * literal text of its `class` attribute (`conventions.md`).
- *
- * `text-sm` is the paired-line-height trap: Tailwind passes the *ratio*
- * `calc(1.25 / 0.875)` down to a descendant that has a font size of its own and
- * no line height, while a StyleX `1.25rem` passes a *length*. A ten-pixel child
- * therefore lands on 14.28px one way and 20px the other, and a vertical tab
- * trigger is sized by its content — measured at 20.28px against 26px on the
- * `tabs-inherited-leading` case.
- *
- * All four go in PR 32.
- */
-const TRIGGER_CLASSES =
-  "text-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
-
-/**
- * `text-sm` on the panel, kept for the same reason: its content is entirely the
- * caller's, so any descendant with a font size of its own inherits the ratio
- * today and would inherit a length instead. PR 32.
- */
-const CONTENT_CLASSES = 'text-sm'
+const iconStyles = stylex.create({
+  trigger: {
+    width: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+    height: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+    pointerEvents: { default: null, ':is(*) svg': 'none' },
+    flexShrink: { default: null, ':is(*) svg': 0 },
+  },
+})
+const TRIGGER_CLASSES = stylex.props(iconStyles.trigger).className
 
 function Tabs({
   className,
   style,
   orientation = 'horizontal',
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Root>) {
-  const sx = stylex.props(styles.root)
+}: React.ComponentProps<typeof TabsPrimitive.Root> & { sx?: Sx }) {
+  const sx = stylex.props(styles.root, sxProp)
   return (
     <TabsPrimitive.Root
       data-slot="tabs"
       data-orientation={orientation}
-      className={cn(GROUP_TABS, sx.className, className)}
+      className={[GROUP_TABS, sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -354,14 +317,21 @@ function TabsList({
   className,
   style,
   variant = 'default',
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.List> & VariantProps<typeof tabsListVariants>) {
-  const sx = stylex.props(styles.list, listVariantStyles[variant ?? 'default'])
+}: React.ComponentProps<typeof TabsPrimitive.List> & { variant?: 'default' | 'line' | null } & {
+  sx?: Sx
+}) {
+  const sx = stylex.props(
+    styles.list,
+    variant !== null && listVariantStyles[variant ?? 'default'],
+    sxProp
+  )
   return (
     <TabsPrimitive.List
       data-slot="tabs-list"
       data-variant={variant}
-      className={cn(GROUP_TABS_LIST, sx.className, className)}
+      className={[GROUP_TABS_LIST, sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -371,13 +341,14 @@ function TabsList({
 function TabsTrigger({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
-  const sx = stylex.props(styles.trigger)
+}: React.ComponentProps<typeof TabsPrimitive.Trigger> & { sx?: Sx }) {
+  const sx = stylex.props(styles.trigger, sxProp)
   return (
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
-      className={cn(TRIGGER_CLASSES, sx.className, className)}
+      className={[TRIGGER_CLASSES, sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -387,17 +358,18 @@ function TabsTrigger({
 function TabsContent({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Content>) {
-  const sx = stylex.props(styles.content)
+}: React.ComponentProps<typeof TabsPrimitive.Content> & { sx?: Sx }) {
+  const sx = stylex.props(styles.content, sxProp)
   return (
     <TabsPrimitive.Content
       data-slot="tabs-content"
-      className={cn(CONTENT_CLASSES, sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-export { Tabs, TabsList, TabsTrigger, TabsContent, tabsListVariants }
+export { Tabs, TabsList, TabsTrigger, TabsContent }

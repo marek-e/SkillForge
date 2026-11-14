@@ -1,3 +1,4 @@
+import * as stylex from '@stylexjs/stylex'
 import { FileTextIcon, FolderIcon, SettingsIcon, WrenchIcon } from 'lucide-react'
 import {
   Menubar,
@@ -53,7 +54,7 @@ import { Case, CaseGroup, CaseRow } from '../Case'
  */
 export function MenubarNavExtraSection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="menubar">
         <Case name="menubar-nav-bar-rich" width={520}>
           <Menubar>
@@ -136,7 +137,11 @@ export function MenubarNavExtraSection() {
               <NavigationMenuItem>
                 <NavigationMenuTrigger>Tools</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <div className="grid w-72 gap-1 p-2">
+                  <div
+                    className={[stylex.props(galleryStyles.case1).className, 'w-explicit'].join(
+                      ' '
+                    )}
+                  >
                     <NavigationMenuLink href="#" active>
                       <WrenchIcon />
                       Claude Code
@@ -149,7 +154,11 @@ export function MenubarNavExtraSection() {
               <NavigationMenuItem>
                 <NavigationMenuTrigger>Skills</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <div className="grid w-64 gap-1 p-2">
+                  <div
+                    className={[stylex.props(galleryStyles.case2).className, 'w-explicit'].join(
+                      ' '
+                    )}
+                  >
                     <NavigationMenuLink href="#">Library</NavigationMenuLink>
                     <NavigationMenuLink href="#">Drafts</NavigationMenuLink>
                   </div>
@@ -169,7 +178,11 @@ export function MenubarNavExtraSection() {
               <NavigationMenuItem>
                 <NavigationMenuTrigger>Connectors</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <div className="grid w-64 gap-1 p-2">
+                  <div
+                    className={[stylex.props(galleryStyles.case3).className, 'w-explicit'].join(
+                      ' '
+                    )}
+                  >
                     <NavigationMenuLink href="#" active>
                       Filesystem
                     </NavigationMenuLink>
@@ -210,3 +223,13 @@ export function MenubarNavExtraSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: { display: 'grid', width: '18rem', gap: '0.25rem', padding: '0.5rem' },
+  case2: { display: 'grid', width: '16rem', gap: '0.25rem', padding: '0.5rem' },
+  case3: { display: 'grid', width: '16rem', gap: '0.25rem', padding: '0.5rem' },
+})

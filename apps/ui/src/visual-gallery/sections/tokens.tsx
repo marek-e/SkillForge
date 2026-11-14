@@ -147,7 +147,7 @@ const FONT_TOKENS: readonly (readonly [string, string])[] = [
 
 export function TokensSection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="colour tokens">
         <CaseRow>
           <Case name="tokens-colors">
@@ -251,3 +251,10 @@ export function TokensSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+})

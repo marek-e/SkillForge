@@ -23,6 +23,7 @@ import { ProjectsExtraSection } from './projects-extra'
 import { OverlaysSection } from './overlays'
 import { OverlaysSheetDrawerSection } from './overlays-sheet-drawer'
 import { SelectComboboxExtraSection } from './select-combobox-extra'
+import { SidebarExtraSection } from './sidebar-extra'
 import { SidebarPartsSection } from './sidebar-parts'
 import { SkillsExtraSection } from './skills-extra'
 import { TokensSection } from './tokens'
@@ -117,6 +118,11 @@ export const GALLERY_SECTIONS: GallerySection[] = [
     id: 'command-calendar-extra',
     title: 'Command palette parts and calendar day states',
     Component: CommandCalendarExtraSection,
+  },
+  {
+    id: 'sidebar-extra',
+    title: 'Sidebar shell states, variants, rail and menu matrix',
+    Component: SidebarExtraSection,
   },
   {
     id: 'nav-bits-extra',

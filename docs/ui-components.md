@@ -1,6 +1,6 @@
 # UI Components
 
-SkillForge uses a component library built on shadcn/ui (Radix Nova style) with Tailwind CSS. All components are located in `apps/ui/src/components/`.
+SkillForge uses a component library built on shadcn/ui (Radix Nova style) with StyleX. All components are located in `apps/ui/src/components/`.
 
 ## Component Structure
 
@@ -11,7 +11,7 @@ SkillForge uses a component library built on shadcn/ui (Radix Nova style) with T
 
 ## Typography Components
 
-Located in `components/typography/`. All typography components support variant props and can be customized with className.
+Located in `components/typography/`. All typography components support variant props and can be customized with the typed `sx` prop.
 
 ### Headings
 
@@ -135,7 +135,21 @@ import { H1, P } from '@/components/typography'
 
 ## Styling
 
-Components use Tailwind CSS with CSS variables for theming. The theme is defined in `src/index.css` and supports light/dark modes.
+Components use `stylex.create` for styling and a typed `sx` prop for caller overrides. Apply native-element styles with `stylex.props`. Pass overrides through `sx` so StyleX can resolve conflicting properties; `className` is reserved for external classes and semantic selector hooks.
+
+Theme colors and exact font metrics live in `src/styles/tokens.stylex.ts`. Light/dark values live in `src/styles/global.css`, and `next-themes` switches the `.dark` class. `src/styles/reset.css` preserves the frozen browser defaults. Keep component styles out of global CSS.
+
+```tsx
+import * as stylex from '@stylexjs/stylex'
+import { colors } from '@/styles/tokens.stylex'
+import { Button } from '@/components/ui/button'
+
+const styles = stylex.create({ action: { color: colors.primary } })
+
+<Button sx={styles.action}>Save</Button>
+```
+
+The Tailwind/shadcn generator configuration and CLI were removed. Edit these components directly rather than regenerating utility classes. Preserve semantic markers such as `group`, `peer`, `size-explicit`, and `w-explicit` when existing descendant selectors depend on them.
 
 ## Electron-Specific Components
 
@@ -146,7 +160,7 @@ Components use Tailwind CSS with CSS variables for theming. The theme is defined
 A custom titlebar component that only renders when running in Electron. Features:
 
 - **Height:** 36px (h-9)
-- **Drag region:** Full bar is draggable via `.drag` class
+- **Drag region:** Full bar uses the StyleX `WebkitAppRegion` property
 - **macOS:** Reserves 80px left space for traffic lights, centered "SkillForge" title
 - **Windows/Linux:** Custom minimize/maximize/close buttons on the right
 - **Styling:** Uses sidebar theme colors for consistency
@@ -174,7 +188,7 @@ const isElectron =
 
 **`.electron-app`** — Applied to the root layout div in Electron mode. Used to offset the fixed sidebar below the titlebar.
 
-**`.drag`** / **`.no-drag`** — Control window drag regions:
+**`.drag`** / **`.no-drag`** are test hooks. StyleX applies window drag behavior to the corresponding elements:
 
 - `.drag` — Makes an element draggable (titlebar)
 - `.no-drag` — Excludes an element from dragging (buttons, inputs)

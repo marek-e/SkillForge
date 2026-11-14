@@ -1,6 +1,15 @@
 import { test } from '@playwright/test'
 import type { DataMode } from './api-mock'
-import { expectRouteShots, expectShot, gotoRoute, preparePage, settle, THEMES } from './helpers'
+import {
+  emulateNoHover,
+  expectRouteShots,
+  expectShot,
+  gotoRoute,
+  preparePage,
+  settle,
+  THEMES,
+  waitForAnimationsToFinish,
+} from './helpers'
 
 interface RouteCase {
   id: string
@@ -292,6 +301,100 @@ test.describe('routesproject route states', () => {
         await button.hover()
         await expectShot(button, `routesproject-action-${action}-hover-${theme}.png`)
       }
+    })
+  }
+})
+
+/**
+ * The states of `/` no data fixture and no gallery case can reach (PR 25).
+ *
+ * `route home {populated,empty,loading,error}` covers every branch the API
+ * decides, in both projects. Three things stay outside it:
+ *
+ * - The connected-tools grid has a middle width step. Each card is a full row
+ *   at 390px and a third of one at 1440px, so the half-width band between
+ *   40rem and 64rem is never captured — and that is exactly where a wrong
+ *   order between the two migrated media queries would hide. A gallery case
+ *   cannot reach it either, because a gallery section is laid out by the same
+ *   viewport the project fixes, so this case sets its own width (PR 27).
+ * - The three "All …" links and the skill and project rows are the route's own
+ *   hover rules, which only a pointer reaches. Each is captured hovered, and
+ *   then hovered again under a pointer that cannot hover, where Tailwind's
+ *   `@media (hover: hover)` wrapper means no hover styling at all
+ *   (`hover-media.spec.ts`).
+ * - The empty branch's inline `Tools` button is the one underlined control on
+ *   the page, and it exists only while no tool is detected.
+ *
+ * `routeshome` selects exactly these tests.
+ */
+test.describe('routeshome route local states', () => {
+  for (const theme of THEMES) {
+    test(`routeshome tools grid two column ${theme}`, async ({ page }) => {
+      await page.setViewportSize({ width: 800, height: 900 })
+      await gotoRoute(page, '/', { theme })
+      await expectRouteShots(page, `routeshome-tools-grid-2col-${theme}`)
+    })
+
+    test(`routeshome hover targets ${theme}`, async ({ page }) => {
+      await gotoRoute(page, '/', { theme })
+      const main = page.locator('main').last()
+      const allTools = main.getByRole('button', { name: 'All tools' })
+      // The second section is the skill library one; its last child is the
+      // list, whose first child is the first row.
+      const skillRow = main.locator('section').nth(1).locator('> div').last().locator('> div')
+      const firstSkillRow = skillRow.first()
+
+      await allTools.hover()
+      await expectShot(allTools, `routeshome-link-hover-${theme}.png`)
+      await firstSkillRow.hover()
+      await expectShot(firstSkillRow, `routeshome-row-hover-${theme}.png`)
+
+      await emulateNoHover(page)
+      await allTools.hover()
+      await expectShot(allTools, `routeshome-link-no-hover-${theme}.png`)
+      await firstSkillRow.hover()
+      await expectShot(firstSkillRow, `routeshome-row-no-hover-${theme}.png`)
+    })
+
+    test(`routeshome empty link hover ${theme}`, async ({ page }) => {
+      await gotoRoute(page, '/', { theme, data: 'empty' })
+      const link = page.locator('main').last().getByRole('button', { name: 'Tools', exact: true })
+      await link.hover()
+      await expectShot(link, `routeshome-empty-link-hover-${theme}.png`)
+    })
+  }
+})
+
+/**
+ * The settings route's one pointer-only state (PR 31).
+ *
+ * Each option row of the two radio groups carries a single hover rule. Nothing
+ * else in the suite reaches it: the route matrix above never moves the pointer,
+ * and `hover-media.spec.ts` only visits gallery sections, none of which mounts
+ * this route. The second case emulates a pointer that cannot hover — the
+ * shape PR 04 translated wrongly and PR 06 corrected — so a rule written
+ * without its `@media (hover: hover)` wrapper paints the row here and fails.
+ */
+test.describe('settings option row', () => {
+  for (const theme of THEMES) {
+    const firstOptionRow = (page: Parameters<typeof gotoRoute>[0]) =>
+      page.locator('[data-slot="radio-group"]').first().locator('> div').first()
+
+    test(`routeset option hover ${theme}`, async ({ page }) => {
+      await gotoRoute(page, '/settings', { theme })
+      const row = firstOptionRow(page)
+      await row.hover()
+      await waitForAnimationsToFinish(page)
+      await expectShot(row, `routeset-option-hover-${theme}.png`)
+    })
+
+    test(`routeset option no-hover ${theme}`, async ({ page }) => {
+      await gotoRoute(page, '/settings', { theme })
+      await emulateNoHover(page)
+      const row = firstOptionRow(page)
+      await row.hover()
+      await waitForAnimationsToFinish(page)
+      await expectShot(row, `routeset-option-no-hover-${theme}.png`)
     })
   }
 })

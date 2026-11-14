@@ -2,7 +2,7 @@ import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
 
 import { colors, fonts, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import type { Sx } from '@/lib/sx'
 
 /**
  * Was
@@ -69,17 +69,18 @@ const styles = stylex.create({
 const variantStyles = { default: null, block: styles.block } as const
 
 export interface CodeProps extends React.HTMLAttributes<HTMLElement> {
+  sx?: Sx
   variant?: keyof typeof variantStyles | null | undefined
 }
 
 const Code = React.forwardRef<HTMLElement, CodeProps>(
-  ({ className, style, variant, ...props }, ref) => {
+  ({ className, style, variant, sx: sxProp, ...props }, ref) => {
     const Comp = variant === 'block' ? 'pre' : 'code'
-    const sx = stylex.props(styles.base, variantStyles[variant ?? 'default'])
+    const sx = stylex.props(styles.base, variantStyles[variant ?? 'default'], sxProp)
     return (
       <Comp
         ref={ref as any}
-        className={cn(sx.className, className)}
+        className={[sx.className, className].filter(Boolean).join(' ')}
         style={sx.style || style ? { ...sx.style, ...style } : undefined}
         {...props}
       />

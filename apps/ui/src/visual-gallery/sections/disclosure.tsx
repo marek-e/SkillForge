@@ -1,3 +1,5 @@
+import { colors, radius, typography } from '@/styles/tokens.stylex'
+import * as stylex from '@stylexjs/stylex'
 import { ChevronDownIcon } from 'lucide-react'
 import {
   Accordion,
@@ -22,7 +24,7 @@ import { LONG_TEXT } from '../data'
 
 export function DisclosureSection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="tabs">
         <CaseRow>
           <Case name="tabs-default" width={360}>
@@ -124,7 +126,7 @@ export function DisclosureSection() {
               </Button>
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <div className="pt-2 text-sm text-muted-foreground">Collapsed body</div>
+              <div {...stylex.props(galleryStyles.case1)}>Collapsed body</div>
             </CollapsibleContent>
           </Collapsible>
         </Case>
@@ -137,7 +139,7 @@ export function DisclosureSection() {
               </Button>
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <div className="pt-2 text-sm text-muted-foreground">Expanded body</div>
+              <div {...stylex.props(galleryStyles.case2)}>Expanded body</div>
             </CollapsibleContent>
           </Collapsible>
         </Case>
@@ -145,8 +147,8 @@ export function DisclosureSection() {
 
       <CaseGroup title="scroll area">
         <Case name="scroll-area-vertical" width={280}>
-          <ScrollArea className="h-40 rounded-lg border p-3">
-            <div className="space-y-2 text-sm">
+          <ScrollArea sx={galleryStyles.case3}>
+            <div {...stylex.props(galleryStyles.case4)}>
               {Array.from({ length: 16 }, (_, index) => (
                 <p key={index}>Row {index + 1}</p>
               ))}
@@ -154,32 +156,32 @@ export function DisclosureSection() {
           </ScrollArea>
         </Case>
         <Case name="scroll-area-short" width={280}>
-          <ScrollArea className="h-40 rounded-lg border p-3">
-            <div className="text-sm">Content that does not overflow.</div>
+          <ScrollArea sx={galleryStyles.case5}>
+            <div {...stylex.props(galleryStyles.case6)}>Content that does not overflow.</div>
           </ScrollArea>
         </Case>
       </CaseGroup>
 
       <CaseGroup title="resizable">
         <Case name="resizable-horizontal" width={480}>
-          <ResizablePanelGroup orientation="horizontal" className="h-40 rounded-lg border">
+          <ResizablePanelGroup orientation="horizontal" sx={galleryStyles.case7}>
             <ResizablePanel defaultSize={35}>
-              <div className="p-3 text-sm">Left</div>
+              <div {...stylex.props(galleryStyles.case8)}>Left</div>
             </ResizablePanel>
             <ResizableHandle withHandle />
             <ResizablePanel defaultSize={65}>
-              <div className="p-3 text-sm">Right</div>
+              <div {...stylex.props(galleryStyles.case9)}>Right</div>
             </ResizablePanel>
           </ResizablePanelGroup>
         </Case>
         <Case name="resizable-vertical" width={480}>
-          <ResizablePanelGroup orientation="vertical" className="h-40 rounded-lg border">
+          <ResizablePanelGroup orientation="vertical" sx={galleryStyles.case10}>
             <ResizablePanel defaultSize={50}>
-              <div className="p-3 text-sm">Top</div>
+              <div {...stylex.props(galleryStyles.case11)}>Top</div>
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel defaultSize={50}>
-              <div className="p-3 text-sm">Bottom</div>
+              <div {...stylex.props(galleryStyles.case12)}>Bottom</div>
             </ResizablePanel>
           </ResizablePanelGroup>
         </Case>
@@ -187,14 +189,12 @@ export function DisclosureSection() {
 
       <CaseGroup title="carousel">
         <Case name="carousel-default" width={420}>
-          <div className="px-14">
+          <div {...stylex.props(galleryStyles.case13)}>
             <Carousel>
               <CarouselContent>
                 {Array.from({ length: 4 }, (_, index) => (
                   <CarouselItem key={index}>
-                    <div className="flex h-28 items-center justify-center rounded-lg bg-muted text-sm">
-                      Slide {index + 1}
-                    </div>
+                    <div {...stylex.props(galleryStyles.case14)}>Slide {index + 1}</div>
                   </CarouselItem>
                 ))}
               </CarouselContent>
@@ -204,14 +204,12 @@ export function DisclosureSection() {
           </div>
         </Case>
         <Case name="carousel-vertical" width={220}>
-          <div className="py-14">
+          <div {...stylex.props(galleryStyles.case15)}>
             <Carousel orientation="vertical">
-              <CarouselContent className="h-28">
+              <CarouselContent sx={galleryStyles.case16}>
                 {Array.from({ length: 3 }, (_, index) => (
                   <CarouselItem key={index}>
-                    <div className="flex h-28 items-center justify-center rounded-lg bg-muted text-sm">
-                      Slide {index + 1}
-                    </div>
+                    <div {...stylex.props(galleryStyles.case17)}>Slide {index + 1}</div>
                   </CarouselItem>
                 ))}
               </CarouselContent>
@@ -224,3 +222,72 @@ export function DisclosureSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: {
+    paddingTop: '0.5rem',
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+    color: colors.mutedForeground,
+  },
+  case2: {
+    paddingTop: '0.5rem',
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+    color: colors.mutedForeground,
+  },
+  case3: {
+    height: '10rem',
+    borderRadius: radius.lg,
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    padding: '0.75rem',
+  },
+  case4: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '0.5rem' },
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+  },
+  case5: {
+    height: '10rem',
+    borderRadius: radius.lg,
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    padding: '0.75rem',
+  },
+  case6: { fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case7: { height: '10rem', borderRadius: radius.lg, borderWidth: '1px', borderStyle: 'solid' },
+  case8: { padding: '0.75rem', fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case9: { padding: '0.75rem', fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case10: { height: '10rem', borderRadius: radius.lg, borderWidth: '1px', borderStyle: 'solid' },
+  case11: { padding: '0.75rem', fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case12: { padding: '0.75rem', fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case13: { paddingInline: '3.5rem' },
+  case14: {
+    display: 'flex',
+    height: '7rem',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: radius.lg,
+    backgroundColor: colors.muted,
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+  },
+  case15: { paddingBlock: '3.5rem' },
+  case16: { height: '7rem' },
+  case17: {
+    display: 'flex',
+    height: '7rem',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: radius.lg,
+    backgroundColor: colors.muted,
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+  },
+})

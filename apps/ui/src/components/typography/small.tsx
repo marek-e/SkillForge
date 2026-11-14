@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
 
-import { cn } from '@/lib/utils'
+import type { Sx } from '@/lib/sx'
 
 /**
  * Was `cva('text-sm font-medium leading-none')` (PR 03).
@@ -28,16 +28,17 @@ const styles = stylex.create({
 const variantStyles = { default: null } as const
 
 export interface SmallProps extends React.HTMLAttributes<HTMLElement> {
+  sx?: Sx
   variant?: keyof typeof variantStyles | null | undefined
 }
 
 const Small = React.forwardRef<HTMLElement, SmallProps>(
-  ({ className, style, variant, ...props }, ref) => {
-    const sx = stylex.props(styles.base, variantStyles[variant ?? 'default'])
+  ({ className, style, variant, sx: sxProp, ...props }, ref) => {
+    const sx = stylex.props(styles.base, variantStyles[variant ?? 'default'], sxProp)
     return (
       <small
         ref={ref}
-        className={cn(sx.className, className)}
+        className={[sx.className, className].filter(Boolean).join(' ')}
         style={sx.style || style ? { ...sx.style, ...style } : undefined}
         {...props}
       />

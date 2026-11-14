@@ -1,3 +1,5 @@
+import { colors, fonts, radius, typography } from '@/styles/tokens.stylex'
+import * as stylex from '@stylexjs/stylex'
 import { SearchIcon, SquareTerminal, XIcon } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -31,7 +33,7 @@ import { LONG_TEXT } from '../data'
 
 export function FormsSection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="input">
         <CaseRow>
           <Case name="input-empty" width={240}>
@@ -79,10 +81,7 @@ export function FormsSection() {
             <Textarea disabled defaultValue="disabled" />
           </Case>
           <Case name="textarea-mono" width={320}>
-            <Textarea
-              className="min-h-32 font-mono text-xs"
-              defaultValue={'---\nname: fixture\n---\n'}
-            />
+            <Textarea sx={galleryStyles.case1} defaultValue={'---\nname: fixture\n---\n'} />
           </Case>
         </CaseRow>
         <CaseRow>
@@ -174,9 +173,7 @@ export function FormsSection() {
               </InputGroupAddon>
               <InputGroupInput placeholder="Search skills..." />
               <InputGroupAddon align="inline-end">
-                <kbd className="rounded bg-muted px-1 py-0.5 font-mono text-[10px] text-muted-foreground">
-                  ⌘F
-                </kbd>
+                <kbd {...stylex.props(galleryStyles.case3)}>⌘F</kbd>
               </InputGroupAddon>
             </InputGroup>
           </Case>
@@ -197,7 +194,11 @@ export function FormsSection() {
             <InputGroup>
               <InputGroupInput placeholder="e.g. windsurf" />
               <InputGroupAddon>
-                <SquareTerminal className="size-4 text-foreground" />
+                <SquareTerminal
+                  className={[stylex.props(galleryStyles.case4).className, 'size-explicit'].join(
+                    ' '
+                  )}
+                />
               </InputGroupAddon>
             </InputGroup>
           </Case>
@@ -262,11 +263,11 @@ export function FormsSection() {
       <CaseGroup title="radio group">
         <Case name="radio-group-default" width={320}>
           <RadioGroup defaultValue="list">
-            <div className="flex items-center gap-3">
+            <div {...stylex.props(galleryStyles.case5)}>
               <RadioGroupItem value="list" id="gallery-radio-list" />
               <Label htmlFor="gallery-radio-list">List</Label>
             </div>
-            <div className="flex items-center gap-3">
+            <div {...stylex.props(galleryStyles.case6)}>
               <RadioGroupItem value="grid" id="gallery-radio-grid" />
               <Label htmlFor="gallery-radio-grid">Grid</Label>
             </div>
@@ -274,11 +275,11 @@ export function FormsSection() {
         </Case>
         <Case name="radio-group-disabled" width={320}>
           <RadioGroup defaultValue="a" disabled>
-            <div className="flex items-center gap-3">
+            <div {...stylex.props(galleryStyles.case7)}>
               <RadioGroupItem value="a" id="gallery-radio-a" />
               <Label htmlFor="gallery-radio-a">Disabled selected</Label>
             </div>
-            <div className="flex items-center gap-3">
+            <div {...stylex.props(galleryStyles.case8)}>
               <RadioGroupItem value="b" id="gallery-radio-b" />
               <Label htmlFor="gallery-radio-b">Disabled unselected</Label>
             </div>
@@ -286,23 +287,23 @@ export function FormsSection() {
         </Case>
         <Case name="radio-group-invalid" width={320}>
           <RadioGroup defaultValue="a">
-            <div className="flex items-center gap-3">
+            <div {...stylex.props(galleryStyles.case9)}>
               <RadioGroupItem value="a" id="gallery-radio-c" aria-invalid />
               <Label htmlFor="gallery-radio-c">Invalid</Label>
             </div>
           </RadioGroup>
         </Case>
         <Case name="radio-group-columns" width={480}>
-          <RadioGroup defaultValue="system" className="grid-cols-3">
-            <div className="flex items-center gap-3 rounded-lg border p-4">
+          <RadioGroup defaultValue="system" sx={galleryStyles.case10}>
+            <div {...stylex.props(galleryStyles.case11)}>
               <RadioGroupItem value="system" id="gallery-radio-system" />
               <Label htmlFor="gallery-radio-system">System</Label>
             </div>
-            <div className="flex items-center gap-3 rounded-lg border p-4">
+            <div {...stylex.props(galleryStyles.case12)}>
               <RadioGroupItem value="light" id="gallery-radio-light" />
               <Label htmlFor="gallery-radio-light">Light</Label>
             </div>
-            <div className="flex items-center gap-3 rounded-lg border p-4">
+            <div {...stylex.props(galleryStyles.case13)}>
               <RadioGroupItem value="dark" id="gallery-radio-dark" />
               <Label htmlFor="gallery-radio-dark">Dark</Label>
             </div>
@@ -353,7 +354,7 @@ export function FormsSection() {
           <Slider value={[50]} disabled />
         </Case>
         <Case name="slider-vertical" width={80}>
-          <div className="h-40">
+          <div {...stylex.props(galleryStyles.case14)}>
             <Slider value={[35]} orientation="vertical" />
           </div>
         </Case>
@@ -361,3 +362,64 @@ export function FormsSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: {
+    minHeight: '8rem',
+    fontFamily: fonts.mono,
+    fontSize: { default: '0.75rem', '@media (width >= 48rem)': '0.875rem' },
+    lineHeight: {
+      default: typography.xsLineHeight,
+      '@media (width >= 48rem)': typography.smLineHeight,
+    },
+  },
+  case3: {
+    borderRadius: '0.25rem',
+    backgroundColor: colors.muted,
+    paddingInline: '0.25rem',
+    paddingBlock: '0.125rem',
+    fontFamily: fonts.mono,
+    fontSize: '10px',
+    lineHeight: 'inherit',
+    color: colors.mutedForeground,
+  },
+  case4: { width: '1rem', height: '1rem', color: colors.foreground },
+  case5: { display: 'flex', alignItems: 'center', gap: '0.75rem' },
+  case6: { display: 'flex', alignItems: 'center', gap: '0.75rem' },
+  case7: { display: 'flex', alignItems: 'center', gap: '0.75rem' },
+  case8: { display: 'flex', alignItems: 'center', gap: '0.75rem' },
+  case9: { display: 'flex', alignItems: 'center', gap: '0.75rem' },
+  case10: { gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' },
+  case11: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+    borderRadius: radius.lg,
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    padding: '1rem',
+  },
+  case12: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+    borderRadius: radius.lg,
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    padding: '1rem',
+  },
+  case13: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+    borderRadius: radius.lg,
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    padding: '1rem',
+  },
+  case14: { height: '10rem' },
+})

@@ -1,3 +1,5 @@
+import { colors, fonts, radius, typography } from '@/styles/tokens.stylex'
+import * as stylex from '@stylexjs/stylex'
 import { AlertCircleIcon, CheckIcon, FolderOpenIcon, InboxIcon, UserIcon } from 'lucide-react'
 import { Alert, AlertAction, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
@@ -69,7 +71,7 @@ const AVATAR_IMAGE =
 
 export function DataDisplaySection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="card">
         <CaseRow>
           <Case name="card-default" width={320}>
@@ -132,7 +134,7 @@ export function DataDisplaySection() {
               <TableRow>
                 <TableCell />
                 <TableCell>Alpha Platform</TableCell>
-                <TableCell className="font-mono text-xs">/Users/fixture/projects/alpha</TableCell>
+                <TableCell sx={galleryStyles.case1}>/Users/fixture/projects/alpha</TableCell>
                 <TableCell>
                   <Badge variant="secondary">Claude Code</Badge>
                 </TableCell>
@@ -140,7 +142,7 @@ export function DataDisplaySection() {
               <TableRow>
                 <TableCell />
                 <TableCell>Beta Service</TableCell>
-                <TableCell className="font-mono text-xs">/Users/fixture/projects/beta</TableCell>
+                <TableCell sx={galleryStyles.case2}>/Users/fixture/projects/beta</TableCell>
                 <TableCell>
                   <Badge variant="secondary">Codex</Badge>
                 </TableCell>
@@ -171,22 +173,22 @@ export function DataDisplaySection() {
             <Separator />
           </Case>
           <Case name="separator-vertical">
-            <div className="flex h-10 items-center">
-              <span className="text-sm">A</span>
-              <Separator orientation="vertical" className="mx-2" />
-              <span className="text-sm">B</span>
+            <div {...stylex.props(galleryStyles.case3)}>
+              <span {...stylex.props(galleryStyles.case4)}>A</span>
+              <Separator orientation="vertical" sx={galleryStyles.case5} />
+              <span {...stylex.props(galleryStyles.case6)}>B</span>
             </div>
           </Case>
         </CaseRow>
         <CaseRow>
           <Case name="aspect-ratio-16-9" width={240}>
             <AspectRatio ratio={16 / 9}>
-              <div className="size-full rounded-lg bg-muted" />
+              <div {...stylex.props(galleryStyles.case7)} />
             </AspectRatio>
           </Case>
           <Case name="aspect-ratio-1-1" width={160}>
             <AspectRatio ratio={1}>
-              <div className="size-full rounded-lg bg-muted" />
+              <div {...stylex.props(galleryStyles.case8)} />
             </AspectRatio>
           </Case>
         </CaseRow>
@@ -322,19 +324,19 @@ export function DataDisplaySection() {
         </CaseRow>
         <CaseRow>
           <Case name="skeleton-line" width={240}>
-            <Skeleton className="h-4 w-full" />
+            <Skeleton sx={galleryStyles.case9} className="w-explicit" />
           </Case>
           <Case name="skeleton-block" width={240}>
-            <Skeleton className="h-24 w-full rounded-xl" />
+            <Skeleton sx={galleryStyles.case10} className="w-explicit" />
           </Case>
           <Case name="skeleton-circle">
-            <Skeleton className="size-10 rounded-full" />
+            <Skeleton sx={galleryStyles.case11} />
           </Case>
           <Case name="spinner-default">
             <Spinner />
           </Case>
           <Case name="spinner-large">
-            <Spinner className="size-8" />
+            <Spinner sx={galleryStyles.case12} />
           </Case>
         </CaseRow>
       </CaseGroup>
@@ -344,7 +346,11 @@ export function DataDisplaySection() {
           <Empty>
             <EmptyHeader>
               <EmptyMedia>
-                <FolderOpenIcon className="size-10 text-muted-foreground" />
+                <FolderOpenIcon
+                  className={[stylex.props(galleryStyles.case13).className, 'size-explicit'].join(
+                    ' '
+                  )}
+                />
               </EmptyMedia>
               <EmptyTitle>No projects yet</EmptyTitle>
               <EmptyDescription>
@@ -371,7 +377,7 @@ export function DataDisplaySection() {
           </Empty>
         </Case>
         <Case name="not-found" width={640}>
-          <div className="h-80">
+          <div {...stylex.props(galleryStyles.case14)}>
             <NotFound />
           </div>
         </Case>
@@ -420,3 +426,24 @@ export function DataDisplaySection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: { fontFamily: fonts.mono, fontSize: '0.75rem', lineHeight: typography.xsLineHeight },
+  case2: { fontFamily: fonts.mono, fontSize: '0.75rem', lineHeight: typography.xsLineHeight },
+  case3: { display: 'flex', height: '2.5rem', alignItems: 'center' },
+  case4: { fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case5: { marginInline: '0.5rem' },
+  case6: { fontSize: '0.875rem', lineHeight: typography.smLineHeight },
+  case7: { width: '100%', height: '100%', borderRadius: radius.lg, backgroundColor: colors.muted },
+  case8: { width: '100%', height: '100%', borderRadius: radius.lg, backgroundColor: colors.muted },
+  case9: { height: '1rem', width: '100%' },
+  case10: { height: '6rem', width: '100%', borderRadius: radius.xl },
+  case11: { width: '2.5rem', height: '2.5rem', borderRadius: 'calc(infinity * 1px)' },
+  case12: { width: '2rem', height: '2rem' },
+  case13: { width: '2.5rem', height: '2.5rem', color: colors.mutedForeground },
+  case14: { height: '20rem' },
+})

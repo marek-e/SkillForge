@@ -2,7 +2,6 @@ import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
 import { Label as LabelPrimitive } from 'radix-ui'
 
-import { cn } from '@/lib/utils'
 import type { Sx } from '@/lib/sx'
 
 const styles = stylex.create({
@@ -13,9 +12,8 @@ const styles = stylex.create({
     alignItems: 'center',
     // `gap-2`
     gap: '0.5rem',
-    // `text-sm`. The line height stays a Tailwind class; see
-    // `CONTESTED_CLASSES`.
     fontSize: '0.875rem',
+    lineHeight: 1,
     // `font-medium`
     fontWeight: 500,
     // `select-none`
@@ -43,24 +41,6 @@ const styles = stylex.create({
   },
 })
 
-/**
- * `leading-none`, kept as a Tailwind class.
- *
- * A `leading-*` utility does two things: it sets `line-height` **and** it sets
- * `--tw-leading`, which every `text-*` utility reads through
- * `line-height: var(--tw-leading, <paired value>)`. A caller that passes only a
- * font size therefore inherits this line height today —
- * `routes/settings.tsx` renders `<Label className="text-base font-semibold">`
- * three times and gets `line-height: 1`, not `text-base`'s `1.5`.
- *
- * StyleX cannot write `--tw-leading`, and a StyleX `lineHeight` would lose to
- * the caller's `text-base` anyway (layer order beats specificity), so the
- * class stays until those callers are StyleX (PR 31, plus PR 23/PR 24 for the
- * dialogs). `twMerge` still lets `FieldLabel`'s `leading-snug` replace it,
- * exactly as before.
- */
-const CONTESTED_CLASSES = 'leading-none'
-
 function Label({
   className,
   style,
@@ -75,7 +55,7 @@ function Label({
   return (
     <LabelPrimitive.Root
       data-slot="label"
-      className={cn(CONTESTED_CLASSES, sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />

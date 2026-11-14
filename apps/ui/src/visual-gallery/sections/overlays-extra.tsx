@@ -1,3 +1,5 @@
+import { colors, radius } from '@/styles/tokens.stylex'
+import * as stylex from '@stylexjs/stylex'
 import { useState } from 'react'
 import { TrashIcon, TriangleAlertIcon } from 'lucide-react'
 import {
@@ -74,7 +76,7 @@ export function OverlaysExtraSection() {
   const [commandOpen, setCommandOpen] = useState(false)
 
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="dialog shape">
         <CaseRow>
           <Case name="dialog-no-close-trigger">
@@ -150,7 +152,9 @@ export function OverlaysExtraSection() {
                     A very wide child cannot push the panel past its maximum width.
                   </DialogDescription>
                 </DialogHeader>
-                <div className="bg-muted h-6 w-[900px] rounded-md" />
+                <div
+                  className={[stylex.props(galleryStyles.case1).className, 'w-explicit'].join(' ')}
+                />
               </DialogContent>
             </Dialog>
           </Case>
@@ -192,13 +196,16 @@ export function OverlaysExtraSection() {
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>
-                    Title <span className="text-[10px]">ten-pixel title span</span>
+                    Title <span {...stylex.props(galleryStyles.case2)}>ten-pixel title span</span>
                   </DialogTitle>
                   <DialogDescription>
-                    Description <span className="text-[10px]">ten-pixel description span</span>
+                    Description{' '}
+                    <span {...stylex.props(galleryStyles.case3)}>ten-pixel description span</span>
                   </DialogDescription>
                 </DialogHeader>
-                <p className="text-[10px]">A ten-pixel paragraph in the panel body.</p>
+                <p {...stylex.props(galleryStyles.case4)}>
+                  A ten-pixel paragraph in the panel body.
+                </p>
               </DialogContent>
             </Dialog>
           </Case>
@@ -292,10 +299,11 @@ export function OverlaysExtraSection() {
               <AlertDialogContent size="sm">
                 <AlertDialogHeader>
                   <AlertDialogTitle>
-                    Title <span className="text-[10px]">ten-pixel title span</span>
+                    Title <span {...stylex.props(galleryStyles.case5)}>ten-pixel title span</span>
                   </AlertDialogTitle>
                   <AlertDialogDescription>
-                    Description <span className="text-[10px]">ten-pixel description span</span>
+                    Description{' '}
+                    <span {...stylex.props(galleryStyles.case6)}>ten-pixel description span</span>
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -322,3 +330,21 @@ export function OverlaysExtraSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: {
+    backgroundColor: colors.muted,
+    height: '1.5rem',
+    width: '900px',
+    borderRadius: radius.md,
+  },
+  case2: { fontSize: '10px', lineHeight: 'inherit' },
+  case3: { fontSize: '10px', lineHeight: 'inherit' },
+  case4: { fontSize: '10px', lineHeight: 'inherit' },
+  case5: { fontSize: '10px', lineHeight: 'inherit' },
+  case6: { fontSize: '10px', lineHeight: 'inherit' },
+})

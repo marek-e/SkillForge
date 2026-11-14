@@ -2,8 +2,8 @@ import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
 import { Select as SelectPrimitive } from 'radix-ui'
 
-import { colors, motion, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import { colors, motion, radius, typography } from '@/styles/tokens.stylex'
+import type { Sx } from '@/lib/sx'
 import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from 'lucide-react'
 
 /** `transition-colors`' property list (see `input.tsx`). */
@@ -92,42 +92,29 @@ const exit = stylex.keyframes({
   },
 })
 
-/**
- * The `SelectTrigger` classes that stay Tailwind, and why. Each goes in PR 32
- * with the utility layer, unless noted.
- *
- * - **`text-sm`** and **`data-[size=default]:h-8 data-[size=sm]:h-7`** —
- *   `components/EditorSelect.tsx` passes `h-7 text-sm` to this trigger. Both
- *   utilities sit in `@layer utilities`; today the two `data-[size=…]` rules
- *   are `(0,2,0)` and beat the caller's plain `h-7`, so an `EditorSelect` is
- *   32px tall. As StyleX rules they would lose to it — `/settings` would
- *   change by four pixels — so the height stays where the cascade already
- *   settles it. `text-sm` is the same story seen from the other side, plus the
- *   paired-line-height trap: the trigger's children come from the call site.
- * - **`w-fit`** — `button-group.tsx` selects this trigger with
- *   `[&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit`, a rule that
- *   reads the literal text of the class attribute (`conventions.md`, "A class
- *   name can itself be the contract").
- * - **the three `svg` rules** — they style a `lucide` icon the call site
- *   supplies, so a StyleX rule in a `priorityN` layer would lose to any
- *   utility on the icon itself.
- */
-const TRIGGER_CLASSES =
-  "text-sm data-[size=default]:h-8 data-[size=sm]:h-7 w-fit [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0"
-
-/**
- * The `SelectItem` classes that stay Tailwind (PR 32).
- *
- * `not-data-[variant=destructive]:focus:**:text-accent-foreground` colours
- * *every* descendant, `[&_svg…]` the caller's icon, and `*:[span]:last:*` the
- * span `SelectPrimitive.ItemText` renders around the caller's children — three
- * elements this component does not own.
- */
-const ITEM_CLASSES =
-  "not-data-[variant=destructive]:focus:**:text-accent-foreground *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0"
-
-/** Sizes the `ChevronUpIcon`/`ChevronDownIcon` of the scroll buttons (PR 32). */
-const SCROLL_BUTTON_CLASSES = "[&_svg:not([class*='size-'])]:size-4"
+const descendantStyles = stylex.create({
+  icons: {
+    width: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+    height: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+    pointerEvents: { default: null, ':is(*) svg': 'none' },
+    flexShrink: { default: null, ':is(*) svg': 0 },
+  },
+  item: {
+    color: {
+      default: null,
+      ':is(*):not([data-variant="destructive"]):focus *': colors.accentForeground,
+    },
+    display: { default: null, ':is(*)>span:last-child': 'flex' },
+    alignItems: { default: null, ':is(*)>span:last-child': 'center' },
+    gap: { default: null, ':is(*)>span:last-child': '0.5rem' },
+  },
+})
+const TRIGGER_CLASSES = stylex.props(descendantStyles.icons).className
+const ITEM_CLASSES = [
+  stylex.props(descendantStyles.icons).className,
+  stylex.props(descendantStyles.item).className,
+].join(' ')
+const SCROLL_BUTTON_CLASSES = stylex.props(descendantStyles.icons).className
 
 /**
  * `*:data-[slot=select-value]:…`, the four rules the trigger writes on the span
@@ -158,6 +145,10 @@ const styles = stylex.create({
   //  justify-between whitespace-nowrap outline-none disabled:cursor-not-allowed
   //  disabled:opacity-50`
   trigger: {
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+    width: 'fit-content',
+    height: { default: null, '[data-size="default"]': '2rem', '[data-size="sm"]': '1.75rem' },
     display: { default: 'flex', [VALUE_CHILD]: 'flex' },
     alignItems: { default: 'center', [VALUE_CHILD]: 'center' },
     justifyContent: 'space-between',
@@ -421,14 +412,15 @@ function Select({ ...props }: React.ComponentProps<typeof SelectPrimitive.Root>)
 function SelectGroup({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Group>) {
-  const sx = stylex.props(styles.group)
+}: React.ComponentProps<typeof SelectPrimitive.Group> & { sx?: Sx }) {
+  const sx = stylex.props(styles.group, sxProp)
 
   return (
     <SelectPrimitive.Group
       data-slot="select-group"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -442,20 +434,22 @@ function SelectValue({ ...props }: React.ComponentProps<typeof SelectPrimitive.V
 function SelectTrigger({
   className,
   style,
+  sx: sxProp,
   size = 'default',
   children,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
+  sx?: Sx
   size?: 'sm' | 'default'
 }) {
-  const sx = stylex.props(styles.trigger)
+  const sx = stylex.props(styles.trigger, sxProp)
   const icon = stylex.props(styles.chevron)
 
   return (
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       data-size={size}
-      className={cn(TRIGGER_CLASSES, sx.className, className)}
+      className={['w-explicit', TRIGGER_CLASSES, sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >
@@ -473,12 +467,14 @@ function SelectContent({
   children,
   position = 'item-aligned',
   align = 'center',
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Content>) {
+}: React.ComponentProps<typeof SelectPrimitive.Content> & { sx?: Sx }) {
   const sx = stylex.props(
     styles.content,
     position === 'item-aligned' && styles.contentAlignTrigger,
-    position === 'popper' && styles.contentPopper
+    position === 'popper' && styles.contentPopper,
+    sxProp
   )
   const viewport = stylex.props(styles.viewport)
 
@@ -487,7 +483,7 @@ function SelectContent({
       <SelectPrimitive.Content
         data-slot="select-content"
         data-align-trigger={position === 'item-aligned'}
-        className={cn(sx.className, className)}
+        className={[sx.className, className].filter(Boolean).join(' ')}
         style={sx.style || style ? { ...sx.style, ...style } : undefined}
         position={position}
         align={align}
@@ -510,14 +506,15 @@ function SelectContent({
 function SelectLabel({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Label>) {
-  const sx = stylex.props(styles.label)
+}: React.ComponentProps<typeof SelectPrimitive.Label> & { sx?: Sx }) {
+  const sx = stylex.props(styles.label, sxProp)
 
   return (
     <SelectPrimitive.Label
       data-slot="select-label"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -528,16 +525,17 @@ function SelectItem({
   className,
   style,
   children,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Item>) {
-  const sx = stylex.props(styles.item)
+}: React.ComponentProps<typeof SelectPrimitive.Item> & { sx?: Sx }) {
+  const sx = stylex.props(styles.item, sxProp)
   const indicator = stylex.props(styles.itemIndicator)
   const check = stylex.props(styles.itemCheck)
 
   return (
     <SelectPrimitive.Item
       data-slot="select-item"
-      className={cn(ITEM_CLASSES, sx.className, className)}
+      className={[ITEM_CLASSES, sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >
@@ -554,14 +552,15 @@ function SelectItem({
 function SelectSeparator({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Separator>) {
-  const sx = stylex.props(styles.separator)
+}: React.ComponentProps<typeof SelectPrimitive.Separator> & { sx?: Sx }) {
+  const sx = stylex.props(styles.separator, sxProp)
 
   return (
     <SelectPrimitive.Separator
       data-slot="select-separator"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -571,14 +570,15 @@ function SelectSeparator({
 function SelectScrollUpButton({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.ScrollUpButton>) {
-  const sx = stylex.props(styles.scrollButton)
+}: React.ComponentProps<typeof SelectPrimitive.ScrollUpButton> & { sx?: Sx }) {
+  const sx = stylex.props(styles.scrollButton, sxProp)
 
   return (
     <SelectPrimitive.ScrollUpButton
       data-slot="select-scroll-up-button"
-      className={cn(SCROLL_BUTTON_CLASSES, sx.className, className)}
+      className={[SCROLL_BUTTON_CLASSES, sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >
@@ -590,14 +590,15 @@ function SelectScrollUpButton({
 function SelectScrollDownButton({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.ScrollDownButton>) {
-  const sx = stylex.props(styles.scrollButton)
+}: React.ComponentProps<typeof SelectPrimitive.ScrollDownButton> & { sx?: Sx }) {
+  const sx = stylex.props(styles.scrollButton, sxProp)
 
   return (
     <SelectPrimitive.ScrollDownButton
       data-slot="select-scroll-down-button"
-      className={cn(SCROLL_BUTTON_CLASSES, sx.className, className)}
+      className={[SCROLL_BUTTON_CLASSES, sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >

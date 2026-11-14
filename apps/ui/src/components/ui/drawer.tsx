@@ -2,8 +2,7 @@ import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
 import { Drawer as DrawerPrimitive } from 'vaul'
 
-import { colors, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import { colors, radius, typography } from '@/styles/tokens.stylex'
 
 /** The `shadcn/tailwind.css` custom variants, verbatim; see `sheet.tsx`. */
 const OPEN = ':is(:where([data-state="open"]), :where([data-open]:not([data-open="false"])))'
@@ -74,6 +73,8 @@ const styles = stylex.create({
   // become prop-selected style objects: `direction` is a prop of `Drawer`, and
   // vaul is what puts `data-vaul-drawer-direction` on this element.
   content: {
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
     position: 'fixed',
     zIndex: 50,
     display: 'flex',
@@ -192,17 +193,7 @@ const styles = stylex.create({
   },
 })
 
-/**
- * The classes that stay Tailwind on `DrawerContent`.
- *
- * - **`group/drawer-content`** — the contract itself. The handle bar and
- *   `DrawerHeader` both select through this exact class name, so it has to stay
- *   a literal until those selectors go in PR 32.
- * - **`text-sm`** — a paired `text-*` on a container that takes arbitrary
- *   children; a StyleX `1.25rem` would pass 20px down where the ratio
- *   `calc(1.25 / 0.875)` passes 1.42857. Same call as `alert.tsx`.
- */
-const CONTENT_CLASSES = 'group/drawer-content text-sm'
+const CONTENT_CLASSES = 'group/drawer-content'
 
 function Drawer({ ...props }: React.ComponentProps<typeof DrawerPrimitive.Root>) {
   return <DrawerPrimitive.Root data-slot="drawer" {...props} />
@@ -230,7 +221,7 @@ function DrawerOverlay({
   return (
     <DrawerPrimitive.Overlay
       data-slot="drawer-overlay"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -251,7 +242,7 @@ function DrawerContent({
       <DrawerOverlay />
       <DrawerPrimitive.Content
         data-slot="drawer-content"
-        className={cn(CONTENT_CLASSES, sx.className, className)}
+        className={[CONTENT_CLASSES, sx.className, className].filter(Boolean).join(' ')}
         style={sx.style || style ? { ...sx.style, ...style } : undefined}
         {...props}
       >
@@ -268,7 +259,7 @@ function DrawerHeader({ className, style, ...props }: React.ComponentProps<'div'
   return (
     <div
       data-slot="drawer-header"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -281,7 +272,7 @@ function DrawerFooter({ className, style, ...props }: React.ComponentProps<'div'
   return (
     <div
       data-slot="drawer-footer"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -298,7 +289,7 @@ function DrawerTitle({
   return (
     <DrawerPrimitive.Title
       data-slot="drawer-title"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -315,7 +306,7 @@ function DrawerDescription({
   return (
     <DrawerPrimitive.Description
       data-slot="drawer-description"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />

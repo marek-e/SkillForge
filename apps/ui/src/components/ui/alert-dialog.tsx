@@ -2,8 +2,8 @@ import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
 import { AlertDialog as AlertDialogPrimitive } from 'radix-ui'
 
-import { colors, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import { colors, radius, typography } from '@/styles/tokens.stylex'
+import type { Sx } from '@/lib/sx'
 import { Button } from '@/components/ui/button'
 
 /**
@@ -20,7 +20,7 @@ const MD = '@media (min-width: 48rem)'
 
 /** `supports-backdrop-filter:`, character for character as Tailwind writes it. */
 const BACKDROP_FILTER_SUPPORTED =
-  '@supports ((-webkit-backdrop-filter: var(--tw)) or (backdrop-filter: var(--tw)))'
+  '@supports ((-webkit-backdrop-filter: var(--supported-filter)) or (backdrop-filter: var(--supported-filter)))'
 
 /** `data-[size=default]:` / `data-[size=sm]:` — the content's own attribute. */
 const SIZE_DEFAULT = ':is([data-size="default"])'
@@ -73,7 +73,7 @@ const RING_1 =
  * correct if `--color-black` stops being emitted, which happens as soon as no
  * utility names it (`sheet.tsx` and `drawer.tsx` still do).
  */
-const OVERLAY_BLACK_10 = 'color-mix(in oklab, var(--color-black, #000) 10%, transparent)'
+const OVERLAY_BLACK_10 = 'color-mix(in oklab, var(--overlay-black, #000) 10%, transparent)'
 
 /** `duration-100`: the animation duration *and* a transition over every property. */
 const DURATION = '0.1s'
@@ -151,6 +151,7 @@ const styles = stylex.create({
   // keys are mutually exclusive, so their relative order never decides
   // anything.
   content: {
+    translate: '-50% -50%',
     position: 'fixed',
     top: '50%',
     left: '50%',
@@ -240,8 +241,8 @@ const styles = stylex.create({
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '2.5rem',
-    height: '2.5rem',
+    width: { default: '2.5rem', ':is(*)>svg:not([class*="size-"])': '1.5rem' },
+    height: { default: '2.5rem', ':is(*)>svg:not([class*="size-"])': '1.5rem' },
     marginBottom: '0.5rem',
     borderRadius: radius.md,
     backgroundColor: colors.muted,
@@ -267,46 +268,17 @@ const styles = stylex.create({
 
   // `text-muted-foreground text-balance md:text-pretty`
   description: {
-    color: colors.mutedForeground,
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
+    textDecorationLine: { default: null, ':is(*)>a': 'underline' },
+    textUnderlineOffset: { default: null, ':is(*)>a': '3px' },
+    color: {
+      default: colors.mutedForeground,
+      '@media (hover: hover)': { default: null, ':is(*)>a:hover': colors.foreground },
+    },
     textWrap: { default: 'balance', [MD]: 'pretty' },
   },
 })
-
-/**
- * `text-sm` on the description, kept as a Tailwind class (PR 10).
- *
- * The paired-line-height trap: `--text-sm--line-height` is the ratio
- * `calc(1.25 / 0.875)`, which `lightningcss` folds to five decimals on the way
- * through StyleX, and a length in its place changes what a sized descendant
- * inherits. The description holds caller text, and the
- * `alert-dialog-inherited-leading` gallery case measures it. PR 32.
- */
-const TEXT_SM_CLASS = 'text-sm'
-
-/**
- * The rules that style content the **caller** puts inside the description and
- * the media slot, kept as Tailwind classes (PR 10).
- *
- * A StyleX rule lives in a `priorityN` layer, below `utilities`, so a utility on
- * the caller's own anchor or icon would outrank it — the opposite of today,
- * where these win on specificity. PR 32.
- */
-const DESCRIPTION_LINK_CLASSES =
-  '*:[a]:hover:text-foreground *:[a]:underline *:[a]:underline-offset-3'
-const MEDIA_ICON_CLASSES = "*:[svg:not([class*='size-'])]:size-6"
-
-/**
- * `-translate-x-1/2 -translate-y-1/2` on the content, kept as Tailwind classes
- * (PR 10).
- *
- * Each utility writes one axis into a `--tw-*` variable and both read
- * `translate: var(--tw-translate-x) var(--tw-translate-y)`, a composition a
- * StyleX declaration cannot join: it writes the whole property at once, from
- * below `utilities`, so a caller's single-axis utility would replace both
- * halves. `dialog.tsx` carries the same pair for the same reason, and the
- * `command-dialog` gallery case is where it is visible. PR 32.
- */
-const CONTENT_TRANSLATE_CLASSES = '-translate-x-1/2 -translate-y-1/2'
 
 function AlertDialog({ ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Root>) {
   return <AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />
@@ -325,13 +297,14 @@ function AlertDialogPortal({ ...props }: React.ComponentProps<typeof AlertDialog
 function AlertDialogOverlay({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Overlay>) {
-  const sx = stylex.props(styles.overlay)
+}: React.ComponentProps<typeof AlertDialogPrimitive.Overlay> & { sx?: Sx }) {
+  const sx = stylex.props(styles.overlay, sxProp)
   return (
     <AlertDialogPrimitive.Overlay
       data-slot="alert-dialog-overlay"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -342,18 +315,20 @@ function AlertDialogContent({
   className,
   style,
   size = 'default',
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Content> & {
   size?: 'default' | 'sm'
+  sx?: Sx
 }) {
-  const sx = stylex.props(styles.content)
+  const sx = stylex.props(styles.content, sxProp)
   return (
     <AlertDialogPortal>
       <AlertDialogOverlay />
       <AlertDialogPrimitive.Content
         data-slot="alert-dialog-content"
         data-size={size}
-        className={cn(GROUP_CONTENT, CONTENT_TRANSLATE_CLASSES, sx.className, className)}
+        className={[GROUP_CONTENT, sx.className, className].filter(Boolean).join(' ')}
         style={sx.style || style ? { ...sx.style, ...style } : undefined}
         {...props}
       />
@@ -361,36 +336,51 @@ function AlertDialogContent({
   )
 }
 
-function AlertDialogHeader({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.header)
+function AlertDialogHeader({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.header, sxProp)
   return (
     <div
       data-slot="alert-dialog-header"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function AlertDialogFooter({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.footer)
+function AlertDialogFooter({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.footer, sxProp)
   return (
     <div
       data-slot="alert-dialog-footer"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function AlertDialogMedia({ className, style, ...props }: React.ComponentProps<'div'>) {
-  const sx = stylex.props(styles.media)
+function AlertDialogMedia({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'div'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.media, sxProp)
   return (
     <div
       data-slot="alert-dialog-media"
-      className={cn(MEDIA_ICON_CLASSES, sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -400,13 +390,14 @@ function AlertDialogMedia({ className, style, ...props }: React.ComponentProps<'
 function AlertDialogTitle({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Title>) {
-  const sx = stylex.props(styles.title)
+}: React.ComponentProps<typeof AlertDialogPrimitive.Title> & { sx?: Sx }) {
+  const sx = stylex.props(styles.title, sxProp)
   return (
     <AlertDialogPrimitive.Title
       data-slot="alert-dialog-title"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -416,38 +407,34 @@ function AlertDialogTitle({
 function AlertDialogDescription({
   className,
   style,
+  sx: sxProp,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Description>) {
-  const sx = stylex.props(styles.description)
+}: React.ComponentProps<typeof AlertDialogPrimitive.Description> & { sx?: Sx }) {
+  const sx = stylex.props(styles.description, sxProp)
   return (
     <AlertDialogPrimitive.Description
       data-slot="alert-dialog-description"
-      className={cn(DESCRIPTION_LINK_CLASSES, TEXT_SM_CLASS, sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-/**
- * The two actions still go through `Button`'s `cva` helper, unchanged (PR 10).
- *
- * `Button` is migrated but keeps its variant classes, so wrapping it with
- * `asChild` is what gives these two their look; there is nothing of their own
- * left to translate. They follow `button.tsx` in PR 32.
- */
+/** Actions compose the shared Button styles through its existing slot. */
 function AlertDialogAction({
   className,
   variant = 'default',
   size = 'default',
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Action> &
-  Pick<React.ComponentProps<typeof Button>, 'variant' | 'size'>) {
+  Pick<React.ComponentProps<typeof Button>, 'variant' | 'size' | 'sx'>) {
   return (
-    <Button variant={variant} size={size} asChild>
+    <Button variant={variant} size={size} sx={sxProp} asChild>
       <AlertDialogPrimitive.Action
         data-slot="alert-dialog-action"
-        className={cn(className)}
+        className={[className].filter(Boolean).join(' ')}
         {...props}
       />
     </Button>
@@ -458,14 +445,15 @@ function AlertDialogCancel({
   className,
   variant = 'outline',
   size = 'default',
+  sx: sxProp,
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Cancel> &
-  Pick<React.ComponentProps<typeof Button>, 'variant' | 'size'>) {
+  Pick<React.ComponentProps<typeof Button>, 'variant' | 'size' | 'sx'>) {
   return (
-    <Button variant={variant} size={size} asChild>
+    <Button variant={variant} size={size} sx={sxProp} asChild>
       <AlertDialogPrimitive.Cancel
         data-slot="alert-dialog-cancel"
-        className={cn(className)}
+        className={[className].filter(Boolean).join(' ')}
         {...props}
       />
     </Button>

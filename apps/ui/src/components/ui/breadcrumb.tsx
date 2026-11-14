@@ -2,40 +2,32 @@ import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
 import { Slot } from 'radix-ui'
 
-import { colors, motion } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
+import { colors, motion, typography } from '@/styles/tokens.stylex'
+import type { Sx } from '@/lib/sx'
 import { ChevronRightIcon, MoreHorizontalIcon } from 'lucide-react'
 
 /** `transition-colors`, copied verbatim (`tailwind-values.md` §8). */
 const TRANSITION_COLORS =
   'color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to'
 
-/**
- * `text-sm` on `BreadcrumbList`, kept as a Tailwind class.
- *
- * The paired-line-height exception in `conventions.md`: the list is a container
- * a caller fills, `lib/breadcrumbs.tsx` puts its own `<Link>` rows inside it,
- * and a descendant with a font size of its own and no line height of its own
- * would inherit a StyleX length instead of Tailwind's ratio. Removed in PR 32.
- */
-const LIST_TEXT_CLASS = 'text-sm'
-
-/**
- * The two icon rules, kept as Tailwind classes.
- *
- * Both style an `svg` the component does not own, and a StyleX rule in a
- * `priorityN` layer loses to any width utility on the icon itself. The
- * separator makes that concrete: it renders the default `ChevronRightIcon`
- * only when it is given no children, and a caller that passes its own icon
- * (the `navbits-breadcrumb-custom-separator` gallery case does) gets it sized
- * by this very rule. Removed in PR 32.
- */
-const SEPARATOR_ICON_CLASS = '[&>svg]:size-3.5'
-const ELLIPSIS_ICON_CLASS = '[&>svg]:size-4'
+const iconStyles = stylex.create({
+  separator: {
+    width: { default: null, ':is(*)>svg': '0.875rem' },
+    height: { default: null, ':is(*)>svg': '0.875rem' },
+  },
+  ellipsis: {
+    width: { default: null, ':is(*)>svg': '1rem' },
+    height: { default: null, ':is(*)>svg': '1rem' },
+  },
+})
+const SEPARATOR_ICON_CLASS = stylex.props(iconStyles.separator).className
+const ELLIPSIS_ICON_CLASS = stylex.props(iconStyles.ellipsis).className
 
 const styles = stylex.create({
   // `text-muted-foreground gap-1.5 flex flex-wrap items-center wrap-break-word`
   list: {
+    fontSize: '0.875rem',
+    lineHeight: typography.smLineHeight,
     display: 'flex',
     flexWrap: 'wrap',
     alignItems: 'center',
@@ -93,30 +85,54 @@ const styles = stylex.create({
   },
 })
 
-function Breadcrumb({ className, ...props }: React.ComponentProps<'nav'>) {
-  return <nav aria-label="breadcrumb" data-slot="breadcrumb" className={cn(className)} {...props} />
-}
-
-function BreadcrumbList({ className, style, ...props }: React.ComponentProps<'ol'>) {
-  const sx = stylex.props(styles.list)
-
+function Breadcrumb({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'nav'> & { sx?: Sx }) {
+  const sx = stylex.props(sxProp)
   return (
-    <ol
-      data-slot="breadcrumb-list"
-      className={cn(LIST_TEXT_CLASS, sx.className, className)}
+    <nav
+      aria-label="breadcrumb"
+      data-slot="breadcrumb"
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function BreadcrumbItem({ className, style, ...props }: React.ComponentProps<'li'>) {
-  const sx = stylex.props(styles.item)
+function BreadcrumbList({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'ol'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.list, sxProp)
+
+  return (
+    <ol
+      data-slot="breadcrumb-list"
+      className={[sx.className, className].filter(Boolean).join(' ')}
+      style={sx.style || style ? { ...sx.style, ...style } : undefined}
+      {...props}
+    />
+  )
+}
+
+function BreadcrumbItem({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'li'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.item, sxProp)
 
   return (
     <li
       data-slot="breadcrumb-item"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
@@ -127,25 +143,31 @@ function BreadcrumbLink({
   asChild,
   className,
   style,
+  sx: sxProp,
   ...props
 }: React.ComponentProps<'a'> & {
   asChild?: boolean
-}) {
+} & { sx?: Sx }) {
   const Comp = asChild ? Slot.Root : 'a'
-  const sx = stylex.props(styles.link)
+  const sx = stylex.props(styles.link, sxProp)
 
   return (
     <Comp
       data-slot="breadcrumb-link"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function BreadcrumbPage({ className, style, ...props }: React.ComponentProps<'span'>) {
-  const sx = stylex.props(styles.page)
+function BreadcrumbPage({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'span'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.page, sxProp)
 
   return (
     <span
@@ -153,20 +175,28 @@ function BreadcrumbPage({ className, style, ...props }: React.ComponentProps<'sp
       role="link"
       aria-disabled="true"
       aria-current="page"
-      className={cn(sx.className, className)}
+      className={[sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     />
   )
 }
 
-function BreadcrumbSeparator({ children, className, ...props }: React.ComponentProps<'li'>) {
+function BreadcrumbSeparator({
+  children,
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'li'> & { sx?: Sx }) {
+  const sx = stylex.props(sxProp)
   return (
     <li
       data-slot="breadcrumb-separator"
       role="presentation"
       aria-hidden="true"
-      className={cn(SEPARATOR_ICON_CLASS, className)}
+      className={[SEPARATOR_ICON_CLASS, sx.className, className].filter(Boolean).join(' ')}
+      style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >
       {children ?? <ChevronRightIcon />}
@@ -174,8 +204,13 @@ function BreadcrumbSeparator({ children, className, ...props }: React.ComponentP
   )
 }
 
-function BreadcrumbEllipsis({ className, style, ...props }: React.ComponentProps<'span'>) {
-  const sx = stylex.props(styles.ellipsis)
+function BreadcrumbEllipsis({
+  className,
+  style,
+  sx: sxProp,
+  ...props
+}: React.ComponentProps<'span'> & { sx?: Sx }) {
+  const sx = stylex.props(styles.ellipsis, sxProp)
   const srOnly = stylex.props(styles.srOnly)
 
   return (
@@ -183,7 +218,7 @@ function BreadcrumbEllipsis({ className, style, ...props }: React.ComponentProps
       data-slot="breadcrumb-ellipsis"
       role="presentation"
       aria-hidden="true"
-      className={cn(ELLIPSIS_ICON_CLASS, sx.className, className)}
+      className={[ELLIPSIS_ICON_CLASS, sx.className, className].filter(Boolean).join(' ')}
       style={sx.style || style ? { ...sx.style, ...style } : undefined}
       {...props}
     >

@@ -1,3 +1,5 @@
+import { colors } from '@/styles/tokens.stylex'
+import * as stylex from '@stylexjs/stylex'
 import {
   Blockquote,
   Code,
@@ -18,7 +20,7 @@ import { LONG_TEXT } from '../data'
 
 export function TypographySection() {
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case0)}>
       <CaseGroup title="headings">
         <CaseRow>
           <Case name="typography-h1">
@@ -89,12 +91,10 @@ export function TypographySection() {
       <CaseGroup title="caller overrides">
         <CaseRow>
           <Case name="typography-h1-override">
-            <H1 className="text-base font-normal text-muted-foreground">
-              H1 with a className override
-            </H1>
+            <H1 sx={galleryStyles.case1}>H1 with a className override</H1>
           </Case>
           <Case name="typography-muted-override">
-            <Muted className="text-foreground">Muted with a className override</Muted>
+            <Muted sx={galleryStyles.case2}>Muted with a className override</Muted>
           </Case>
         </CaseRow>
       </CaseGroup>
@@ -110,3 +110,12 @@ export function TypographySection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+  case1: { fontSize: '1rem', lineHeight: 1.5, fontWeight: 400, color: colors.mutedForeground },
+  case2: { color: colors.foreground },
+})

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
 
-import { cn } from '@/lib/utils'
+import type { Sx } from '@/lib/sx'
 
 /**
  * Was `cva('mt-6 border-l-2 pl-6 italic')` (PR 03).
@@ -31,16 +31,17 @@ const styles = stylex.create({
 const variantStyles = { default: null } as const
 
 export interface BlockquoteProps extends React.HTMLAttributes<HTMLQuoteElement> {
+  sx?: Sx
   variant?: keyof typeof variantStyles | null | undefined
 }
 
 const Blockquote = React.forwardRef<HTMLQuoteElement, BlockquoteProps>(
-  ({ className, style, variant, ...props }, ref) => {
-    const sx = stylex.props(styles.base, variantStyles[variant ?? 'default'])
+  ({ className, style, variant, sx: sxProp, ...props }, ref) => {
+    const sx = stylex.props(styles.base, variantStyles[variant ?? 'default'], sxProp)
     return (
       <blockquote
         ref={ref}
-        className={cn(sx.className, className)}
+        className={[sx.className, className].filter(Boolean).join(' ')}
         style={sx.style || style ? { ...sx.style, ...style } : undefined}
         {...props}
       />

@@ -1,56 +1,9 @@
 import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
-import { cva, type VariantProps } from 'class-variance-authority'
 import { Slot } from 'radix-ui'
 
 import { colors, motion, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
 import type { Sx } from '@/lib/sx'
-
-/**
- * Kept **unchanged** for `components/ui/calendar.tsx`, which still calls
- * `buttonVariants({ variant })` to style day cells that are not `Button`s
- * (PR 16 migrates it). `Button` itself no longer uses it; the equivalent
- * StyleX styles are below and every class in this string has a comment there.
- *
- * Removing it is PR 32's job, together with `cva`, `cn` and `tailwind-merge`.
- */
-const buttonVariants = cva(
-  "focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-lg border border-transparent bg-clip-padding text-sm font-medium focus-visible:ring-3 aria-invalid:ring-3 [&_svg:not([class*='size-'])]:size-4 inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none group/button select-none",
-  {
-    variants: {
-      variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/80',
-        outline:
-          'border-border bg-background hover:bg-muted hover:text-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 aria-expanded:bg-muted aria-expanded:text-foreground',
-        secondary:
-          'bg-secondary text-secondary-foreground hover:bg-secondary/80 aria-expanded:bg-secondary aria-expanded:text-secondary-foreground',
-        ghost:
-          'text-muted-foreground hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground',
-        destructive:
-          'bg-destructive/10 hover:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/20 text-destructive focus-visible:border-destructive/40 dark:hover:bg-destructive/30',
-        link: 'text-primary underline-offset-4 hover:underline',
-      },
-      size: {
-        default:
-          'h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2',
-        xs: "h-6 gap-1 rounded-[min(var(--radius-md),10px)] px-2 text-xs in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
-        sm: "h-7 gap-1 rounded-[min(var(--radius-md),12px)] px-2.5 text-[0.8rem] in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
-        lg: 'h-9 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3',
-        icon: 'size-8',
-        'icon-xs':
-          "size-6 rounded-[min(var(--radius-md),10px)] in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-3",
-        'icon-sm':
-          'size-7 rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg',
-        'icon-lg': 'size-9',
-      },
-    },
-    defaultVariants: {
-      variant: 'default',
-      size: 'default',
-    },
-  }
-)
 
 /**
  * The composed `box-shadow` a three-pixel ring utility produces (PR 04).
@@ -564,6 +517,10 @@ const styles = stylex.create({
   },
 })
 
+const nullableStyles = stylex.create({
+  uncolored: { backgroundColor: 'transparent', color: 'inherit' },
+})
+
 const variantStyles = {
   default: styles.default,
   outline: styles.outline,
@@ -584,46 +541,64 @@ const sizeStyles = {
   'icon-lg': styles.sizeIconLg,
 } as const
 
-/**
- * `[&_svg:not([class*='size-'])]:size-N`, kept as a Tailwind class (PR 04).
- *
- * This rule styles an element the button does not own — a `lucide` icon whose
- * class comes from the call site. As a StyleX rule it would sit in a
- * `priorityN` layer, and layer order beats specificity, so it would lose to any
- * width/height utility on the icon itself. `mode-toggle.tsx` renders exactly
- * that: `<Sun className="h-[1.2rem] w-[1.2rem]" />`, which today loses to the
- * button's `(0,2,1)` descendant selector and renders at 16px, not 19.2px.
- *
- * It therefore stays Tailwind until the components that pass those icon classes
- * are StyleX (PR 20 for `mode-toggle`). `twMerge` still lets a caller override
- * it, exactly as before, because it is merged on the same key.
- */
-const SIZE_ICON_CLASS = {
-  default: "[&_svg:not([class*='size-'])]:size-4",
-  xs: "[&_svg:not([class*='size-'])]:size-3",
-  sm: "[&_svg:not([class*='size-'])]:size-3.5",
-  lg: "[&_svg:not([class*='size-'])]:size-4",
-  icon: "[&_svg:not([class*='size-'])]:size-4",
-  'icon-xs': "[&_svg:not([class*='size-'])]:size-3",
-  'icon-sm': "[&_svg:not([class*='size-'])]:size-4",
-  'icon-lg': "[&_svg:not([class*='size-'])]:size-4",
+const iconStyles = stylex.create({
+  regular: {
+    width: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+    height: { default: null, ':is(*) svg:not([class*="size-"])': '1rem' },
+  },
+  small: {
+    width: { default: null, ':is(*) svg:not([class*="size-"])': '0.875rem' },
+    height: { default: null, ':is(*) svg:not([class*="size-"])': '0.875rem' },
+  },
+  tiny: {
+    width: { default: null, ':is(*) svg:not([class*="size-"])': '0.75rem' },
+    height: { default: null, ':is(*) svg:not([class*="size-"])': '0.75rem' },
+  },
+})
+
+const iconSizeStyles = {
+  default: iconStyles.regular,
+  xs: iconStyles.tiny,
+  sm: iconStyles.small,
+  lg: iconStyles.regular,
+  icon: iconStyles.regular,
+  'icon-xs': iconStyles.tiny,
+  'icon-sm': iconStyles.regular,
+  'icon-lg': iconStyles.regular,
 } as const
+
+export function getButtonStyles({
+  variant = 'default',
+  size = 'default',
+}: {
+  variant?: keyof typeof variantStyles | null
+  size?: keyof typeof sizeStyles | null
+} = {}) {
+  return [
+    styles.base,
+    variantStyles[variant ?? 'default'],
+    variant === null && nullableStyles.uncolored,
+    size !== null && sizeStyles[size ?? 'default'],
+  ]
+}
 
 const Button = React.forwardRef<
   HTMLButtonElement,
-  React.ComponentProps<'button'> &
-    VariantProps<typeof buttonVariants> & {
-      asChild?: boolean
-      /**
-       * StyleX overrides from a StyleX caller, applied last so they win.
-       *
-       * `InputGroupButton` (PR 05) is the first one: its `shadow-none` used to
-       * be a utility class, which — once the ring moved to StyleX — beat the
-       * focus ring instead of losing to it. Passing the reset through here puts
-       * both declarations back in the same cascade layer.
-       */
-      sx?: Sx
-    }
+  React.ComponentProps<'button'> & {
+    variant?: keyof typeof variantStyles | null
+    size?: keyof typeof sizeStyles | null
+  } & {
+    asChild?: boolean
+    /**
+     * StyleX overrides from a StyleX caller, applied last so they win.
+     *
+     * `InputGroupButton` (PR 05) is the first one: its `shadow-none` used to
+     * be a utility class, which — once the ring moved to StyleX — beat the
+     * focus ring instead of losing to it. Passing the reset through here puts
+     * both declarations back in the same cascade layer.
+     */
+    sx?: Sx
+  }
 >(
   (
     {
@@ -641,7 +616,8 @@ const Button = React.forwardRef<
     const sx = stylex.props(
       styles.base,
       variantStyles[variant ?? 'default'],
-      sizeStyles[size ?? 'default'],
+      variant === null && nullableStyles.uncolored,
+      size !== null && sizeStyles[size ?? 'default'],
       sxProp
     )
 
@@ -655,7 +631,14 @@ const Button = React.forwardRef<
         // own, but `ProjectsTable` and `routes/project-detail` still style a
         // descendant icon with `group-hover/button:fill-yellow-400/50`, which
         // needs this exact class name on the ancestor until those files migrate.
-        className={cn('group/button', SIZE_ICON_CLASS[size ?? 'default'], sx.className, className)}
+        className={[
+          'group/button',
+          stylex.props(iconSizeStyles[size ?? 'default']).className,
+          sx.className,
+          className,
+        ]
+          .filter(Boolean)
+          .join(' ')}
         style={sx.style || style ? { ...sx.style, ...style } : undefined}
         {...props}
       />
@@ -664,4 +647,4 @@ const Button = React.forwardRef<
 )
 Button.displayName = 'Button'
 
-export { Button, buttonVariants }
+export { Button }

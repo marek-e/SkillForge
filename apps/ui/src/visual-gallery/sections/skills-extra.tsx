@@ -1,3 +1,5 @@
+import { fonts, typography } from '@/styles/tokens.stylex'
+import * as stylex from '@stylexjs/stylex'
 import { useRef, useState } from 'react'
 import { MoreHorizontalIcon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
@@ -38,19 +40,19 @@ const LONG_FILES = [
 function CardBadges() {
   return (
     <>
-      <Badge variant="outline" className="text-xs gap-1 px-1.5 py-0">
+      <Badge variant="outline" sx={galleryStyles.case0}>
         Claude Code
       </Badge>
-      <Badge variant="secondary" className="text-xs">
+      <Badge variant="secondary" sx={galleryStyles.case1}>
         imported
       </Badge>
-      <Badge variant="outline" className="text-xs">
+      <Badge variant="outline" sx={galleryStyles.case2}>
         project-specific
       </Badge>
-      <Badge variant="secondary" className="text-xs font-mono">
+      <Badge variant="secondary" sx={galleryStyles.case3}>
         #review
       </Badge>
-      <Badge variant="secondary" className="text-xs font-mono">
+      <Badge variant="secondary" sx={galleryStyles.case4}>
         #automation
       </Badge>
     </>
@@ -74,7 +76,7 @@ export function SkillsExtraSection() {
   const loadedFileContentsRef = useRef<Record<string, string>>({})
 
   return (
-    <div className="space-y-8">
+    <div {...stylex.props(galleryStyles.case5)}>
       <CaseGroup title="skill card grid mode">
         <CaseRow>
           <Case name="skillsx-card-grid-actions" width={320}>
@@ -192,3 +194,21 @@ export function SkillsExtraSection() {
     </div>
   )
 }
+
+const galleryStyles = stylex.create({
+  case0: {
+    fontSize: '0.75rem',
+    lineHeight: typography.xsLineHeight,
+    gap: '0.25rem',
+    paddingInline: '0.375rem',
+    paddingBlock: '0rem',
+  },
+  case1: { fontSize: '0.75rem', lineHeight: typography.xsLineHeight },
+  case2: { fontSize: '0.75rem', lineHeight: typography.xsLineHeight },
+  case3: { fontSize: '0.75rem', lineHeight: typography.xsLineHeight, fontFamily: fonts.mono },
+  case4: { fontSize: '0.75rem', lineHeight: typography.xsLineHeight, fontFamily: fonts.mono },
+  case5: {
+    marginBlockStart: { default: null, ':is(*)>:not(:last-child)': '0rem' },
+    marginBlockEnd: { default: null, ':is(*)>:not(:last-child)': '2rem' },
+  },
+})

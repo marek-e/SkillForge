@@ -2,9 +2,9 @@ import * as React from 'react'
 import * as stylex from '@stylexjs/stylex'
 import { DayPicker, getDefaultClassNames, type DayButton, type Locale } from 'react-day-picker'
 
-import { colors, radius } from '@/styles/tokens.stylex'
-import { cn } from '@/lib/utils'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { colors, radius, typography } from '@/styles/tokens.stylex'
+import type { Sx } from '@/lib/sx'
+import { Button, getButtonStyles } from '@/components/ui/button'
 import { ChevronLeftIcon, ChevronRightIcon, ChevronDownIcon } from 'lucide-react'
 
 /**
@@ -20,9 +20,103 @@ const CELL_SIZE = 'var(--cell-size)'
 const MD = '@media (width >= 48rem)'
 
 const styles = stylex.create({
+  navButton: {
+    width: CELL_SIZE,
+    height: CELL_SIZE,
+    padding: 0,
+    paddingInline: 0,
+    paddingBlock: 0,
+    opacity: { default: null, ':is([aria-disabled="true"])': '50%' },
+    userSelect: 'none',
+  },
+  captionIcons: {
+    width: { default: null, ':is(*)>svg': '0.875rem' },
+    height: { default: null, ':is(*)>svg': '0.875rem' },
+    color: { default: null, ':is(*)>svg': colors.mutedForeground },
+  },
+  dayCell: {
+    borderRadius: CELL_RADIUS,
+    borderTopRightRadius: {
+      default: null,
+      ':is(*):last-child[data-selected="true"] button': CELL_RADIUS,
+      '[data-range-middle="true"]': {
+        default: null,
+        ':is(*):last-child[data-selected="true"] button': CELL_RADIUS,
+      },
+    },
+    borderBottomRightRadius: {
+      default: null,
+      ':is(*):last-child[data-selected="true"] button': CELL_RADIUS,
+      '[data-range-middle="true"]': {
+        default: null,
+        ':is(*):last-child[data-selected="true"] button': CELL_RADIUS,
+      },
+    },
+  },
+  dayFirst: {
+    borderTopLeftRadius: {
+      default: null,
+      ':is(*):first-child[data-selected="true"] button': CELL_RADIUS,
+      '[data-range-middle="true"]': {
+        default: null,
+        ':is(*):first-child[data-selected="true"] button': CELL_RADIUS,
+      },
+    },
+    borderBottomLeftRadius: {
+      default: null,
+      ':is(*):first-child[data-selected="true"] button': CELL_RADIUS,
+      '[data-range-middle="true"]': {
+        default: null,
+        ':is(*):first-child[data-selected="true"] button': CELL_RADIUS,
+      },
+    },
+  },
+  daySecond: {
+    borderTopLeftRadius: {
+      default: null,
+      ':is(*):nth-child(2)[data-selected="true"] button': CELL_RADIUS,
+      '[data-range-middle="true"]': {
+        default: null,
+        ':is(*):nth-child(2)[data-selected="true"] button': CELL_RADIUS,
+      },
+    },
+    borderBottomLeftRadius: {
+      default: null,
+      ':is(*):nth-child(2)[data-selected="true"] button': CELL_RADIUS,
+      '[data-range-middle="true"]': {
+        default: null,
+        ':is(*):nth-child(2)[data-selected="true"] button': CELL_RADIUS,
+      },
+    },
+  },
+  rangeStartRadius: { borderTopLeftRadius: CELL_RADIUS, borderBottomLeftRadius: CELL_RADIUS },
+  rangeEndRadius: { borderTopRightRadius: CELL_RADIUS, borderBottomRightRadius: CELL_RADIUS },
+  rangeMiddleRadius: { borderRadius: { default: null, ':is(.rdp-range_middle)': 0 } },
+  outside: {
+    color: {
+      default: colors.mutedForeground,
+      ':is([aria-selected="true"])': colors.mutedForeground,
+    },
+  },
+  icon: { width: '1rem', height: '1rem' },
+  weekNumberCell: {
+    display: 'flex',
+    width: CELL_SIZE,
+    height: CELL_SIZE,
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+  },
   // `p-2 bg-background in-data-[slot=card-content]:bg-transparent
   //  in-data-[slot=popover-content]:bg-transparent` on the root.
   root: {
+    '--cell-radius': radius.md,
+    '--cell-size': '1.75rem',
+    rotate: {
+      default: null,
+      ':is(:dir(rtl)) .rdp-button_next>svg': '180deg',
+      ':is(:dir(rtl)) .rdp-button_previous>svg': '180deg',
+    },
     padding: '0.5rem',
     backgroundColor: {
       default: colors.background,
@@ -221,11 +315,18 @@ const styles = stylex.create({
 
   // `bg-muted` on today's cell; its colour and radius stay classes, see
   // `TODAY_CLASSES`.
-  today: { backgroundColor: colors.muted },
+  today: {
+    backgroundColor: colors.muted,
+    color: {
+      default: colors.foreground,
+      ':is(.rdp-outside,.rdp-disabled)': colors.mutedForeground,
+    },
+    borderRadius: { default: CELL_RADIUS, '[data-selected="true"]': 0 },
+  },
 
   // `opacity-50` on a disabled cell; its colour stays a class, see
   // `DISABLED_CLASSES`.
-  disabled: { opacity: '50%' },
+  disabled: { opacity: '50%', color: colors.mutedForeground },
 
   // `invisible`
   hidden: { visibility: 'hidden' },
@@ -251,6 +352,21 @@ const styles = stylex.create({
   // `.w-full` wins the width, so the pair is a `100%` width and an `auto`
   // height.
   dayButton: {
+    lineHeight: { default: 1, ':is(*)>span': typography.xsLineHeight },
+    borderColor: {
+      default: 'transparent',
+      ':focus-visible': colors.ring,
+      ':is(.group\\/day[data-focused="true"] *)': colors.ring,
+    },
+    boxShadow: {
+      default: null,
+      ':focus-visible':
+        '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent), 0 0 #0000',
+      ':is(.group\\/day[data-focused="true"] *)':
+        '0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent), 0 0 #0000',
+    },
+    fontSize: { default: '0.875rem', ':is(*)>span': '0.75rem' },
+    opacity: { default: null, ':disabled': '50%', ':is(*)>span': '70%' },
     position: 'relative',
     isolation: 'isolate',
     zIndex: 10,
@@ -289,106 +405,35 @@ const styles = stylex.create({
       default: colors.mutedForeground,
       ':is([aria-expanded="true"])': colors.foreground,
       '@media (hover: hover)': { default: null, ':hover': colors.foreground },
-      '[data-selected-single="true"]': colors.primaryForeground,
-      '[data-range-start="true"]': colors.primaryForeground,
-      '[data-range-end="true"]': colors.primaryForeground,
+      '[data-selected-single="true"]': {
+        default: colors.primaryForeground,
+        ':is(.dark *)': {
+          default: null,
+          '@media (hover: hover)': { default: null, ':hover': colors.foreground },
+        },
+      },
+      '[data-range-start="true"]': {
+        default: colors.primaryForeground,
+        ':is(.dark *)': {
+          default: null,
+          '@media (hover: hover)': { default: null, ':hover': colors.foreground },
+        },
+      },
+      '[data-range-end="true"]': {
+        default: colors.primaryForeground,
+        ':is(.dark *)': {
+          default: null,
+          '@media (hover: hover)': { default: null, ':hover': colors.foreground },
+        },
+      },
       '[data-range-middle="true"]': colors.foreground,
     },
   },
 })
 
-/**
- * The root classes that cannot move (PR 16).
- *
- * `[--cell-radius:var(--radius-md)]` and `[--cell-size:--spacing(7)]` resolve
- * two Tailwind *theme* variables, which StyleX may never reference
- * (`conventions.md`, "Toolchain"); `group/calendar` is a hook a caller can
- * select through, so removing it would change the DOM; and the two `rtl:`
- * rules reach into `react-day-picker`'s own `.rdp-button_*` elements. PR 32.
- */
-const ROOT_CLASSES = 'group/calendar [--cell-radius:var(--radius-md)] [--cell-size:--spacing(7)]'
-
-/**
- * The previous/next month buttons, kept exactly as they were (PR 16).
- *
- * `buttonVariants` still returns Tailwind utilities, so the four classes beside
- * it have to stay utilities too: as StyleX they would sit in a `priorityN`
- * layer and lose to `buttonVariants`' own `h-8` and `px-2.5`. The whole string
- * moves in PR 32, with `buttonVariants` itself.
- */
-const NAV_BUTTON_CLASSES = 'size-(--cell-size) aria-disabled:opacity-50 p-0 select-none'
-
-/**
- * The caption label's icon rules, kept as Tailwind classes (PR 16).
- *
- * `[&>svg]:size-3.5` has to beat the `size-4` the `Chevron` component puts on
- * the icon itself, which it does today on specificity — (0,1,1) against
- * (0,1,0). Both live in `utilities`, so the pair only keeps working while this
- * one does. PR 32.
- */
-const CAPTION_LABEL_ICON_CLASSES = '[&>svg]:text-muted-foreground [&>svg]:size-3.5'
-
-/**
- * The day cell's radius and its two descendant rules, kept as Tailwind classes
- * (PR 16).
- *
- * `rounded-(--cell-radius)` is contested on the same element by
- * `range_middle`'s `rounded-none` and by `range_start`/`range_end`'s
- * `rounded-l-`/`rounded-r-`, and `react-day-picker` adds those modifier classes
- * from a *different* entry of the `classNames` map — so the two declarations
- * can never reach one `stylex.props` call, and a StyleX tie is not settled by
- * the order the keys were written in (`conventions.md`, "Utility source order
- * decides a same-specificity tie"). Tailwind settles it by emission order:
- * `.rounded-none` and the two side longhands are emitted after
- * `.rounded-(--cell-radius)`, so they win. Keeping all of them as utilities
- * keeps that outcome.
- *
- * `[&:…[data-selected=true]_button]:rounded-*` reaches into the `Button` the
- * cell contains, whose own radius is already StyleX, so it has to stay in
- * `utilities` to keep outranking it. `group/day` is the hook the day button's
- * `group-data-[focused=true]/day:` rules select through. PR 32.
- */
-const DAY_CELL_CLASSES =
-  'rounded-(--cell-radius) [&:last-child[data-selected=true]_button]:rounded-r-(--cell-radius) group/day'
-
-/** `text-foreground rounded-(--cell-radius) data-[selected=true]:rounded-none` — see `DAY_CELL_CLASSES` for the radius, and `OUTSIDE_CLASSES` for the colour. */
-const TODAY_CLASSES = 'text-foreground rounded-(--cell-radius) data-[selected=true]:rounded-none'
-
-/**
- * `text-muted-foreground` on an outside or a disabled cell, kept as Tailwind
- * classes (PR 16).
- *
- * A cell can be both "today" and outside, or both today and disabled, and then
- * `text-foreground` and `text-muted-foreground` contest one property from two
- * entries of the `classNames` map — the same unmergeable pair as the radius
- * above. Tailwind emits `.text-muted-foreground` after `.text-foreground`, so
- * the muted colour wins; keeping both as utilities keeps that. PR 32.
- */
-const OUTSIDE_CLASSES = 'text-muted-foreground aria-selected:text-muted-foreground'
-const DISABLED_CLASSES = 'text-muted-foreground'
-
-/**
- * The day button's rules that stay Tailwind classes (PR 16).
- *
- * - `group-data-[focused=true]/day:*` reaches the button from the *cell*, and
- *   the ring and border colour it writes have to keep beating `Button`'s own
- *   `:focus-visible` declarations, which are StyleX. Restating them through
- *   `sx` would also mean restating the four `aria-invalid:` rings a day button
- *   can never show;
- * - `dark:hover:text-foreground` is (0,3,0) today and therefore outranks the
- *   `data-[…=true]:text-*` rules in dark mode. Leaving it in `utilities` keeps
- *   it above the StyleX keys that replaced them;
- * - `leading-none` publishes `--tw-leading`, which the `[&>span]:text-xs`
- *   below resolves its own line height through (`conventions.md`);
- * - `[&>span]:*` styles content `react-day-picker` puts inside the button.
- *
- * PR 32.
- */
-const DAY_BUTTON_CLASSES =
-  'group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50 dark:hover:text-foreground leading-none group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px] [&>span]:text-xs [&>span]:opacity-70'
-
 function Calendar({
   className,
+  sx: sxProp,
   classNames,
   showOutsideDays = true,
   captionLayout = 'label',
@@ -398,6 +443,7 @@ function Calendar({
   components,
   ...props
 }: React.ComponentProps<typeof DayPicker> & {
+  sx?: Sx
   buttonVariant?: React.ComponentProps<typeof Button>['variant']
 }) {
   const defaultClassNames = getDefaultClassNames()
@@ -405,13 +451,9 @@ function Calendar({
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      className={cn(
-        ROOT_CLASSES,
-        stylex.props(styles.root).className,
-        String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
-        String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`,
-        className
-      )}
+      className={['group/calendar', stylex.props(styles.root, sxProp).className, className]
+        .filter(Boolean)
+        .join(' ')}
       captionLayout={captionLayout}
       locale={locale}
       formatters={{
@@ -419,98 +461,166 @@ function Calendar({
         ...formatters,
       }}
       classNames={{
-        root: cn(stylex.props(styles.rootWidth).className, defaultClassNames.root),
-        months: cn(stylex.props(styles.months).className, defaultClassNames.months),
-        month: cn(stylex.props(styles.month).className, defaultClassNames.month),
-        nav: cn(stylex.props(styles.nav).className, defaultClassNames.nav),
-        button_previous: cn(
-          buttonVariants({ variant: buttonVariant }),
-          NAV_BUTTON_CLASSES,
-          defaultClassNames.button_previous
-        ),
-        button_next: cn(
-          buttonVariants({ variant: buttonVariant }),
-          NAV_BUTTON_CLASSES,
-          defaultClassNames.button_next
-        ),
-        month_caption: cn(
+        root: [stylex.props(styles.rootWidth).className, defaultClassNames.root]
+          .filter(Boolean)
+          .join(' '),
+        months: [stylex.props(styles.months).className, defaultClassNames.months]
+          .filter(Boolean)
+          .join(' '),
+        month: [stylex.props(styles.month).className, defaultClassNames.month]
+          .filter(Boolean)
+          .join(' '),
+        nav: [stylex.props(styles.nav).className, defaultClassNames.nav].filter(Boolean).join(' '),
+        button_previous: [
+          stylex.props(getButtonStyles({ variant: buttonVariant }), styles.navButton).className,
+          defaultClassNames.button_previous,
+        ]
+          .filter(Boolean)
+          .join(' '),
+        button_next: [
+          stylex.props(getButtonStyles({ variant: buttonVariant }), styles.navButton).className,
+          defaultClassNames.button_next,
+        ]
+          .filter(Boolean)
+          .join(' '),
+        month_caption: [
           stylex.props(styles.monthCaption).className,
-          defaultClassNames.month_caption
-        ),
-        dropdowns: cn(stylex.props(styles.dropdowns).className, defaultClassNames.dropdowns),
-        dropdown_root: cn(
+          defaultClassNames.month_caption,
+        ]
+          .filter(Boolean)
+          .join(' '),
+        dropdowns: [stylex.props(styles.dropdowns).className, defaultClassNames.dropdowns]
+          .filter(Boolean)
+          .join(' '),
+        dropdown_root: [
           stylex.props(styles.dropdownRoot).className,
-          defaultClassNames.dropdown_root
-        ),
-        dropdown: cn(stylex.props(styles.dropdown).className, defaultClassNames.dropdown),
-        caption_label: cn(
-          captionLayout === 'label' ? undefined : CAPTION_LABEL_ICON_CLASSES,
+          defaultClassNames.dropdown_root,
+        ]
+          .filter(Boolean)
+          .join(' '),
+        dropdown: [stylex.props(styles.dropdown).className, defaultClassNames.dropdown]
+          .filter(Boolean)
+          .join(' '),
+        caption_label: [
+          captionLayout === 'label' ? undefined : stylex.props(styles.captionIcons).className,
           stylex.props(
             styles.captionLabel,
             captionLayout === 'label' ? styles.captionLabelPlain : styles.captionLabelDropdown
           ).className,
-          defaultClassNames.caption_label
-        ),
+          defaultClassNames.caption_label,
+        ]
+          .filter(Boolean)
+          .join(' '),
         table: stylex.props(styles.table).className,
-        weekdays: cn(stylex.props(styles.weekdays).className, defaultClassNames.weekdays),
-        weekday: cn(stylex.props(styles.weekday).className, defaultClassNames.weekday),
-        week: cn(stylex.props(styles.week).className, defaultClassNames.week),
-        week_number_header: cn(
+        weekdays: [stylex.props(styles.weekdays).className, defaultClassNames.weekdays]
+          .filter(Boolean)
+          .join(' '),
+        weekday: [stylex.props(styles.weekday).className, defaultClassNames.weekday]
+          .filter(Boolean)
+          .join(' '),
+        week: [stylex.props(styles.week).className, defaultClassNames.week]
+          .filter(Boolean)
+          .join(' '),
+        week_number_header: [
           stylex.props(styles.weekNumberHeader).className,
-          defaultClassNames.week_number_header
-        ),
-        week_number: cn(stylex.props(styles.weekNumber).className, defaultClassNames.week_number),
-        day: cn(
-          DAY_CELL_CLASSES,
+          defaultClassNames.week_number_header,
+        ]
+          .filter(Boolean)
+          .join(' '),
+        week_number: [stylex.props(styles.weekNumber).className, defaultClassNames.week_number]
+          .filter(Boolean)
+          .join(' '),
+        day: [
+          'group/day',
+          stylex.props(styles.dayCell).className,
           stylex.props(styles.day).className,
-          props.showWeekNumber
-            ? '[&:nth-child(2)[data-selected=true]_button]:rounded-l-(--cell-radius)'
-            : '[&:first-child[data-selected=true]_button]:rounded-l-(--cell-radius)',
-          defaultClassNames.day
-        ),
-        range_start: cn(
-          'rounded-l-(--cell-radius)',
+          stylex.props(props.showWeekNumber ? styles.daySecond : styles.dayFirst).className,
+          defaultClassNames.day,
+        ]
+          .filter(Boolean)
+          .join(' '),
+        range_start: [
+          stylex.props(styles.rangeStartRadius).className,
           stylex.props(styles.rangeStart).className,
-          defaultClassNames.range_start
-        ),
-        range_middle: cn('rounded-none', defaultClassNames.range_middle),
-        range_end: cn(
-          'rounded-r-(--cell-radius)',
+          defaultClassNames.range_start,
+        ]
+          .filter(Boolean)
+          .join(' '),
+        range_middle: [
+          stylex.props(styles.rangeMiddleRadius).className,
+          defaultClassNames.range_middle,
+        ]
+          .filter(Boolean)
+          .join(' '),
+        range_end: [
+          stylex.props(styles.rangeEndRadius).className,
           stylex.props(styles.rangeEnd).className,
-          defaultClassNames.range_end
-        ),
-        today: cn(TODAY_CLASSES, stylex.props(styles.today).className, defaultClassNames.today),
-        outside: cn(OUTSIDE_CLASSES, defaultClassNames.outside),
-        disabled: cn(
-          DISABLED_CLASSES,
-          stylex.props(styles.disabled).className,
-          defaultClassNames.disabled
-        ),
-        hidden: cn(stylex.props(styles.hidden).className, defaultClassNames.hidden),
+          defaultClassNames.range_end,
+        ]
+          .filter(Boolean)
+          .join(' '),
+        today: [stylex.props(styles.today).className, defaultClassNames.today]
+          .filter(Boolean)
+          .join(' '),
+        outside: [stylex.props(styles.outside).className, defaultClassNames.outside]
+          .filter(Boolean)
+          .join(' '),
+        disabled: [stylex.props(styles.disabled).className, defaultClassNames.disabled]
+          .filter(Boolean)
+          .join(' '),
+        hidden: [stylex.props(styles.hidden).className, defaultClassNames.hidden]
+          .filter(Boolean)
+          .join(' '),
         ...classNames,
       }}
       components={{
         Root: ({ className, rootRef, ...props }) => {
-          return <div data-slot="calendar" ref={rootRef} className={cn(className)} {...props} />
+          return (
+            <div
+              data-slot="calendar"
+              ref={rootRef}
+              className={[className].filter(Boolean).join(' ')}
+              {...props}
+            />
+          )
         },
         Chevron: ({ className, orientation, ...props }) => {
           if (orientation === 'left') {
-            return <ChevronLeftIcon className={cn('size-4', className)} {...props} />
+            return (
+              <ChevronLeftIcon
+                className={['size-explicit', stylex.props(styles.icon).className, className]
+                  .filter(Boolean)
+                  .join(' ')}
+                {...props}
+              />
+            )
           }
 
           if (orientation === 'right') {
-            return <ChevronRightIcon className={cn('size-4', className)} {...props} />
+            return (
+              <ChevronRightIcon
+                className={['size-explicit', stylex.props(styles.icon).className, className]
+                  .filter(Boolean)
+                  .join(' ')}
+                {...props}
+              />
+            )
           }
 
-          return <ChevronDownIcon className={cn('size-4', className)} {...props} />
+          return (
+            <ChevronDownIcon
+              className={['size-explicit', stylex.props(styles.icon).className, className]
+                .filter(Boolean)
+                .join(' ')}
+              {...props}
+            />
+          )
         },
         DayButton: ({ ...props }) => <CalendarDayButton locale={locale} {...props} />,
         WeekNumber: ({ children, ...props }) => {
           return (
             <td {...props}>
-              <div className="flex size-(--cell-size) items-center justify-center text-center">
-                {children}
-              </div>
+              <div {...stylex.props(styles.weekNumberCell)}>{children}</div>
             </td>
           )
         },
@@ -523,11 +633,12 @@ function Calendar({
 
 function CalendarDayButton({
   className,
+  sx: sxProp,
   day,
   modifiers,
   locale,
   ...props
-}: React.ComponentProps<typeof DayButton> & { locale?: Partial<Locale> }) {
+}: React.ComponentProps<typeof DayButton> & { locale?: Partial<Locale>; sx?: Sx }) {
   const defaultClassNames = getDefaultClassNames()
 
   const ref = React.useRef<HTMLButtonElement>(null)
@@ -550,8 +661,8 @@ function CalendarDayButton({
       data-range-start={modifiers.range_start}
       data-range-end={modifiers.range_end}
       data-range-middle={modifiers.range_middle}
-      sx={styles.dayButton}
-      className={cn(DAY_BUTTON_CLASSES, defaultClassNames.day, className)}
+      sx={[styles.dayButton, sxProp]}
+      className={[defaultClassNames.day, className].filter(Boolean).join(' ')}
       {...props}
     />
   )
